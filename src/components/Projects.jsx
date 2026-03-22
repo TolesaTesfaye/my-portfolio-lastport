@@ -27,10 +27,10 @@ const Projects = ({ darkMode }) => {
     {
       title: 'Personal Portfolio',
       description: 'Modern, responsive portfolio website showcasing my projects and skills. Features dark/light mode, smooth animations, and interactive components built with React and Framer Motion.',
-      technologies: ['React', 'Tailwind CSS', 'Framer Motion', 'Vite', 'GitHub Pages'],
+      technologies: ['React', 'Tailwind CSS', 'Framer Motion', 'Vite', 'Vercel'],
       image: '💼',
       github: 'https://github.com/TolesaTesfaye/my-portfolio-lastport',
-      demo: 'https://tolesatesfaye.github.io/port2/',
+      demo: 'https://my-portfolio-lastport.vercel.app/',
       category: 'Web Development',
     },
     {
