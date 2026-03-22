@@ -1,0 +1,10 @@
+Force deployment trigger - Updated: 2024-12-22
+This file is created to trigger a new Vercel deployment with all the latest features including:
+- Services section
+- Legal pages (Privacy Policy, Terms of Service, Cookie Policy, Disclaimer)
+- Enhanced navigation
+- Updated contact information
+- MERN stack skills
+- Real GitHub repository links
+- Professional footer
+- Improved UI/UX
