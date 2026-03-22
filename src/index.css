@@ -8,26 +8,26 @@
   }
   
   body {
-    @apply bg-gray-900 text-white transition-colors duration-300;
+    @apply bg-slate-900 text-white transition-colors duration-300;
   }
   
   body.light {
-    @apply bg-gray-50 text-gray-900;
+    @apply bg-slate-50 text-slate-900;
   }
   
   /* Light mode enhancements */
   @media (prefers-color-scheme: light) {
     body {
-      @apply bg-gradient-to-br from-gray-50 via-white to-blue-50/30;
+      @apply bg-gradient-to-br from-slate-50 via-white to-blue-50/30;
     }
   }
 }
 
 @layer utilities {
   .text-gradient {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500;
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500;
     background-size: 200% auto;
-    animation: gradient-shift 5s ease infinite;
+    animation: gradient-shift 6s ease infinite;
   }
   
   @keyframes gradient-shift {

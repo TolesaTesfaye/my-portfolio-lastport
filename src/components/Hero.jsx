@@ -42,7 +42,7 @@ const Hero = ({ darkMode }) => {
 
   return (
     <section id="home" className={`min-h-screen flex items-center justify-center relative overflow-hidden pt-16 ${
-      darkMode ? '' : 'bg-gradient-to-br from-white via-blue-50/20 to-purple-50/20'
+      darkMode ? '' : 'bg-gradient-to-br from-white via-blue-50/30 to-purple-50/30'
     }`}>
       {/* Additional Hero Section Background Effects */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -55,27 +55,27 @@ const Hero = ({ darkMode }) => {
           }}></div>
         </div>
         
-        {/* Floating Particles */}
-        {[...Array(8)].map((_, i) => (
+        {/* Floating Particles - Reduced count and movement */}
+        {[...Array(4)].map((_, i) => (
           <motion.div
             key={i}
             animate={{
-              y: [0, -100, 0],
-              x: [0, Math.sin(i) * 50, 0],
-              opacity: darkMode ? [0.2, 0.6, 0.2] : [0.1, 0.3, 0.1],
-              scale: [1, 1.5, 1],
+              y: [0, -50, 0],
+              x: [0, Math.sin(i) * 25, 0],
+              opacity: darkMode ? [0.1, 0.3, 0.1] : [0.05, 0.15, 0.05],
+              scale: [1, 1.2, 1],
             }}
             transition={{
-              duration: 4 + i * 0.5,
+              duration: 6 + i * 0.5,
               repeat: Infinity,
-              delay: i * 0.3,
+              delay: i * 0.5,
             }}
-            className={`absolute w-3 h-3 rounded-full ${
+            className={`absolute w-2 h-2 rounded-full ${
               darkMode ? 'bg-blue-400' : 'bg-blue-500/40'
             }`}
             style={{
-              left: `${10 + i * 12}%`,
-              top: `${20 + i * 8}%`,
+              left: `${15 + i * 20}%`,
+              top: `${25 + i * 15}%`,
             }}
           />
         ))}
@@ -108,24 +108,25 @@ const Hero = ({ darkMode }) => {
 
             <motion.p
               variants={itemVariants}
-              className={`text-xl md:text-2xl mb-4 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}
+              className={`text-xl md:text-2xl mb-4 ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}
             >
               4th Year Software Engineering Student
             </motion.p>
 
             <motion.p
               variants={itemVariants}
-              className={`text-lg md:text-xl mb-8 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}
+              className={`text-lg md:text-xl mb-8 ${darkMode ? 'text-slate-400' : 'text-slate-600'}`}
             >
               Haramaya University
             </motion.p>
 
             <motion.p
               variants={itemVariants}
-              className={`text-lg max-w-2xl mx-auto lg:mx-0 mb-12 leading-relaxed ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}
+              className={`text-lg max-w-2xl mx-auto lg:mx-0 mb-12 leading-relaxed ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}
             >
-              Passionate Full-Stack Developer specializing in React, Node.js, and modern web technologies.
-              Building innovative solutions with AI integration and mobile applications.
+              Passionate Full-Stack Developer specializing in MERN stack, Java with Spring Boot, and modern web technologies. 
+              Content Creator at "Tolman Tube" YouTube channel and creator of SuccessBridge learning platform. 
+              Expert in photo/video editing and educational content creation.
             </motion.p>
 
             <motion.div
@@ -181,8 +182,8 @@ const Hero = ({ darkMode }) => {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.8 + index * 0.1 }}
-                  whileHover={{ scale: 1.3, y: -8, rotate: [0, -10, 10, 0] }}
-                  whileTap={{ scale: 0.9 }}
+                  whileHover={{ scale: 1.1, y: -3 }}
+                  whileTap={{ scale: 0.95 }}
                   className={`text-3xl transition-all duration-300 ${social.color} relative group ${
                     darkMode ? 'text-gray-400' : 'text-gray-600'
                   }`}
@@ -209,19 +210,19 @@ const Hero = ({ darkMode }) => {
             className="flex-1 flex justify-center lg:justify-end"
           >
             <div className="relative">
-              {/* Glowing Ring Animation */}
+              {/* Glowing Ring Animation - Slower rotation */}
               <motion.div
                 animate={{ rotate: 360 }}
-                transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+                transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
                 className="absolute inset-0 rounded-full"
               >
-                <div className="w-full h-full rounded-full bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 opacity-20 blur-xl"></div>
+                <div className="w-full h-full rounded-full bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 opacity-15 blur-xl"></div>
               </motion.div>
               
               {/* Profile Image Container */}
               <motion.div
-                whileHover={{ scale: 1.05, rotate: [0, -5, 5, 0] }}
-                transition={{ duration: 0.5 }}
+                whileHover={{ scale: 1.02 }}
+                transition={{ duration: 0.3 }}
                 className="relative w-80 h-80 md:w-96 md:h-96 rounded-full overflow-hidden border-4 border-transparent bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 p-1"
               >
                 <div className="w-full h-full rounded-full overflow-hidden bg-gray-800">
@@ -248,22 +249,20 @@ const Hero = ({ darkMode }) => {
                 </div>
               </motion.div>
 
-              {/* Floating Elements */}
+              {/* Floating Elements - Reduced movement */}
               <motion.div
                 animate={{ 
-                  y: [0, -20, 0],
-                  rotate: [0, 10, 0]
+                  y: [0, -10, 0],
                 }}
-                transition={{ duration: 3, repeat: Infinity }}
-                className="absolute -top-10 -right-10 w-20 h-20 bg-blue-500/20 rounded-full blur-xl"
+                transition={{ duration: 4, repeat: Infinity }}
+                className="absolute -top-10 -right-10 w-20 h-20 bg-blue-500/15 rounded-full blur-xl"
               ></motion.div>
               <motion.div
                 animate={{ 
-                  y: [0, 20, 0],
-                  rotate: [0, -10, 0]
+                  y: [0, 10, 0],
                 }}
-                transition={{ duration: 4, repeat: Infinity }}
-                className="absolute -bottom-10 -left-10 w-24 h-24 bg-purple-500/20 rounded-full blur-xl"
+                transition={{ duration: 5, repeat: Infinity }}
+                className="absolute -bottom-10 -left-10 w-24 h-24 bg-purple-500/15 rounded-full blur-xl"
               ></motion.div>
             </div>
           </motion.div>

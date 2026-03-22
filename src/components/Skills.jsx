@@ -8,8 +8,9 @@ import {
   FaDatabase,
   FaMobile,
   FaBrain,
+  FaJava,
 } from 'react-icons/fa'
-import { SiMongodb, SiMysql, SiTailwindcss, SiTypescript, SiExpress, SiPhp } from 'react-icons/si'
+import { SiMongodb, SiMysql, SiTailwindcss, SiTypescript, SiExpress, SiPhp, SiSpringboot } from 'react-icons/si'
 
 const Skills = ({ darkMode }) => {
   const skillCategories = [
@@ -21,6 +22,7 @@ const Skills = ({ darkMode }) => {
         { name: 'CSS3', icon: FaCss3Alt, level: 90, color: 'text-blue-500' },
         { name: 'JavaScript', icon: FaJs, level: 88, color: 'text-yellow-400' },
         { name: 'Tailwind CSS', icon: SiTailwindcss, level: 85, color: 'text-cyan-400' },
+        { name: 'TypeScript', icon: SiTypescript, level: 82, color: 'text-blue-500' },
       ],
     },
     {
@@ -28,15 +30,17 @@ const Skills = ({ darkMode }) => {
       skills: [
         { name: 'Node.js', icon: FaNode, level: 85, color: 'text-green-400' },
         { name: 'Express.js', icon: SiExpress, level: 88, color: 'text-gray-400' },
-        { name: 'TypeScript', icon: SiTypescript, level: 82, color: 'text-blue-500' },
-        { name: 'PHP', icon: SiPhp, level: 80, color: 'text-indigo-400' },
+        { name: 'Java', icon: FaJava, level: 85, color: 'text-red-500' },
+        { name: 'Spring Boot', icon: SiSpringboot, level: 80, color: 'text-green-500' },
+        { name: 'PHP', icon: SiPhp, level: 75, color: 'text-indigo-400' },
       ],
     },
     {
-      title: 'Database',
+      title: 'Database & Full Stack',
       skills: [
-        { name: 'MongoDB', icon: SiMongodb, level: 80, color: 'text-green-500' },
+        { name: 'MongoDB', icon: SiMongodb, level: 85, color: 'text-green-500' },
         { name: 'MySQL', icon: SiMysql, level: 82, color: 'text-blue-600' },
+        { name: 'MERN Stack', icon: FaReact, level: 88, color: 'text-purple-400' },
         { name: 'Database Design', icon: FaDatabase, level: 85, color: 'text-purple-400' },
       ],
     },
@@ -67,8 +71,8 @@ const Skills = ({ darkMode }) => {
   return (
     <section id="skills" className={`py-20 px-4 sm:px-6 lg:px-8 ${
       darkMode 
-        ? 'bg-gray-800/30' 
-        : 'bg-gradient-to-br from-white via-gray-50/50 to-blue-50/30'
+        ? 'bg-slate-800/30' 
+        : 'bg-gradient-to-br from-white via-slate-50/50 to-blue-50/30'
     }`}>
       <div className="max-w-7xl mx-auto">
         <motion.div
@@ -78,11 +82,11 @@ const Skills = ({ darkMode }) => {
           transition={{ duration: 0.6 }}
           className="text-center mb-16"
         >
-          <h2 className={`text-4xl md:text-5xl font-bold mb-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+          <h2 className={`text-4xl md:text-5xl font-bold mb-4 ${darkMode ? 'text-white' : 'text-slate-900'}`}>
             My <span className="text-gradient">Skills</span>
           </h2>
           <div className="w-24 h-1 bg-gradient-to-r from-blue-500 to-purple-600 mx-auto mb-4"></div>
-          <p className={`text-lg ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+          <p className={`text-lg ${darkMode ? 'text-slate-400' : 'text-slate-600'}`}>
             Technologies and tools I work with to bring ideas to life
           </p>
         </motion.div>
@@ -155,7 +159,7 @@ const Skills = ({ darkMode }) => {
             Additional Expertise
           </h3>
           <div className="flex flex-wrap justify-center gap-4">
-            {['RESTful APIs', 'Git & GitHub', 'Responsive Design', 'UI/UX Design', 'Problem Solving', 'Team Collaboration'].map((skill, index) => (
+            {['RESTful APIs', 'Git & GitHub', 'Responsive Design', 'UI/UX Design', 'Problem Solving', 'Team Collaboration', 'MERN Stack', 'Spring Framework', 'Object-Oriented Programming'].map((skill, index) => (
               <motion.div
                 key={index}
                 initial={{ opacity: 0, scale: 0.5 }}

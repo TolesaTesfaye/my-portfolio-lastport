@@ -7,67 +7,58 @@ const Projects = ({ darkMode }) => {
 
   const projects = [
     {
-      title: 'E-Commerce Platform',
-      description: 'Full-stack e-commerce solution with React, Node.js, and MongoDB. Features include user authentication, payment integration, and admin dashboard.',
-      technologies: ['React', 'Node.js', 'MongoDB', 'Express', 'Tailwind CSS'],
-      image: '🛒',
-      github: 'https://github.com',
-      demo: 'https://demo.com',
-      category: 'Web Development',
-    },
-    {
-      title: 'AI-Powered Chat Application',
-      description: 'Real-time chat application with AI integration for smart responses. Built with React, Socket.io, and OpenAI API.',
-      technologies: ['React', 'Node.js', 'Socket.io', 'AI/ML', 'MongoDB'],
-      image: '🤖',
-      github: 'https://github.com',
-      demo: 'https://demo.com',
-      category: 'AI Integration',
-    },
-    {
-      title: 'Mobile Task Manager',
-      description: 'Cross-platform mobile application for task management with offline support and cloud synchronization.',
-      technologies: ['React Native', 'Node.js', 'MySQL', 'REST API'],
-      image: '📱',
-      github: 'https://github.com',
-      demo: 'https://demo.com',
-      category: 'Mobile App',
-    },
-    {
-      title: 'Social Media Dashboard',
-      description: 'Analytics dashboard for social media management with real-time data visualization and insights.',
-      technologies: ['React', 'Node.js', 'MongoDB', 'Chart.js', 'Tailwind CSS'],
-      image: '📊',
-      github: 'https://github.com',
-      demo: 'https://demo.com',
-      category: 'Web Development',
-    },
-    {
-      title: 'Learning Management System',
-      description: 'Comprehensive LMS platform for online education with video streaming, quizzes, and progress tracking.',
-      technologies: ['React', 'Node.js', 'MySQL', 'Express', 'Video Streaming'],
-      image: '🎓',
-      github: 'https://github.com',
-      demo: 'https://demo.com',
-      category: 'Web Development',
-    },
-    {
-      title: 'Weather Forecast App',
-      description: 'Beautiful weather application with location-based forecasts, interactive maps, and detailed analytics.',
-      technologies: ['React', 'API Integration', 'Tailwind CSS', 'Chart.js'],
-      image: '🌤️',
-      github: 'https://github.com',
-      demo: 'https://demo.com',
-      category: 'Web Development',
-    },
-    {
-      title: 'Student Success App',
-      description: 'Comprehensive student management application for tracking academic progress, assignments, grades, and performance analytics. Features include dashboard, grade tracking, assignment management, and progress reports.',
+      title: 'SuccessBridge',
+      description: 'Comprehensive student management platform connecting students, teachers, and parents. Features academic progress tracking, grade management, assignment submission, and real-time communication tools.',
       technologies: ['React', 'Node.js', 'Express', 'MongoDB', 'TypeScript', 'Tailwind CSS'],
-      image: '🎓',
-      github: 'https://github.com',
+      image: '🌉',
+      github: 'https://github.com/TolesaTesfaye/SuccessBridge',
       demo: 'https://demo.com',
       category: 'Web Development',
+    },
+    {
+      title: 'Task Management System',
+      description: 'Modern task management application with drag-and-drop functionality, team collaboration, deadline tracking, and productivity analytics. Built for efficient project management.',
+      technologies: ['React', 'Node.js', 'MongoDB', 'Socket.io', 'Tailwind CSS'],
+      image: '✅',
+      github: 'https://github.com/TolesaTesfaye/Task-Managemant-System',
+      demo: 'https://demo.com',
+      category: 'Web Development',
+    },
+    {
+      title: 'Personal Portfolio',
+      description: 'Modern, responsive portfolio website showcasing my projects and skills. Features dark/light mode, smooth animations, and interactive components built with React and Framer Motion.',
+      technologies: ['React', 'Tailwind CSS', 'Framer Motion', 'Vite', 'GitHub Pages'],
+      image: '💼',
+      github: 'https://github.com/TolesaTesfaye/my-portfolio-lastport',
+      demo: 'https://tolesatesfaye.github.io/port2/',
+      category: 'Web Development',
+    },
+    {
+      title: 'EAGLES TEAM Project',
+      description: 'Collaborative team project showcasing teamwork and development skills. Built with modern web technologies and best practices for scalable applications.',
+      technologies: ['React', 'Node.js', 'Express', 'MongoDB', 'Team Collaboration'],
+      image: '🦅',
+      github: 'https://github.com/TolesaTesfaye/EAGLES-TEAM-',
+      demo: 'https://demo.com',
+      category: 'Team Project',
+    },
+    {
+      title: 'Database Management System',
+      description: 'Comprehensive database management system with advanced querying, data visualization, backup automation, and performance monitoring. Supports multiple database engines.',
+      technologies: ['Node.js', 'MySQL', 'MongoDB', 'PostgreSQL', 'Chart.js', 'Express'],
+      image: '🗄️',
+      github: 'https://github.com/TolesaTesfaye/database',
+      demo: 'https://demo.com',
+      category: 'Database',
+    },
+    {
+      title: 'Tolesa Repository',
+      description: 'Personal development repository containing various coding projects, experiments, and learning materials. Showcases continuous learning and skill development.',
+      technologies: ['JavaScript', 'React', 'Node.js', 'Various Technologies'],
+      image: '📚',
+      github: 'https://github.com/TolesaTesfaye/Tolesa-repo',
+      demo: 'https://demo.com',
+      category: 'Learning & Development',
     },
   ]
 
@@ -99,7 +90,7 @@ const Projects = ({ darkMode }) => {
     <section id="projects" className={`py-20 px-4 sm:px-6 lg:px-8 ${
       darkMode 
         ? '' 
-        : 'bg-gradient-to-br from-gray-50/50 via-white to-purple-50/20'
+        : 'bg-gradient-to-br from-slate-50/50 via-white to-purple-50/20'
     }`}>
       <div className="max-w-7xl mx-auto">
         <motion.div
@@ -109,11 +100,11 @@ const Projects = ({ darkMode }) => {
           transition={{ duration: 0.6 }}
           className="text-center mb-16"
         >
-          <h2 className={`text-4xl md:text-5xl font-bold mb-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+          <h2 className={`text-4xl md:text-5xl font-bold mb-4 ${darkMode ? 'text-white' : 'text-slate-900'}`}>
             My <span className="text-gradient">Projects</span>
           </h2>
           <div className="w-24 h-1 bg-gradient-to-r from-blue-500 to-purple-600 mx-auto mb-4"></div>
-          <p className={`text-lg ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+          <p className={`text-lg ${darkMode ? 'text-slate-400' : 'text-slate-600'}`}>
             A collection of projects showcasing my skills and experience
           </p>
         </motion.div>
@@ -132,9 +123,9 @@ const Projects = ({ darkMode }) => {
               onMouseEnter={() => setHoveredIndex(index)}
               onMouseLeave={() => setHoveredIndex(null)}
               whileHover={{ 
-                y: -10,
-                scale: 1.02,
-                boxShadow: "0 20px 40px rgba(59, 130, 246, 0.3)"
+                y: -5,
+                scale: 1.01,
+                boxShadow: "0 15px 30px rgba(59, 130, 246, 0.2)"
               }}
               className={`group relative backdrop-blur-sm rounded-xl overflow-hidden border transition-all duration-300 ${
                 darkMode 
@@ -145,15 +136,15 @@ const Projects = ({ darkMode }) => {
               {/* Project Image/Icon */}
               <motion.div 
                 className="h-48 bg-gradient-to-br from-blue-500/20 to-purple-600/20 flex items-center justify-center text-6xl relative overflow-hidden"
-                whileHover={{ scale: 1.1 }}
+                whileHover={{ scale: 1.02 }}
               >
                 <motion.div
                   animate={{ 
                     rotate: [0, 360],
-                    scale: [1, 1.2, 1]
+                    scale: [1, 1.05, 1]
                   }}
-                  transition={{ duration: 20, repeat: Infinity }}
-                  className="absolute inset-0 bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-pink-500/20"
+                  transition={{ duration: 30, repeat: Infinity }}
+                  className="absolute inset-0 bg-gradient-to-r from-blue-500/15 via-purple-500/15 to-pink-500/15"
                 />
                 <span className="relative z-10 text-7xl">{project.image}</span>
               </motion.div>

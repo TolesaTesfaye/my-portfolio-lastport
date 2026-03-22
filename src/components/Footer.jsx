@@ -1,29 +1,218 @@
 import { motion } from 'framer-motion'
-import { FaHeart } from 'react-icons/fa'
+import { FaHeart, FaGithub, FaLinkedin, FaYoutube, FaTelegram, FaEnvelope } from 'react-icons/fa'
 
-const Footer = ({ darkMode }) => {
+const Footer = ({ darkMode, navigateToSection, currentPage }) => {
   const currentYear = new Date().getFullYear()
 
+  const footerLinks = {
+    company: [
+      { name: 'About Tolesa', sectionId: 'about' },
+      { name: 'Services', sectionId: 'services' },
+      { name: 'Projects', sectionId: 'projects' },
+      { name: 'Skills', sectionId: 'skills' },
+    ],
+    legal: [
+      { name: 'Privacy Policy', href: '#privacy-policy' },
+      { name: 'Terms of Service', href: '#terms-of-service' },
+      { name: 'Cookie Policy', href: '#cookie-policy' },
+      { name: 'Disclaimer', href: '#disclaimer' },
+    ],
+    resources: [
+      { name: 'SuccessBridge Platform', href: 'https://github.com/TolesaTesfaye/SuccessBridge' },
+      { name: 'Tolman Tube Channel', href: 'https://www.youtube.com/@tolinaaf' },
+      { name: 'GitHub Portfolio', href: 'https://github.com/TolesaTesfaye' },
+      { name: 'Learning Resources', href: 'https://github.com/TolesaTesfaye/Tolesa-repo' },
+    ],
+    contact: [
+      { name: 'Get In Touch', sectionId: 'contact' },
+      { name: 'Collaboration', sectionId: 'contact' },
+      { name: 'Hire Me', sectionId: 'contact' },
+      { name: 'Support', sectionId: 'contact' },
+    ]
+  }
+
+  const socialLinks = [
+    { icon: FaGithub, href: 'https://github.com/TolesaTesfaye', label: 'GitHub' },
+    { icon: FaLinkedin, href: 'https://linkedin.com', label: 'LinkedIn' },
+    { icon: FaYoutube, href: 'https://www.youtube.com/@tolinaaf', label: 'YouTube' },
+    { icon: FaTelegram, href: 'https://t.me/+ap3RyRf-wvEyNTg0', label: 'Telegram' },
+    { icon: FaEnvelope, href: '#contact', label: 'Email' },
+  ]
+
   return (
-    <footer className={`py-8 px-4 sm:px-6 lg:px-8 border-t ${
-      darkMode ? 'border-gray-800' : 'border-gray-200'
+    <footer className={`py-12 px-4 sm:px-6 lg:px-8 border-t ${
+      darkMode 
+        ? 'border-slate-800 bg-slate-900/50' 
+        : 'border-slate-200 bg-slate-50/50'
     }`}>
       <div className="max-w-7xl mx-auto">
+        {/* Main Footer Content */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
+          {/* Company Info */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            <h3 className={`text-lg font-semibold mb-4 ${darkMode ? 'text-white' : 'text-slate-900'}`}>
+              Tolesa Tesfaye
+            </h3>
+            <p className={`mb-4 ${darkMode ? 'text-slate-400' : 'text-slate-600'}`}>
+              Full-Stack Developer, Content Creator, and Educator passionate about building innovative solutions and teaching technology.
+            </p>
+            <div className="flex space-x-4">
+              {socialLinks.map((social, index) => (
+                <motion.a
+                  key={index}
+                  href={social.href}
+                  target={social.href.startsWith('http') ? '_blank' : '_self'}
+                  rel={social.href.startsWith('http') ? 'noopener noreferrer' : ''}
+                  whileHover={{ scale: 1.2, y: -2 }}
+                  whileTap={{ scale: 0.9 }}
+                  className={`transition-colors ${
+                    darkMode 
+                      ? 'text-slate-400 hover:text-white' 
+                      : 'text-slate-600 hover:text-blue-600'
+                  }`}
+                  title={social.label}
+                >
+                  <social.icon size={20} />
+                </motion.a>
+              ))}
+            </div>
+          </motion.div>
+
+          {/* Company Links */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.1 }}
+          >
+            <h4 className={`text-lg font-semibold mb-4 ${darkMode ? 'text-white' : 'text-slate-900'}`}>
+              Company
+            </h4>
+            <ul className="space-y-2">
+              {footerLinks.company.map((link, index) => (
+                <li key={index}>
+                  <button
+                    onClick={() => navigateToSection(link.sectionId)}
+                    className={`transition-colors hover:text-blue-500 text-left ${
+                      darkMode ? 'text-slate-400' : 'text-slate-600'
+                    }`}
+                  >
+                    {link.name}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </motion.div>
+
+          {/* Resources */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+          >
+            <h4 className={`text-lg font-semibold mb-4 ${darkMode ? 'text-white' : 'text-slate-900'}`}>
+              Resources
+            </h4>
+            <ul className="space-y-2">
+              {footerLinks.resources.map((link, index) => (
+                <li key={index}>
+                  <a
+                    href={link.href}
+                    target={link.href.startsWith('http') ? '_blank' : '_self'}
+                    rel={link.href.startsWith('http') ? 'noopener noreferrer' : ''}
+                    className={`transition-colors hover:text-blue-500 ${
+                      darkMode ? 'text-slate-400' : 'text-slate-600'
+                    }`}
+                  >
+                    {link.name}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </motion.div>
+
+          {/* Contact */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+          >
+            <h4 className={`text-lg font-semibold mb-4 ${darkMode ? 'text-white' : 'text-slate-900'}`}>
+              Contact
+            </h4>
+            <ul className="space-y-2">
+              {footerLinks.contact.map((link, index) => (
+                <li key={index}>
+                  <button
+                    onClick={() => navigateToSection(link.sectionId)}
+                    className={`transition-colors hover:text-blue-500 text-left ${
+                      darkMode ? 'text-slate-400' : 'text-slate-600'
+                    }`}
+                  >
+                    {link.name}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </motion.div>
+        </div>
+
+        {/* Legal Links */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.4 }}
+          className={`py-6 border-t ${darkMode ? 'border-slate-800' : 'border-slate-200'}`}
+        >
+          <div className="flex flex-wrap justify-center gap-6 mb-4">
+            {footerLinks.legal.map((link, index) => (
+              <a
+                key={index}
+                href={link.href}
+                onClick={(e) => {
+                  // Small delay to ensure hash change is processed first
+                  setTimeout(() => {
+                    window.scrollTo({ top: 0, behavior: 'smooth' })
+                  }, 50)
+                }}
+                className={`text-sm transition-colors hover:text-blue-500 ${
+                  darkMode ? 'text-slate-400' : 'text-slate-600'
+                }`}
+              >
+                {link.name}
+              </a>
+            ))}
+          </div>
+        </motion.div>
+
+        {/* Bottom Footer */}
         <motion.div
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.5 }}
           className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0"
         >
           <div className={`text-center md:text-left ${
-            darkMode ? 'text-gray-400' : 'text-gray-600'
+            darkMode ? 'text-slate-400' : 'text-slate-600'
           }`}>
             <p>
               © {currentYear} Tolesa Tesfaye. All rights reserved.
             </p>
+            <p className="text-sm mt-1">
+              Software Engineer | Content Creator | Educator
+            </p>
           </div>
           <div className={`flex items-center space-x-2 ${
-            darkMode ? 'text-gray-400' : 'text-gray-600'
+            darkMode ? 'text-slate-400' : 'text-slate-600'
           }`}>
             <span>Made with</span>
             <motion.span

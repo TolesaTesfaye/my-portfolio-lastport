@@ -29,14 +29,14 @@ const Contact = ({ darkMode }) => {
     {
       icon: FaEnvelope,
       label: 'Email',
-      value: 'tolesa.tesfaye@example.com',
-      link: 'mailto:tolesa.tesfaye@example.com',
+      value: 'tolesatesfay273@gmail.com',
+      link: 'mailto:tolesatesfay273@gmail.com',
     },
     {
       icon: FaPhone,
       label: 'Phone',
-      value: '+251 XXX XXX XXX',
-      link: 'tel:+251XXXXXXXXX',
+      value: '+251 716 000 504',
+      link: 'tel:+251716000504',
     },
     {
       icon: FaMapMarkerAlt,
@@ -56,8 +56,8 @@ const Contact = ({ darkMode }) => {
   return (
     <section id="contact" className={`py-20 px-4 sm:px-6 lg:px-8 ${
       darkMode 
-        ? 'bg-gray-800/30' 
-        : 'bg-gradient-to-br from-gray-50/50 via-white to-blue-50/30'
+        ? 'bg-slate-800/30' 
+        : 'bg-gradient-to-br from-slate-50/50 via-white to-blue-50/30'
     }`}>
       <div className="max-w-7xl mx-auto">
         <motion.div
@@ -67,11 +67,11 @@ const Contact = ({ darkMode }) => {
           transition={{ duration: 0.6 }}
           className="text-center mb-16"
         >
-          <h2 className={`text-4xl md:text-5xl font-bold mb-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+          <h2 className={`text-4xl md:text-5xl font-bold mb-4 ${darkMode ? 'text-white' : 'text-slate-900'}`}>
             Get In <span className="text-gradient">Touch</span>
           </h2>
           <div className="w-24 h-1 bg-gradient-to-r from-blue-500 to-purple-600 mx-auto mb-4"></div>
-          <p className={`text-lg ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+          <p className={`text-lg ${darkMode ? 'text-slate-400' : 'text-slate-600'}`}>
             Have a project in mind? Let's work together to bring it to life!
           </p>
         </motion.div>
