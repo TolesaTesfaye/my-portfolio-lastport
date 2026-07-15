@@ -1,61 +1,175 @@
-import { motion } from 'framer-motion'
-import { 
-  FaCode, 
-  FaYoutube, 
-  FaChalkboardTeacher, 
-  FaImage, 
-  FaVideo, 
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  FaCode,
+  FaYoutube,
+  FaChalkboardTeacher,
+  FaImage,
+  FaVideo,
   FaGraduationCap,
-  FaLaptopCode,
-  FaPalette
-} from 'react-icons/fa'
-import { SiAdobephotoshop, SiCanva } from 'react-icons/si'
+  FaChevronLeft,
+  FaChevronRight,
+  FaCircle,
+} from "react-icons/fa";
+import { useState, useEffect } from "react";
 
 const Services = ({ darkMode }) => {
+  const [hoveredIndex, setHoveredIndex] = useState(null);
+  const [activeImage, setActiveImage] = useState({});
+
   const services = [
     {
-      title: 'Web Development',
-      description: 'Full-stack web application development using MERN stack (MongoDB, Express, React, Node.js), Java with Spring Boot, and modern technologies. Creator of SuccessBridge learning platform.',
+      title: "Web Development",
+      description:
+        "Full-stack web application development using MERN stack (MongoDB, Express, React, Node.js), Java with Spring Boot, and modern technologies. Creator of SuccessBridge learning platform.",
       icon: FaCode,
-      features: ['MERN Stack', 'Java & Spring Boot', 'API Development', 'Responsive Design'],
-      color: 'from-blue-500 to-cyan-500'
+      features: [
+        "MERN Stack",
+        "Java & Spring Boot",
+        "API Development",
+        "Responsive Design",
+      ],
+      color: "from-blue-500 to-cyan-500",
+      images: [
+        "https://picsum.photos/seed/webdev1/800/400",
+        "https://picsum.photos/seed/webdev2/800/400",
+        "https://picsum.photos/seed/webdev3/800/400",
+      ],
     },
     {
-      title: 'Content Creation',
-      description: 'YouTube content creator at "Tolman Tube" channel, creating educational content and tutorials for students and developers.',
+      title: "Content Creation",
+      description:
+        'YouTube content creator at "Tolman Tube" channel, creating educational content and tutorials for students and developers.',
       icon: FaYoutube,
-      features: ['Educational Videos', 'Tutorial Creation', 'Student Engagement', 'Tech Content'],
-      color: 'from-red-500 to-pink-500'
+      features: [
+        "Educational Videos",
+        "Tutorial Creation",
+        "Student Engagement",
+        "Tech Content",
+      ],
+      color: "from-red-500 to-pink-500",
+      images: [
+        "https://picsum.photos/seed/content1/800/400",
+        "https://picsum.photos/seed/content2/800/400",
+        "https://picsum.photos/seed/content3/800/400",
+      ],
     },
     {
-      title: 'Online Teaching',
-      description: 'Passionate educator teaching students through YouTube channel, providing valuable learning resources and guidance in technology.',
+      title: "Online Teaching",
+      description:
+        "Passionate educator teaching students through YouTube channel, providing valuable learning resources and guidance in technology.",
       icon: FaChalkboardTeacher,
-      features: ['Student Mentoring', 'Tech Education', 'Learning Resources', 'Skill Development'],
-      color: 'from-green-500 to-emerald-500'
+      features: [
+        "Student Mentoring",
+        "Tech Education",
+        "Learning Resources",
+        "Skill Development",
+      ],
+      color: "from-green-500 to-emerald-500",
+      images: [
+        "https://picsum.photos/seed/teaching1/800/400",
+        "https://picsum.photos/seed/teaching2/800/400",
+        "https://picsum.photos/seed/teaching3/800/400",
+      ],
     },
     {
-      title: 'Photo Editing',
-      description: 'Professional photo editing services using industry-standard tools like Adobe Photoshop, Canva, and other creative software.',
+      title: "Photo Editing",
+      description:
+        "Professional photo editing services using industry-standard tools like Adobe Photoshop, Canva, and other creative software.",
       icon: FaImage,
-      features: ['Adobe Photoshop', 'Canva Design', 'Image Enhancement', 'Creative Design'],
-      color: 'from-purple-500 to-indigo-500'
+      features: [
+        "Adobe Photoshop",
+        "Canva Design",
+        "Image Enhancement",
+        "Creative Design",
+      ],
+      color: "from-purple-500 to-indigo-500",
+      images: [
+        "https://picsum.photos/seed/photoedit1/800/400",
+        "https://picsum.photos/seed/photoedit2/800/400",
+        "https://picsum.photos/seed/photoedit3/800/400",
+      ],
     },
     {
-      title: 'Video Editing',
-      description: 'Expert video editing services using CapCut and other professional tools for creating engaging and high-quality video content.',
+      title: "Video Editing",
+      description:
+        "Expert video editing services using CapCut and other professional tools for creating engaging and high-quality video content.",
       icon: FaVideo,
-      features: ['CapCut Editing', 'Video Production', 'Content Optimization', 'Visual Effects'],
-      color: 'from-orange-500 to-yellow-500'
+      features: [
+        "CapCut Editing",
+        "Video Production",
+        "Content Optimization",
+        "Visual Effects",
+      ],
+      color: "from-orange-500 to-yellow-500",
+      images: [
+        "https://picsum.photos/seed/videoedit1/800/400",
+        "https://picsum.photos/seed/videoedit2/800/400",
+        "https://picsum.photos/seed/videoedit3/800/400",
+      ],
     },
     {
-      title: 'SuccessBridge Platform',
-      description: 'Developer and creator of SuccessBridge - a comprehensive learning platform built with MERN stack, providing educational resources and reading materials for students.',
+      title: "SuccessBridge Platform",
+      description:
+        "Developer and creator of SuccessBridge - a comprehensive learning platform built with MERN stack, providing educational resources and reading materials for students.",
       icon: FaGraduationCap,
-      features: ['MERN Stack Development', 'Resource Library', 'Student Portal', 'Educational Tools'],
-      color: 'from-teal-500 to-blue-500'
-    }
-  ]
+      features: [
+        "MERN Stack Development",
+        "Resource Library",
+        "Student Portal",
+        "Educational Tools",
+      ],
+      color: "from-teal-500 to-blue-500",
+      images: [
+        "https://picsum.photos/seed/successbridge1/800/400",
+        "https://picsum.photos/seed/successbridge2/800/400",
+        "https://picsum.photos/seed/successbridge3/800/400",
+      ],
+    },
+  ];
+
+  // Initialize active image index for each service
+  useEffect(() => {
+    const initial = {};
+    services.forEach((_, index) => {
+      initial[index] = 0;
+    });
+    setActiveImage(initial);
+  }, []);
+
+  // Auto-slide for hovered service
+  useEffect(() => {
+    if (hoveredIndex === null) return;
+
+    const interval = setInterval(() => {
+      setActiveImage((prev) => ({
+        ...prev,
+        [hoveredIndex]: ((prev[hoveredIndex] || 0) + 1) % 3,
+      }));
+    }, 2500);
+
+    return () => clearInterval(interval);
+  }, [hoveredIndex]);
+
+  const nextImage = (serviceIndex) => {
+    setActiveImage((prev) => ({
+      ...prev,
+      [serviceIndex]: ((prev[serviceIndex] || 0) + 1) % 3,
+    }));
+  };
+
+  const prevImage = (serviceIndex) => {
+    setActiveImage((prev) => ({
+      ...prev,
+      [serviceIndex]: ((prev[serviceIndex] || 0) - 1 + 3) % 3,
+    }));
+  };
+
+  const goToImage = (serviceIndex, imageIndex) => {
+    setActiveImage((prev) => ({
+      ...prev,
+      [serviceIndex]: imageIndex,
+    }));
+  };
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -65,27 +179,30 @@ const Services = ({ darkMode }) => {
         staggerChildren: 0.1,
       },
     },
-  }
+  };
 
   const itemVariants = {
     hidden: { opacity: 0, y: 30 },
-    visible: { 
-      opacity: 1, 
+    visible: {
+      opacity: 1,
       y: 0,
       transition: {
         type: "spring",
         stiffness: 100,
-        damping: 12
-      }
+        damping: 12,
+      },
     },
-  }
+  };
 
   return (
-    <section id="services" className={`py-20 px-4 sm:px-6 lg:px-8 ${
-      darkMode 
-        ? 'bg-slate-800/30' 
-        : 'bg-gradient-to-br from-white via-slate-50/50 to-purple-50/30'
-    }`}>
+    <section
+      id="services"
+      className={`py-20 px-4 sm:px-6 lg:px-8 ${
+        darkMode
+          ? "bg-slate-800/30"
+          : "bg-gradient-to-br from-white via-slate-50/50 to-purple-50/30"
+      }`}
+    >
       <div className="max-w-7xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -94,12 +211,17 @@ const Services = ({ darkMode }) => {
           transition={{ duration: 0.6 }}
           className="text-center mb-16"
         >
-          <h2 className={`text-4xl md:text-5xl font-bold mb-4 ${darkMode ? 'text-white' : 'text-slate-900'}`}>
+          <h2
+            className={`text-4xl md:text-5xl font-bold mb-4 ${darkMode ? "text-white" : "text-slate-900"}`}
+          >
             My <span className="text-gradient">Services</span>
           </h2>
           <div className="w-24 h-1 bg-gradient-to-r from-blue-500 to-purple-600 mx-auto mb-4"></div>
-          <p className={`text-lg ${darkMode ? 'text-slate-400' : 'text-slate-600'}`}>
-            Comprehensive services from web development to content creation and education
+          <p
+            className={`text-lg ${darkMode ? "text-slate-400" : "text-slate-600"}`}
+          >
+            Comprehensive services from web development to content creation and
+            education
           </p>
         </motion.div>
 
@@ -110,57 +232,161 @@ const Services = ({ darkMode }) => {
           viewport={{ once: true }}
           className="grid md:grid-cols-2 lg:grid-cols-3 gap-8"
         >
-          {services.map((service, index) => (
-            <motion.div
-              key={index}
-              variants={itemVariants}
-              whileHover={{ 
-                y: -8, 
-                scale: 1.02,
-                boxShadow: "0 15px 30px rgba(59, 130, 246, 0.2)"
-              }}
-              className={`backdrop-blur-sm rounded-xl p-6 border transition-all duration-300 relative overflow-hidden group ${
-                darkMode 
-                  ? 'bg-slate-800/50 border-slate-700 hover:border-blue-500/50' 
-                  : 'bg-white/90 border-slate-200/80 hover:border-blue-400 shadow-xl hover:shadow-2xl'
-              }`}
-            >
+          {services.map((service, index) => {
+            const currentImage = activeImage[index] || 0;
+
+            return (
               <motion.div
-                className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-              />
-              
-              <div className="relative z-10">
-                <motion.div
-                  whileHover={{ scale: 1.1, rotate: [0, -5, 5, 0] }}
-                  transition={{ duration: 0.3 }}
-                  className="mb-4"
-                >
-                  <div className={`w-16 h-16 rounded-lg bg-gradient-to-r ${service.color} flex items-center justify-center mb-4`}>
-                    <service.icon className="text-2xl text-white" />
-                  </div>
-                </motion.div>
-                
-                <h3 className={`text-xl font-semibold mb-3 ${darkMode ? 'text-white' : 'text-slate-900'}`}>
-                  {service.title}
-                </h3>
-                
-                <p className={`mb-4 ${darkMode ? 'text-slate-400' : 'text-slate-700'}`}>
-                  {service.description}
-                </p>
-                
-                <div className="space-y-2">
-                  {service.features.map((feature, featureIndex) => (
-                    <div key={featureIndex} className="flex items-center space-x-2">
-                      <div className="w-2 h-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full"></div>
-                      <span className={`text-sm ${darkMode ? 'text-slate-300' : 'text-slate-600'}`}>
-                        {feature}
-                      </span>
+                key={index}
+                variants={itemVariants}
+                onMouseEnter={() => setHoveredIndex(index)}
+                onMouseLeave={() => setHoveredIndex(null)}
+                whileHover={{
+                  y: -8,
+                  scale: 1.02,
+                  boxShadow: "0 15px 30px rgba(59, 130, 246, 0.2)",
+                }}
+                className={`backdrop-blur-sm rounded-xl border transition-all duration-300 relative overflow-hidden group ${
+                  darkMode
+                    ? "bg-slate-800/50 border-slate-700 hover:border-blue-500/50"
+                    : "bg-white/90 border-slate-200/80 hover:border-blue-400 shadow-xl hover:shadow-2xl"
+                }`}
+              >
+                {/* Image Carousel */}
+                <div className="relative h-48 overflow-hidden bg-gradient-to-br from-blue-500/20 to-purple-600/20">
+                  <AnimatePresence mode="wait">
+                    <motion.img
+                      key={currentImage}
+                      src={service.images[currentImage]}
+                      alt={`${service.title} preview ${currentImage + 1}`}
+                      initial={{ opacity: 0, x: 50 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: -50 }}
+                      transition={{ duration: 0.3 }}
+                      className="absolute inset-0 w-full h-full object-cover"
+                      onError={(e) => {
+                        e.target.style.display = "none";
+                      }}
+                    />
+                  </AnimatePresence>
+
+                  {/* Fallback gradient overlay if no image */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent pointer-events-none" />
+
+                  {/* Service Icon overlay */}
+                  <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                    <div
+                      className={`w-16 h-16 rounded-xl bg-gradient-to-r ${service.color} flex items-center justify-center shadow-2xl opacity-90`}
+                    >
+                      <service.icon className="text-3xl text-white" />
                     </div>
-                  ))}
+                  </div>
+
+                  {/* Navigation Arrows - show on hover */}
+                  {hoveredIndex === index && (
+                    <>
+                      <motion.button
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          prevImage(index);
+                        }}
+                        className={`absolute left-2 top-1/2 -translate-y-1/2 p-2 rounded-full z-20 transition-all ${
+                          darkMode
+                            ? "bg-black/60 text-white hover:bg-black/80"
+                            : "bg-white/80 text-gray-800 hover:bg-white"
+                        }`}
+                      >
+                        <FaChevronLeft className="text-sm" />
+                      </motion.button>
+                      <motion.button
+                        initial={{ opacity: 0, x: 10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          nextImage(index);
+                        }}
+                        className={`absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-full z-20 transition-all ${
+                          darkMode
+                            ? "bg-black/60 text-white hover:bg-black/80"
+                            : "bg-white/80 text-gray-800 hover:bg-white"
+                        }`}
+                      >
+                        <FaChevronRight className="text-sm" />
+                      </motion.button>
+                    </>
+                  )}
+
+                  {/* Dots Indicator */}
+                  <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center space-x-2 z-20">
+                    {[0, 1, 2].map((dotIndex) => (
+                      <button
+                        key={dotIndex}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          goToImage(index, dotIndex);
+                        }}
+                        className="transition-all duration-300 focus:outline-none"
+                      >
+                        {currentImage === dotIndex ? (
+                          <FaCircle className="text-[8px] text-white drop-shadow-lg" />
+                        ) : (
+                          <FaCircle className="text-[6px] text-white/50 drop-shadow-lg hover:opacity-80" />
+                        )}
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* Image Counter */}
+                  <span
+                    className={`absolute top-3 right-3 z-20 text-xs font-medium px-2 py-1 rounded-full backdrop-blur-sm ${
+                      darkMode
+                        ? "bg-black/50 text-white"
+                        : "bg-white/70 text-gray-800"
+                    }`}
+                  >
+                    {currentImage + 1}/3
+                  </span>
                 </div>
-              </div>
-            </motion.div>
-          ))}
+
+                {/* Service Content */}
+                <div className="p-6 relative z-10">
+                  <motion.div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+
+                  <div className="relative z-10">
+                    <h3
+                      className={`text-xl font-semibold mb-3 group-hover:text-gradient transition-colors ${darkMode ? "text-white" : "text-slate-900"}`}
+                    >
+                      {service.title}
+                    </h3>
+
+                    <p
+                      className={`mb-4 line-clamp-3 ${darkMode ? "text-slate-400" : "text-slate-700"}`}
+                    >
+                      {service.description}
+                    </p>
+
+                    <div className="space-y-2">
+                      {service.features.map((feature, featureIndex) => (
+                        <div
+                          key={featureIndex}
+                          className="flex items-center space-x-2"
+                        >
+                          <div className="w-2 h-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full"></div>
+                          <span
+                            className={`text-sm ${darkMode ? "text-slate-300" : "text-slate-600"}`}
+                          >
+                            {feature}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            );
+          })}
         </motion.div>
 
         {/* Call to Action */}
@@ -171,11 +397,16 @@ const Services = ({ darkMode }) => {
           transition={{ duration: 0.6, delay: 0.3 }}
           className="text-center mt-16"
         >
-          <h3 className={`text-2xl font-semibold mb-4 ${darkMode ? 'text-white' : 'text-slate-900'}`}>
+          <h3
+            className={`text-2xl font-semibold mb-4 ${darkMode ? "text-white" : "text-slate-900"}`}
+          >
             Ready to Work Together?
           </h3>
-          <p className={`text-lg mb-8 ${darkMode ? 'text-slate-400' : 'text-slate-600'}`}>
-            Let's bring your ideas to life with professional development and creative services
+          <p
+            className={`text-lg mb-8 ${darkMode ? "text-slate-400" : "text-slate-600"}`}
+          >
+            Let's bring your ideas to life with professional development and
+            creative services
           </p>
           <motion.a
             href="#contact"
@@ -188,7 +419,7 @@ const Services = ({ darkMode }) => {
         </motion.div>
       </div>
     </section>
-  )
-}
+  );
+};
 
-export default Services
+export default Services;

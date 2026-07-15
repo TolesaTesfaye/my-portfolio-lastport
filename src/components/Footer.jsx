@@ -1,50 +1,85 @@
-import { motion } from 'framer-motion'
-import { FaHeart, FaGithub, FaLinkedin, FaYoutube, FaTelegram, FaEnvelope } from 'react-icons/fa'
+import { motion } from "framer-motion";
+import {
+  FaHeart,
+  FaGithub,
+  FaLinkedin,
+  FaYoutube,
+  FaTelegram,
+  FaEnvelope,
+} from "react-icons/fa";
+import { useLanguage } from "../context/LanguageContext";
+import { translations as t } from "../translations";
 
 const Footer = ({ darkMode, navigateToSection, currentPage }) => {
-  const currentYear = new Date().getFullYear()
+  const { translate } = useLanguage();
+  const currentYear = new Date().getFullYear();
 
   const footerLinks = {
     company: [
-      { name: 'About Tolesa', sectionId: 'about' },
-      { name: 'Services', sectionId: 'services' },
-      { name: 'Projects', sectionId: 'projects' },
-      { name: 'Skills', sectionId: 'skills' },
+      { name: translate(t.navAbout), sectionId: "about" },
+      { name: translate(t.navServices), sectionId: "services" },
+      { name: translate(t.navSkills), sectionId: "skills" },
+      { name: translate(t.navProjects), sectionId: "projects" },
+      { name: translate(t.navCertificates), sectionId: "certificates" },
+      { name: translate(t.navJourney), sectionId: "journey" },
     ],
     legal: [
-      { name: 'Privacy Policy', href: '#privacy-policy' },
-      { name: 'Terms of Service', href: '#terms-of-service' },
-      { name: 'Cookie Policy', href: '#cookie-policy' },
-      { name: 'Disclaimer', href: '#disclaimer' },
+      { name: "Privacy Policy", href: "#privacy-policy" },
+      { name: "Terms of Service", href: "#terms-of-service" },
+      { name: "Cookie Policy", href: "#cookie-policy" },
+      { name: "Disclaimer", href: "#disclaimer" },
     ],
     resources: [
-      { name: 'SuccessBridge Platform', href: 'https://github.com/TolesaTesfaye/SuccessBridge' },
-      { name: 'Tolman Tube Channel', href: 'https://www.youtube.com/@tolinaaf' },
-      { name: 'GitHub Portfolio', href: 'https://github.com/TolesaTesfaye' },
-      { name: 'Learning Resources', href: 'https://github.com/TolesaTesfaye/Tolesa-repo' },
+      {
+        name: "SuccessBridge Platform",
+        href: "https://github.com/TolesaTesfaye/SuccessBridge",
+      },
+      {
+        name: "Tolman Tube Channel",
+        href: "https://www.youtube.com/@tolinaaf",
+      },
+      { name: "GitHub Portfolio", href: "https://github.com/TolesaTesfaye" },
+      {
+        name: "Learning Resources",
+        href: "https://github.com/TolesaTesfaye/Tolesa-repo",
+      },
     ],
     contact: [
-      { name: 'Get In Touch', sectionId: 'contact' },
-      { name: 'Collaboration', sectionId: 'contact' },
-      { name: 'Hire Me', sectionId: 'contact' },
-      { name: 'Support', sectionId: 'contact' },
-    ]
-  }
+      { name: translate(t.navContact), sectionId: "contact" },
+      { name: translate(t.navContact), sectionId: "contact" },
+      { name: translate(t.navContact), sectionId: "contact" },
+      { name: translate(t.navContact), sectionId: "contact" },
+    ],
+  };
 
   const socialLinks = [
-    { icon: FaGithub, href: 'https://github.com/TolesaTesfaye', label: 'GitHub' },
-    { icon: FaLinkedin, href: 'https://linkedin.com', label: 'LinkedIn' },
-    { icon: FaYoutube, href: 'https://www.youtube.com/@tolinaaf', label: 'YouTube' },
-    { icon: FaTelegram, href: 'https://t.me/+ap3RyRf-wvEyNTg0', label: 'Telegram' },
-    { icon: FaEnvelope, href: '#contact', label: 'Email' },
-  ]
+    {
+      icon: FaGithub,
+      href: "https://github.com/TolesaTesfaye",
+      label: "GitHub",
+    },
+    { icon: FaLinkedin, href: "https://linkedin.com", label: "LinkedIn" },
+    {
+      icon: FaYoutube,
+      href: "https://www.youtube.com/@tolinaaf",
+      label: "YouTube",
+    },
+    {
+      icon: FaTelegram,
+      href: "https://t.me/+ap3RyRf-wvEyNTg0",
+      label: "Telegram",
+    },
+    { icon: FaEnvelope, href: "#contact", label: "Email" },
+  ];
 
   return (
-    <footer className={`py-12 px-4 sm:px-6 lg:px-8 border-t ${
-      darkMode 
-        ? 'border-slate-800 bg-slate-900/50' 
-        : 'border-slate-200 bg-slate-50/50'
-    }`}>
+    <footer
+      className={`py-12 px-4 sm:px-6 lg:px-8 border-t ${
+        darkMode
+          ? "border-slate-800 bg-slate-900/50"
+          : "border-slate-200 bg-slate-50/50"
+      }`}
+    >
       <div className="max-w-7xl mx-auto">
         {/* Main Footer Content */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
@@ -55,25 +90,31 @@ const Footer = ({ darkMode, navigateToSection, currentPage }) => {
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            <h3 className={`text-lg font-semibold mb-4 ${darkMode ? 'text-white' : 'text-slate-900'}`}>
+            <h3
+              className={`text-lg font-semibold mb-4 ${darkMode ? "text-white" : "text-slate-900"}`}
+            >
               Tolesa Tesfaye
             </h3>
-            <p className={`mb-4 ${darkMode ? 'text-slate-400' : 'text-slate-600'}`}>
-              Full-Stack Developer, Content Creator, and Educator passionate about building innovative solutions and teaching technology.
+            <p
+              className={`mb-4 ${darkMode ? "text-slate-400" : "text-slate-600"}`}
+            >
+              {translate(t.footerAbout)}
             </p>
             <div className="flex space-x-4">
               {socialLinks.map((social, index) => (
                 <motion.a
                   key={index}
                   href={social.href}
-                  target={social.href.startsWith('http') ? '_blank' : '_self'}
-                  rel={social.href.startsWith('http') ? 'noopener noreferrer' : ''}
+                  target={social.href.startsWith("http") ? "_blank" : "_self"}
+                  rel={
+                    social.href.startsWith("http") ? "noopener noreferrer" : ""
+                  }
                   whileHover={{ scale: 1.2, y: -2 }}
                   whileTap={{ scale: 0.9 }}
                   className={`transition-colors ${
-                    darkMode 
-                      ? 'text-slate-400 hover:text-white' 
-                      : 'text-slate-600 hover:text-blue-600'
+                    darkMode
+                      ? "text-slate-400 hover:text-white"
+                      : "text-slate-600 hover:text-blue-600"
                   }`}
                   title={social.label}
                 >
@@ -90,8 +131,10 @@ const Footer = ({ darkMode, navigateToSection, currentPage }) => {
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.1 }}
           >
-            <h4 className={`text-lg font-semibold mb-4 ${darkMode ? 'text-white' : 'text-slate-900'}`}>
-              Company
+            <h4
+              className={`text-lg font-semibold mb-4 ${darkMode ? "text-white" : "text-slate-900"}`}
+            >
+              {translate(t.footerCompany)}
             </h4>
             <ul className="space-y-2">
               {footerLinks.company.map((link, index) => (
@@ -99,7 +142,7 @@ const Footer = ({ darkMode, navigateToSection, currentPage }) => {
                   <button
                     onClick={() => navigateToSection(link.sectionId)}
                     className={`transition-colors hover:text-blue-500 text-left ${
-                      darkMode ? 'text-slate-400' : 'text-slate-600'
+                      darkMode ? "text-slate-400" : "text-slate-600"
                     }`}
                   >
                     {link.name}
@@ -116,18 +159,22 @@ const Footer = ({ darkMode, navigateToSection, currentPage }) => {
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.2 }}
           >
-            <h4 className={`text-lg font-semibold mb-4 ${darkMode ? 'text-white' : 'text-slate-900'}`}>
-              Resources
+            <h4
+              className={`text-lg font-semibold mb-4 ${darkMode ? "text-white" : "text-slate-900"}`}
+            >
+              {translate(t.footerResources)}
             </h4>
             <ul className="space-y-2">
               {footerLinks.resources.map((link, index) => (
                 <li key={index}>
                   <a
                     href={link.href}
-                    target={link.href.startsWith('http') ? '_blank' : '_self'}
-                    rel={link.href.startsWith('http') ? 'noopener noreferrer' : ''}
+                    target={link.href.startsWith("http") ? "_blank" : "_self"}
+                    rel={
+                      link.href.startsWith("http") ? "noopener noreferrer" : ""
+                    }
                     className={`transition-colors hover:text-blue-500 ${
-                      darkMode ? 'text-slate-400' : 'text-slate-600'
+                      darkMode ? "text-slate-400" : "text-slate-600"
                     }`}
                   >
                     {link.name}
@@ -144,8 +191,10 @@ const Footer = ({ darkMode, navigateToSection, currentPage }) => {
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.3 }}
           >
-            <h4 className={`text-lg font-semibold mb-4 ${darkMode ? 'text-white' : 'text-slate-900'}`}>
-              Contact
+            <h4
+              className={`text-lg font-semibold mb-4 ${darkMode ? "text-white" : "text-slate-900"}`}
+            >
+              {translate(t.footerContact)}
             </h4>
             <ul className="space-y-2">
               {footerLinks.contact.map((link, index) => (
@@ -153,7 +202,7 @@ const Footer = ({ darkMode, navigateToSection, currentPage }) => {
                   <button
                     onClick={() => navigateToSection(link.sectionId)}
                     className={`transition-colors hover:text-blue-500 text-left ${
-                      darkMode ? 'text-slate-400' : 'text-slate-600'
+                      darkMode ? "text-slate-400" : "text-slate-600"
                     }`}
                   >
                     {link.name}
@@ -170,7 +219,7 @@ const Footer = ({ darkMode, navigateToSection, currentPage }) => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6, delay: 0.4 }}
-          className={`py-6 border-t ${darkMode ? 'border-slate-800' : 'border-slate-200'}`}
+          className={`py-6 border-t ${darkMode ? "border-slate-800" : "border-slate-200"}`}
         >
           <div className="flex flex-wrap justify-center gap-6 mb-4">
             {footerLinks.legal.map((link, index) => (
@@ -180,11 +229,11 @@ const Footer = ({ darkMode, navigateToSection, currentPage }) => {
                 onClick={(e) => {
                   // Small delay to ensure hash change is processed first
                   setTimeout(() => {
-                    window.scrollTo({ top: 0, behavior: 'smooth' })
-                  }, 50)
+                    window.scrollTo({ top: 0, behavior: "smooth" });
+                  }, 50);
                 }}
                 className={`text-sm transition-colors hover:text-blue-500 ${
-                  darkMode ? 'text-slate-400' : 'text-slate-600'
+                  darkMode ? "text-slate-400" : "text-slate-600"
                 }`}
               >
                 {link.name}
@@ -201,33 +250,34 @@ const Footer = ({ darkMode, navigateToSection, currentPage }) => {
           transition={{ duration: 0.6, delay: 0.5 }}
           className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0"
         >
-          <div className={`text-center md:text-left ${
-            darkMode ? 'text-slate-400' : 'text-slate-600'
-          }`}>
+          <div
+            className={`text-center md:text-left ${
+              darkMode ? "text-slate-400" : "text-slate-600"
+            }`}
+          >
             <p>
-              © {currentYear} Tolesa Tesfaye. All rights reserved.
+              &copy; {currentYear} Tolesa Tesfaye. {translate(t.footerRights)}
             </p>
-            <p className="text-sm mt-1">
-              Software Engineer | Content Creator | Educator
-            </p>
+            <p className="text-sm mt-1">{translate(t.footerTagline)}</p>
           </div>
-          <div className={`flex items-center space-x-2 ${
-            darkMode ? 'text-slate-400' : 'text-slate-600'
-          }`}>
-            <span>Made with</span>
+          <div
+            className={`flex items-center space-x-2 ${
+              darkMode ? "text-slate-400" : "text-slate-600"
+            }`}
+          >
+            <span>{translate(t.footerMadeWith)}</span>
             <motion.span
               animate={{ scale: [1, 1.2, 1] }}
               transition={{ duration: 1, repeat: Infinity }}
             >
               <FaHeart className="text-red-500" />
             </motion.span>
-            <span>using React & Tailwind CSS</span>
+            <span>React & Tailwind CSS</span>
           </div>
         </motion.div>
       </div>
     </footer>
-  )
-}
+  );
+};
 
-export default Footer
-
+export default Footer;

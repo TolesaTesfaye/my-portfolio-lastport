@@ -1,64 +1,89 @@
-import { motion } from 'framer-motion'
-import { useState } from 'react'
-import { FaEnvelope, FaPhone, FaMapMarkerAlt, FaLinkedin, FaGithub, FaYoutube, FaTelegram } from 'react-icons/fa'
-import { HiMail } from 'react-icons/hi'
+import { motion } from "framer-motion";
+import { useState } from "react";
+import {
+  FaEnvelope,
+  FaPhone,
+  FaMapMarkerAlt,
+  FaLinkedin,
+  FaGithub,
+  FaYoutube,
+  FaTelegram,
+} from "react-icons/fa";
+import { HiMail } from "react-icons/hi";
+import { useLanguage } from "../context/LanguageContext";
+import { translations as t } from "../translations";
 
 const Contact = ({ darkMode }) => {
+  const { translate } = useLanguage();
+
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    message: '',
-  })
+    name: "",
+    email: "",
+    message: "",
+  });
+
+  const [submitted, setSubmitted] = useState(false);
 
   const handleSubmit = (e) => {
-    e.preventDefault()
-    // Handle form submission here
-    console.log('Form submitted:', formData)
-    alert('Thank you for your message! I will get back to you soon.')
-    setFormData({ name: '', email: '', message: '' })
-  }
+    e.preventDefault();
+    console.log("Form submitted:", formData);
+    setSubmitted(true);
+    setTimeout(() => setSubmitted(false), 4000);
+    setFormData({ name: "", email: "", message: "" });
+  };
 
   const handleChange = (e) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
-    })
-  }
+    });
+  };
 
   const contactInfo = [
     {
       icon: FaEnvelope,
-      label: 'Email',
-      value: 'tolesatesfay273@gmail.com',
-      link: 'mailto:tolesatesfay273@gmail.com',
+      label: "Email",
+      value: "tolesatesfay273@gmail.com",
+      link: "mailto:tolesatesfay273@gmail.com",
     },
     {
       icon: FaPhone,
-      label: 'Phone',
-      value: '+251 716 000 504',
-      link: 'tel:+251716000504',
+      label: "Phone",
+      value: "+251 716 000 504",
+      link: "tel:+251716000504",
     },
     {
       icon: FaMapMarkerAlt,
-      label: 'Location',
-      value: 'Haramaya University, Ethiopia',
+      label: "Location",
+      value: "Haramaya University, Ethiopia",
       link: null,
     },
-  ]
+  ];
 
   const socialLinks = [
-    { icon: FaGithub, href: 'https://github.com', label: 'GitHub' },
-    { icon: FaLinkedin, href: 'https://linkedin.com', label: 'LinkedIn' },
-    { icon: FaYoutube, href: 'https://www.youtube.com/@tolinaaf', label: 'YouTube' },
-    { icon: FaTelegram, href: 'https://t.me/+ap3RyRf-wvEyNTg0', label: 'Telegram' },
-  ]
+    { icon: FaGithub, href: "https://github.com", label: "GitHub" },
+    { icon: FaLinkedin, href: "https://linkedin.com", label: "LinkedIn" },
+    {
+      icon: FaYoutube,
+      href: "https://www.youtube.com/@tolinaaf",
+      label: "YouTube",
+    },
+    {
+      icon: FaTelegram,
+      href: "https://t.me/+ap3RyRf-wvEyNTg0",
+      label: "Telegram",
+    },
+  ];
 
   return (
-    <section id="contact" className={`py-20 px-4 sm:px-6 lg:px-8 ${
-      darkMode 
-        ? 'bg-slate-800/30' 
-        : 'bg-gradient-to-br from-slate-50/50 via-white to-blue-50/30'
-    }`}>
+    <section
+      id="contact"
+      className={`py-20 px-4 sm:px-6 lg:px-8 ${
+        darkMode
+          ? "bg-slate-800/30"
+          : "bg-gradient-to-br from-slate-50/50 via-white to-blue-50/30"
+      }`}
+    >
       <div className="max-w-7xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -67,12 +92,16 @@ const Contact = ({ darkMode }) => {
           transition={{ duration: 0.6 }}
           className="text-center mb-16"
         >
-          <h2 className={`text-4xl md:text-5xl font-bold mb-4 ${darkMode ? 'text-white' : 'text-slate-900'}`}>
-            Get In <span className="text-gradient">Touch</span>
+          <h2
+            className={`text-4xl md:text-5xl font-bold mb-4 ${darkMode ? "text-white" : "text-slate-900"}`}
+          >
+            {translate(t.contactTitle)}
           </h2>
           <div className="w-24 h-1 bg-gradient-to-r from-blue-500 to-purple-600 mx-auto mb-4"></div>
-          <p className={`text-lg ${darkMode ? 'text-slate-400' : 'text-slate-600'}`}>
-            Have a project in mind? Let's work together to bring it to life!
+          <p
+            className={`text-lg ${darkMode ? "text-slate-400" : "text-slate-600"}`}
+          >
+            {translate(t.contactSubtitle)}
           </p>
         </motion.div>
 
@@ -86,10 +115,13 @@ const Contact = ({ darkMode }) => {
             className="space-y-8"
           >
             <div>
-              <h3 className="text-2xl font-semibold mb-6 text-gradient">Let's Connect</h3>
-              <p className={`mb-8 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                I'm always open to discussing new projects, creative ideas, or opportunities 
-                to be part of your visions. Feel free to reach out!
+              <h3 className="text-2xl font-semibold mb-6 text-gradient">
+                {translate(t.contactTitle)}
+              </h3>
+              <p
+                className={`mb-8 ${darkMode ? "text-gray-300" : "text-gray-700"}`}
+              >
+                {translate(t.contactSubtitle)}
               </p>
             </div>
 
@@ -107,20 +139,24 @@ const Contact = ({ darkMode }) => {
                     <info.icon className="text-blue-400 text-xl" />
                   </div>
                   <div>
-                    <h4 className={`text-sm mb-1 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                    <h4
+                      className={`text-sm mb-1 ${darkMode ? "text-gray-400" : "text-gray-600"}`}
+                    >
                       {info.label}
                     </h4>
                     {info.link ? (
                       <a
                         href={info.link}
                         className={`hover:text-blue-400 transition-colors ${
-                          darkMode ? 'text-white' : 'text-gray-900'
+                          darkMode ? "text-white" : "text-gray-900"
                         }`}
                       >
                         {info.value}
                       </a>
                     ) : (
-                      <p className={darkMode ? 'text-white' : 'text-gray-900'}>{info.value}</p>
+                      <p className={darkMode ? "text-white" : "text-gray-900"}>
+                        {info.value}
+                      </p>
                     )}
                   </div>
                 </motion.div>
@@ -129,7 +165,9 @@ const Contact = ({ darkMode }) => {
 
             {/* Social Links */}
             <div>
-              <h4 className={`text-lg font-semibold mb-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+              <h4
+                className={`text-lg font-semibold mb-4 ${darkMode ? "text-white" : "text-gray-900"}`}
+              >
                 Follow Me
               </h4>
               <div className="flex space-x-4">
@@ -142,16 +180,18 @@ const Contact = ({ darkMode }) => {
                     whileHover={{ scale: 1.1, y: -5 }}
                     whileTap={{ scale: 0.9 }}
                     className={`p-3 rounded-lg hover:bg-blue-500/20 transition-colors ${
-                      darkMode 
-                        ? 'bg-gray-700/50' 
-                        : 'bg-white/80 border border-gray-200/80 shadow-md hover:shadow-lg'
+                      darkMode
+                        ? "bg-gray-700/50"
+                        : "bg-white/80 border border-gray-200/80 shadow-md hover:shadow-lg"
                     }`}
                   >
-                    <social.icon className={`text-2xl transition-colors ${
-                      darkMode 
-                        ? 'text-gray-400 hover:text-blue-400' 
-                        : 'text-gray-600 hover:text-blue-600'
-                    }`} />
+                    <social.icon
+                      className={`text-2xl transition-colors ${
+                        darkMode
+                          ? "text-gray-400 hover:text-blue-400"
+                          : "text-gray-600 hover:text-blue-600"
+                      }`}
+                    />
                   </motion.a>
                 ))}
               </div>
@@ -165,17 +205,20 @@ const Contact = ({ darkMode }) => {
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
             className={`backdrop-blur-sm rounded-xl p-8 border ${
-              darkMode 
-                ? 'bg-gray-800/50 border-gray-700' 
-                : 'bg-white/95 border-gray-200/80 shadow-2xl'
+              darkMode
+                ? "bg-gray-800/50 border-gray-700"
+                : "bg-white/95 border-gray-200/80 shadow-2xl"
             }`}
           >
             <form onSubmit={handleSubmit} className="space-y-6">
               <div>
-                <label htmlFor="name" className={`block text-sm font-medium mb-2 ${
-                  darkMode ? 'text-gray-300' : 'text-gray-700'
-                }`}>
-                  Name
+                <label
+                  htmlFor="name"
+                  className={`block text-sm font-medium mb-2 ${
+                    darkMode ? "text-gray-300" : "text-gray-700"
+                  }`}
+                >
+                  {translate(t.contactName)}
                 </label>
                 <input
                   type="text"
@@ -185,19 +228,22 @@ const Contact = ({ darkMode }) => {
                   onChange={handleChange}
                   required
                   className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all ${
-                    darkMode 
-                      ? 'bg-gray-700/50 border-gray-600 text-white' 
-                      : 'bg-white border-gray-300 text-gray-900'
+                    darkMode
+                      ? "bg-gray-700/50 border-gray-600 text-white"
+                      : "bg-white border-gray-300 text-gray-900"
                   }`}
-                  placeholder="Your Name"
+                  placeholder={translate(t.contactName)}
                 />
               </div>
 
               <div>
-                <label htmlFor="email" className={`block text-sm font-medium mb-2 ${
-                  darkMode ? 'text-gray-300' : 'text-gray-700'
-                }`}>
-                  Email
+                <label
+                  htmlFor="email"
+                  className={`block text-sm font-medium mb-2 ${
+                    darkMode ? "text-gray-300" : "text-gray-700"
+                  }`}
+                >
+                  {translate(t.contactEmail)}
                 </label>
                 <input
                   type="email"
@@ -207,19 +253,22 @@ const Contact = ({ darkMode }) => {
                   onChange={handleChange}
                   required
                   className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all ${
-                    darkMode 
-                      ? 'bg-gray-700/50 border-gray-600 text-white' 
-                      : 'bg-white border-gray-300 text-gray-900'
+                    darkMode
+                      ? "bg-gray-700/50 border-gray-600 text-white"
+                      : "bg-white border-gray-300 text-gray-900"
                   }`}
-                  placeholder="your.email@example.com"
+                  placeholder={translate(t.contactEmail)}
                 />
               </div>
 
               <div>
-                <label htmlFor="message" className={`block text-sm font-medium mb-2 ${
-                  darkMode ? 'text-gray-300' : 'text-gray-700'
-                }`}>
-                  Message
+                <label
+                  htmlFor="message"
+                  className={`block text-sm font-medium mb-2 ${
+                    darkMode ? "text-gray-300" : "text-gray-700"
+                  }`}
+                >
+                  {translate(t.contactMessage)}
                 </label>
                 <textarea
                   id="message"
@@ -229,11 +278,11 @@ const Contact = ({ darkMode }) => {
                   required
                   rows="5"
                   className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all resize-none ${
-                    darkMode 
-                      ? 'bg-gray-700/50 border-gray-600 text-white' 
-                      : 'bg-white border-gray-300 text-gray-900'
+                    darkMode
+                      ? "bg-gray-700/50 border-gray-600 text-white"
+                      : "bg-white border-gray-300 text-gray-900"
                   }`}
-                  placeholder="Your message..."
+                  placeholder={translate(t.contactMessage)}
                 />
               </div>
 
@@ -244,15 +293,25 @@ const Contact = ({ darkMode }) => {
                 className="w-full px-8 py-3 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg font-semibold hover:shadow-lg hover:shadow-purple-500/50 transition-all duration-300 flex items-center justify-center space-x-2"
               >
                 <HiMail />
-                <span>Send Message</span>
+                <span>{translate(t.contactSend)}</span>
               </motion.button>
+              {submitted && (
+                <motion.p
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className={`text-center text-sm font-medium ${
+                    darkMode ? "text-green-400" : "text-green-600"
+                  }`}
+                >
+                  {translate(t.contactSuccess)}
+                </motion.p>
+              )}
             </form>
           </motion.div>
         </div>
       </div>
     </section>
-  )
-}
+  );
+};
 
-export default Contact
-
+export default Contact;
