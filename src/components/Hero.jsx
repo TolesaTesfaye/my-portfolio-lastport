@@ -214,27 +214,27 @@ const Hero = ({ darkMode }) => {
               <motion.div
                 animate={{ rotate: 360 }}
                 transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
-                className="absolute inset-0 rounded-full"
+                className="absolute inset-0 rounded-2xl"
               >
-                <div className="w-full h-full rounded-full bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 opacity-15 blur-xl"></div>
+                <div className="w-full h-full rounded-2xl bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 opacity-15 blur-xl"></div>
               </motion.div>
               
               {/* Profile Image Container */}
               <motion.div
                 whileHover={{ scale: 1.02 }}
                 transition={{ duration: 0.3 }}
-                className="relative w-80 h-80 md:w-96 md:h-96 rounded-full overflow-hidden border-4 border-transparent bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 p-1"
+                className="relative w-80 md:w-96 aspect-[3/4] rounded-2xl overflow-hidden border-4 border-transparent bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 p-1"
               >
-                <div className="w-full h-full rounded-full overflow-hidden bg-gray-800">
+                <div className="w-full h-full rounded-2xl overflow-hidden bg-gray-800">
                   {/* Your profile image */}
                   <img 
-                    src="/port2/tolman.jpg" 
+                    src="/Tolli.jpg" 
                     alt="Tolesa Tesfaye"
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-contain bg-gray-800"
                     onError={(e) => {
                       // Try alternative image
-                      if (e.target.src.includes('tolman.jpg')) {
-                        e.target.src = '/port2/Tolli.jpg'
+                      if (e.target.src.includes('Tolli.jpg')) {
+                        e.target.src = '/tolman.jpg'
                       } else {
                         // Fallback to gradient if image not found
                         e.target.style.display = 'none'
@@ -242,10 +242,6 @@ const Hero = ({ darkMode }) => {
                       }
                     }}
                   />
-                  {/* Fallback gradient background */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-purple-600 via-pink-600 to-orange-600 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
-                    <span className="text-6xl font-bold text-white opacity-50">TT</span>
-                  </div>
                 </div>
               </motion.div>
 
@@ -269,16 +265,6 @@ const Hero = ({ darkMode }) => {
         </div>
       </motion.div>
 
-      {/* Scroll Indicator */}
-      <motion.div
-        animate={{ y: [0, 10, 0] }}
-        transition={{ duration: 1.5, repeat: Infinity }}
-        className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
-      >
-        <div className="w-6 h-10 border-2 border-gray-400 rounded-full flex justify-center">
-          <div className="w-1 h-3 bg-gray-400 rounded-full mt-2"></div>
-        </div>
-      </motion.div>
     </section>
   )
 }

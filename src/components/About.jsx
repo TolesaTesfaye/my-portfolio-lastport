@@ -125,7 +125,7 @@ const About = ({ darkMode }) => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="max-w-4xl mx-auto mb-16"
+          className="max-w-6xl mx-auto mb-16"
         >
           <h3 className={`text-3xl font-semibold mb-8 text-center ${darkMode ? 'text-white' : 'text-slate-900'}`}>
             Hello, I'm <span className="text-gradient">Tolesa Tesfaye</span>
