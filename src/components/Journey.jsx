@@ -5,6 +5,8 @@ import {
   FaLaptopCode,
   FaRocket,
   FaCalendarAlt,
+  FaBook,
+  FaBookReader,
 } from "react-icons/fa";
 import { HiCode } from "react-icons/hi";
 
@@ -20,6 +22,24 @@ const Journey = ({ darkMode }) => {
       type: "work",
     },
     {
+      year: "2024",
+      title: "Develop SuccessBridge learning platform ",
+      description:
+        "i develop the learning platform called successbridge for students who learn highschool (9-12 ) and for university students that platfrom is give the reource to students , quiz and also give all learning material  ",
+      icon: FaBookReader,
+      color: "from-white-500 to-orange-600",
+      type: "work",
+    },
+    {
+      year: "2024",
+      title: "YouTube Channel Launch",
+      description:
+        'Launched "Tolman Tube" YouTube channel to share knowledge and help students learn technology. Started creating educational content and tutorials.',
+      icon: FaBriefcase,
+      color: "from-yellow-500 to-orange-600",
+      type: "work",
+    },
+    {
       year: "2023 - 2024",
       title: "Advanced Web Development Training",
       description:
@@ -28,15 +48,7 @@ const Journey = ({ darkMode }) => {
       color: "from-purple-500 to-pink-600",
       type: "education",
     },
-    {
-      year: "2023",
-      title: "Java & Spring Boot Mastery",
-      description:
-        "Deep dive into Java programming, object-oriented design, and Spring Boot framework for enterprise application development.",
-      icon: FaGraduationCap,
-      color: "from-green-500 to-teal-600",
-      type: "education",
-    },
+
     {
       year: "2022 - 2023",
       title: "Started Software Development Journey",
@@ -46,20 +58,12 @@ const Journey = ({ darkMode }) => {
       color: "from-orange-500 to-red-600",
       type: "milestone",
     },
-    {
-      year: "2022",
-      title: "YouTube Channel Launch",
-      description:
-        'Launched "Tolman Tube" YouTube channel to share knowledge and help students learn technology. Started creating educational content and tutorials.',
-      icon: FaBriefcase,
-      color: "from-yellow-500 to-orange-600",
-      type: "work",
-    },
+
     {
       year: "2021 - 2022",
-      title: "Computer Science Foundations",
+      title: "I start Freshman course  at Haramaya University ",
       description:
-        "Built a strong foundation in computer science, programming fundamentals, algorithms, data structures, and problem-solving skills.",
+        "after i take grade 12 national exam i join haramaya university and start my bachelor degree by software engineering to compute the world by technplogy , then i pass many challenge during this freshman year ...",
       icon: FaGraduationCap,
       color: "from-indigo-500 to-blue-600",
       type: "education",

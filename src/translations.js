@@ -11,10 +11,10 @@ export const translations = {
 
   // Hero
   heroGreeting: { en: "Hello, I'm", om: "Akkam, Ani", am: "ሰላም፣ እኔ" },
-  heroName: { en: "Tolesa Tesfaye", om: "Tolesa Tesfaye", am: "ጦለሳ ተስፋዬ" },
+  heroName: { en: "Tolesa Tesfaye", om: "Tolasaa Tasfaayee", am: "ጦለሳ ተስፋዬ" },
   heroTitle: {
     en: "4th Year Software Engineering Student",
-    om: "Bara 4ffaa Barataa Injinarii Softiweerii",
+    om: "Barataaa waggaa 4ffaa sooftware Ingineering ",
     am: "የ4ኛ ዓመት የሶፍትዌር ኢንጂነሪንግ ተማሪ",
   },
   heroUniversity: {
@@ -28,7 +28,7 @@ export const translations = {
     am: 'ፉል-ስታክ ገንቢ በMERN ስታክ፣ ጃቫ ከSpring Boot እና በዘመናዊ የድር ቴክኖሎጂዎች ላይ ያተኮረ። በ"Tolman Tube" የዩቲዩብ ቻናል የይዘት ፈጣሪ እና የSuccessBridge የትምህርት መድረክ ፈጣሪ።',
   },
   heroGetInTouch: { en: "Get In Touch", om: "Qunnamaa", am: "ያግኙኝ" },
-  heroViewWork: { en: "View My Work", om: "Hojiirraa Laali", am: "ሥራዬን ይመልከቱ" },
+  heroViewWork: { en: "View My Work", om: "Hojii keenya ", am: "ሥራዬን ይመልከቱ" },
 
   // About
   aboutTitle: { en: "About Me", om: "Waa'ee Koo", am: "ስለ እኔ" },
