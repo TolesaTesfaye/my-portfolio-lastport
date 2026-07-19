@@ -11,16 +11,18 @@ import {
   FaCircle,
 } from "react-icons/fa";
 import { useState, useEffect } from "react";
+import { useLanguage } from "../context/LanguageContext";
+import { translations as t } from "../translations";
 
 const Services = ({ darkMode }) => {
+  const { translate } = useLanguage();
   const [hoveredIndex, setHoveredIndex] = useState(null);
   const [activeImage, setActiveImage] = useState({});
 
   const services = [
     {
-      title: "Web Development",
-      description:
-        "Full-stack web application development using MERN stack (MongoDB, Express, React, Node.js), Java with Spring Boot, and modern technologies. Creator of SuccessBridge learning platform.",
+      title: translate(t.serviceWebDev),
+      description: translate(t.serviceWebDevDesc),
       icon: FaCode,
       features: [
         "MERN Stack",
@@ -36,9 +38,8 @@ const Services = ({ darkMode }) => {
       ],
     },
     {
-      title: "Content Creation",
-      description:
-        'YouTube content creator at "Tolman Tube" channel, creating educational content and tutorials for students and developers.',
+      title: translate(t.serviceContent),
+      description: translate(t.serviceContentDesc),
       icon: FaYoutube,
       features: [
         "Educational Videos",
@@ -54,9 +55,8 @@ const Services = ({ darkMode }) => {
       ],
     },
     {
-      title: "Online Teaching",
-      description:
-        "Passionate educator teaching students through YouTube channel, providing valuable learning resources and guidance in technology.",
+      title: translate(t.serviceTeaching),
+      description: translate(t.serviceTeachingDesc),
       icon: FaChalkboardTeacher,
       features: [
         "Student Mentoring",
@@ -72,9 +72,8 @@ const Services = ({ darkMode }) => {
       ],
     },
     {
-      title: "Photo Editing",
-      description:
-        "Professional photo editing services using industry-standard tools like Adobe Photoshop, Canva, and other creative software.",
+      title: translate(t.servicePhoto),
+      description: translate(t.servicePhotoDesc),
       icon: FaImage,
       features: [
         "Adobe Photoshop",
@@ -90,9 +89,8 @@ const Services = ({ darkMode }) => {
       ],
     },
     {
-      title: "Video Editing",
-      description:
-        "Expert video editing services using CapCut and other professional tools for creating engaging and high-quality video content.",
+      title: translate(t.serviceVideo),
+      description: translate(t.serviceVideoDesc),
       icon: FaVideo,
       features: [
         "CapCut Editing",
@@ -108,9 +106,8 @@ const Services = ({ darkMode }) => {
       ],
     },
     {
-      title: "SuccessBridge Platform",
-      description:
-        "Developer and creator of SuccessBridge - a comprehensive learning platform built with MERN stack, providing educational resources and reading materials for students.",
+      title: translate(t.serviceBridge),
+      description: translate(t.serviceBridgeDesc),
       icon: FaGraduationCap,
       features: [
         "MERN Stack Development",
@@ -214,14 +211,13 @@ const Services = ({ darkMode }) => {
           <h2
             className={`text-4xl md:text-5xl font-bold mb-4 ${darkMode ? "text-white" : "text-slate-900"}`}
           >
-            My <span className="text-gradient">Services</span>
+            {translate(t.servicesTitle)}
           </h2>
           <div className="w-24 h-1 bg-gradient-to-r from-blue-500 to-purple-600 mx-auto mb-4"></div>
           <p
             className={`text-lg ${darkMode ? "text-slate-400" : "text-slate-600"}`}
           >
-            Comprehensive services from web development to content creation and
-            education
+            {translate(t.servicesSubtitle)}
           </p>
         </motion.div>
 
@@ -400,13 +396,12 @@ const Services = ({ darkMode }) => {
           <h3
             className={`text-2xl font-semibold mb-4 ${darkMode ? "text-white" : "text-slate-900"}`}
           >
-            Ready to Work Together?
+            {translate(t.servicesCta)}
           </h3>
           <p
             className={`text-lg mb-8 ${darkMode ? "text-slate-400" : "text-slate-600"}`}
           >
-            Let's bring your ideas to life with professional development and
-            creative services
+            {translate(t.servicesCtaDesc)}
           </p>
           <motion.a
             href="#contact"
@@ -414,7 +409,7 @@ const Services = ({ darkMode }) => {
             whileTap={{ scale: 0.95 }}
             className="inline-block px-8 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg font-semibold hover:shadow-lg hover:shadow-purple-500/50 transition-all duration-300"
           >
-            Get In Touch
+            {translate(t.servicesGetInTouch)}
           </motion.a>
         </motion.div>
       </div>

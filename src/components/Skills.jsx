@@ -11,11 +11,14 @@ import {
   FaJava,
 } from 'react-icons/fa'
 import { SiMongodb, SiMysql, SiTailwindcss, SiTypescript, SiExpress, SiPhp, SiSpringboot } from 'react-icons/si'
+import { useLanguage } from "../context/LanguageContext";
+import { translations as t } from "../translations";
 
 const Skills = ({ darkMode }) => {
+  const { translate } = useLanguage();
   const skillCategories = [
     {
-      title: 'Frontend',
+      title: translate(t.skillsFrontend),
       skills: [
         { name: 'React', icon: FaReact, level: 90, color: 'text-blue-400' },
         { name: 'HTML5', icon: FaHtml5, level: 95, color: 'text-orange-400' },
@@ -26,7 +29,7 @@ const Skills = ({ darkMode }) => {
       ],
     },
     {
-      title: 'Backend',
+      title: translate(t.skillsBackend),
       skills: [
         { name: 'Node.js', icon: FaNode, level: 85, color: 'text-green-400' },
         { name: 'Express.js', icon: SiExpress, level: 88, color: 'text-gray-400' },
@@ -36,17 +39,12 @@ const Skills = ({ darkMode }) => {
       ],
     },
     {
-      title: 'Database & Full Stack',
+      title: translate(t.skillsOther),
       skills: [
         { name: 'MongoDB', icon: SiMongodb, level: 85, color: 'text-green-500' },
         { name: 'MySQL', icon: SiMysql, level: 82, color: 'text-blue-600' },
         { name: 'MERN Stack', icon: FaReact, level: 88, color: 'text-purple-400' },
         { name: 'Database Design', icon: FaDatabase, level: 85, color: 'text-purple-400' },
-      ],
-    },
-    {
-      title: 'Specializations',
-      skills: [
         { name: 'AI Integration', icon: FaBrain, level: 75, color: 'text-pink-400' },
         { name: 'Mobile Apps', icon: FaMobile, level: 78, color: 'text-indigo-400' },
       ],
@@ -83,11 +81,11 @@ const Skills = ({ darkMode }) => {
           className="text-center mb-16"
         >
           <h2 className={`text-4xl md:text-5xl font-bold mb-4 ${darkMode ? 'text-white' : 'text-slate-900'}`}>
-            My <span className="text-gradient">Skills</span>
+            {translate(t.skillsTitle)}
           </h2>
           <div className="w-24 h-1 bg-gradient-to-r from-blue-500 to-purple-600 mx-auto mb-4"></div>
           <p className={`text-lg ${darkMode ? 'text-slate-400' : 'text-slate-600'}`}>
-            Technologies and tools I work with to bring ideas to life
+            {translate(t.skillsSubtitle)}
           </p>
         </motion.div>
 
@@ -96,7 +94,7 @@ const Skills = ({ darkMode }) => {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
-          className="grid md:grid-cols-2 gap-8"
+          className="grid md:grid-cols-2 lg:grid-cols-3 gap-8"
         >
           {skillCategories.map((category, categoryIndex) => (
             <motion.div
@@ -156,7 +154,7 @@ const Skills = ({ darkMode }) => {
           className="mt-12"
         >
           <h3 className="text-2xl font-semibold mb-6 text-center text-gradient">
-            Additional Expertise
+            {translate(t.skillsAdditional)}
           </h3>
           <div className="flex flex-wrap justify-center gap-4">
             {['RESTful APIs', 'Git & GitHub', 'Responsive Design', 'UI/UX Design', 'Problem Solving', 'Team Collaboration', 'MERN Stack', 'Spring Framework', 'Object-Oriented Programming'].map((skill, index) => (

@@ -14,7 +14,6 @@ import CookiePolicy from "./components/CookiePolicy";
 import Disclaimer from "./components/Disclaimer";
 import Certificates from "./components/Certificates";
 import Journey from "./components/Journey";
-import FloatingSocials from "./components/FloatingSocials";
 
 function App() {
   const [darkMode, setDarkMode] = useState(true);
@@ -216,7 +215,7 @@ function App() {
           setCurrentPage={setCurrentPage}
           navigateToSection={navigateToSection}
         />
-        <FloatingSocials darkMode={darkMode} />
+
         {renderPage()}
         <Footer
           darkMode={darkMode}

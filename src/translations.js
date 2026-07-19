@@ -31,6 +31,11 @@ export const translations = {
   heroViewWork: { en: "View My Work", om: "Hojii keenya ", am: "ሥራዬን ይመልከቱ" },
 
   // About
+  heroDownloadCV: {
+    en: "Download CV",
+    om: "CV Buufadhu",
+    am: "ሲቪ ያውርዱ",
+  },
   aboutTitle: { en: "About Me", om: "Waa'ee Koo", am: "ስለ እኔ" },
   aboutHello: { en: "Hello, I'm", om: "Akkam, Ani", am: "ሰላም፣ እኔ" },
   aboutName: { en: "Tolesa Tesfaye", om: "Tolesa Tesfaye", am: "ጦለሳ ተስፋዬ" },
@@ -95,10 +100,10 @@ export const translations = {
   },
   skillsFrontend: { en: "Frontend", om: "Fuuldura", am: "የፊት ጫፍ" },
   skillsBackend: { en: "Backend", om: "Dura-duuba", am: "የኋላ ጫፍ" },
-  skillsDatabase: {
-    en: "Database & Full Stack",
-    om: "Database & Full Stack",
-    am: "ዳታቤዝ እና ፉል ስታክ",
+  skillsOther: {
+    en: "Other",
+    om: "Biroo",
+    am: "ሌሎች",
   },
   skillsSpecializations: {
     en: "Specializations",

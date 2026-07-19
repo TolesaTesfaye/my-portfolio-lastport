@@ -7,14 +7,17 @@ import {
   FaCircle,
 } from "react-icons/fa";
 import { useState, useEffect, useCallback } from "react";
+import { useLanguage } from "../context/LanguageContext";
+import { translations as t } from "../translations";
 
 const Projects = ({ darkMode }) => {
+  const { translate } = useLanguage();
   const [hoveredIndex, setHoveredIndex] = useState(null);
   const [activeImage, setActiveImage] = useState({});
 
   const projects = [
     {
-      title: "SuccessBridge",
+      title: translate(t.projectSuccessBridge),
       description:
         "Comprehensive student management platform connecting students, teachers, and parents. Features academic progress tracking, grade management, assignment submission, and real-time communication tools.",
       technologies: [
@@ -35,7 +38,7 @@ const Projects = ({ darkMode }) => {
       category: "Web Development",
     },
     {
-      title: "Task Management System",
+      title: translate(t.projectTaskMgmt),
       description:
         "Modern task management application with drag-and-drop functionality, team collaboration, deadline tracking, and productivity analytics. Built for efficient project management.",
       technologies: [
@@ -55,7 +58,7 @@ const Projects = ({ darkMode }) => {
       category: "Web Development",
     },
     {
-      title: "Personal Portfolio",
+      title: translate(t.projectPortfolio),
       description:
         "Modern, responsive portfolio website showcasing my projects and skills. Features dark/light mode, smooth animations, and interactive components built with React and Framer Motion.",
       technologies: [
@@ -75,7 +78,7 @@ const Projects = ({ darkMode }) => {
       category: "Web Development",
     },
     {
-      title: "EAGLES TEAM Project",
+      title: translate(t.projectEagles),
       description:
         "Collaborative team project showcasing teamwork and development skills. Built with modern web technologies and best practices for scalable applications.",
       technologies: [
@@ -95,7 +98,7 @@ const Projects = ({ darkMode }) => {
       category: "Team Project",
     },
     {
-      title: "Database Management System",
+      title: translate(t.projectDatabase),
       description:
         "Comprehensive database management system with advanced querying, data visualization, backup automation, and performance monitoring. Supports multiple database engines.",
       technologies: [
@@ -116,7 +119,7 @@ const Projects = ({ darkMode }) => {
       category: "Database",
     },
     {
-      title: "Tolesa Repository",
+      title: translate(t.projectTolesaRepo),
       description:
         "Personal development repository containing various coding projects, experiments, and learning materials. Showcases continuous learning and skill development.",
       technologies: ["JavaScript", "React", "Node.js", "Various Technologies"],
@@ -219,13 +222,13 @@ const Projects = ({ darkMode }) => {
           <h2
             className={`text-4xl md:text-5xl font-bold mb-4 ${darkMode ? "text-white" : "text-slate-900"}`}
           >
-            My <span className="text-gradient">Projects</span>
+            {translate(t.projectsTitle)}
           </h2>
           <div className="w-24 h-1 bg-gradient-to-r from-blue-500 to-purple-600 mx-auto mb-4"></div>
           <p
             className={`text-lg ${darkMode ? "text-slate-400" : "text-slate-600"}`}
           >
-            A collection of projects showcasing my skills and experience
+            {translate(t.projectsSubtitle)}
           </p>
         </motion.div>
 
@@ -412,7 +415,7 @@ const Projects = ({ darkMode }) => {
                       }`}
                     >
                       <FaGithub />
-                      <span className="text-sm">Code</span>
+                      <span className="text-sm">{translate(t.projectsCode)}</span>
                     </motion.a>
                     <motion.a
                       href={project.demo}
@@ -427,7 +430,7 @@ const Projects = ({ darkMode }) => {
                       }`}
                     >
                       <FaExternalLinkAlt />
-                      <span className="text-sm">Live Demo</span>
+                      <span className="text-sm">{translate(t.projectsLiveDemo)}</span>
                     </motion.a>
                   </div>
                 </div>

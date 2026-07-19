@@ -2,13 +2,16 @@ import { motion } from 'framer-motion'
 import { FaCertificate, FaAward, FaTrophy, FaMedal, FaExternalLinkAlt, FaStar } from 'react-icons/fa'
 import { SiFreecodecamp, SiSololearn, SiUdemy, SiCoursera } from 'react-icons/si'
 import { useState } from 'react'
+import { useLanguage } from "../context/LanguageContext";
+import { translations as t } from "../translations";
 
 const Certificates = ({ darkMode }) => {
+  const { translate } = useLanguage();
   const [activeTab, setActiveTab] = useState('certificates')
 
   const certificates = [
     {
-      title: 'Full Stack Web Development',
+      title: translate(t.certFullStack),
       issuer: 'FreeCodeCamp',
       date: '2024',
       icon: SiFreecodecamp,
@@ -17,7 +20,7 @@ const Certificates = ({ darkMode }) => {
       description: 'Comprehensive full-stack development certification covering MERN stack, APIs, and responsive design.',
     },
     {
-      title: 'Java Programming Masterclass',
+      title: translate(t.certJava),
       issuer: 'Udemy',
       date: '2024',
       icon: SiUdemy,
@@ -26,7 +29,7 @@ const Certificates = ({ darkMode }) => {
       description: 'In-depth Java programming course covering OOP, data structures, algorithms, and Spring Boot.',
     },
     {
-      title: 'JavaScript Algorithms & Data Structures',
+      title: translate(t.certJS),
       issuer: 'FreeCodeCamp',
       date: '2023',
       icon: SiFreecodecamp,
@@ -35,7 +38,7 @@ const Certificates = ({ darkMode }) => {
       description: 'Mastered JavaScript fundamentals, algorithms, data structures, and problem-solving techniques.',
     },
     {
-      title: 'React - The Complete Guide',
+      title: translate(t.certReact),
       issuer: 'Udemy',
       date: '2024',
       icon: SiUdemy,
@@ -44,7 +47,7 @@ const Certificates = ({ darkMode }) => {
       description: 'Comprehensive React development including hooks, state management, and modern best practices.',
     },
     {
-      title: 'Python for Data Science',
+      title: translate(t.certPython),
       issuer: 'Sololearn',
       date: '2023',
       icon: SiSololearn,
@@ -53,7 +56,7 @@ const Certificates = ({ darkMode }) => {
       description: 'Data science fundamentals with Python, including pandas, numpy, and data visualization.',
     },
     {
-      title: 'Responsive Web Design',
+      title: translate(t.certResponsive),
       issuer: 'FreeCodeCamp',
       date: '2023',
       icon: SiFreecodecamp,
@@ -128,11 +131,11 @@ const Certificates = ({ darkMode }) => {
           className="text-center mb-16"
         >
           <h2 className={`text-4xl md:text-5xl font-bold mb-4 ${darkMode ? 'text-white' : 'text-slate-900'}`}>
-            Certificates & <span className="text-gradient">Achievements</span>
+            {translate(t.certTitle)}
           </h2>
           <div className="w-24 h-1 bg-gradient-to-r from-blue-500 to-purple-600 mx-auto mb-4"></div>
           <p className={`text-lg ${darkMode ? 'text-slate-400' : 'text-slate-600'}`}>
-            Professional certifications, courses, and notable achievements
+            {translate(t.certSubtitle)}
           </p>
         </motion.div>
 
@@ -152,7 +155,7 @@ const Certificates = ({ darkMode }) => {
               }`}
             >
               <FaCertificate />
-              <span>Certificates</span>
+              <span>{translate(t.certTabCert)}</span>
             </button>
             <button
               onClick={() => setActiveTab('achievements')}
@@ -163,7 +166,7 @@ const Certificates = ({ darkMode }) => {
               }`}
             >
               <FaAward />
-              <span>Achievements</span>
+              <span>{translate(t.certTabAchieve)}</span>
             </button>
           </div>
         </div>
@@ -240,7 +243,7 @@ const Certificates = ({ darkMode }) => {
                         : 'text-blue-600 hover:text-blue-700'
                     }`}
                   >
-                    <span>View Certificate</span>
+                    <span>{translate(t.certView)}</span>
                     <FaExternalLinkAlt className="text-xs" />
                   </motion.a>
                 </div>

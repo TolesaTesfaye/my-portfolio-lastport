@@ -180,6 +180,20 @@ const Hero = ({ darkMode }) => {
               >
                 {translate(t.heroViewWork)}
               </motion.a>
+              <motion.a
+                href="/Tolesa_Tesfaye_CV.html"
+                target="_blank"
+                rel="noopener noreferrer"
+                whileHover={{ scale: 1.05, borderColor: "rgb(168, 85, 247)" }}
+                whileTap={{ scale: 0.95 }}
+                className={`px-8 py-3 border-2 border-purple-500 rounded-lg font-semibold transition-all duration-300 ${
+                  darkMode
+                    ? "hover:bg-purple-500/10 text-purple-400"
+                    : "hover:bg-purple-50 text-purple-600 shadow-md hover:shadow-lg"
+                }`}
+              >
+                {translate(t.heroDownloadCV) || "Download CV"}
+              </motion.a>
             </motion.div>
 
             {/* Social Media Links */}

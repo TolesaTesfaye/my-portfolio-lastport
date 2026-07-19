@@ -45,10 +45,10 @@ const Footer = ({ darkMode, navigateToSection, currentPage }) => {
       },
     ],
     contact: [
-      { name: translate(t.navContact), sectionId: "contact" },
-      { name: translate(t.navContact), sectionId: "contact" },
-      { name: translate(t.navContact), sectionId: "contact" },
-      { name: translate(t.navContact), sectionId: "contact" },
+      { name: "Email", href: "mailto:tolesatesfay273@gmail.com" },
+      { name: "Phone", href: "tel:+251716000504" },
+      { name: "Telegram", href: "https://t.me/+ap3RyRf-wvEyNTg0" },
+      { name: "Location", sectionId: "contact" },
     ],
   };
 
@@ -199,14 +199,27 @@ const Footer = ({ darkMode, navigateToSection, currentPage }) => {
             <ul className="space-y-2">
               {footerLinks.contact.map((link, index) => (
                 <li key={index}>
-                  <button
-                    onClick={() => navigateToSection(link.sectionId)}
-                    className={`transition-colors hover:text-blue-500 text-left ${
-                      darkMode ? "text-slate-400" : "text-slate-600"
-                    }`}
-                  >
-                    {link.name}
-                  </button>
+                  {link.href ? (
+                    <a
+                      href={link.href}
+                      target={link.href.startsWith("http") ? "_blank" : "_self"}
+                      rel={link.href.startsWith("http") ? "noopener noreferrer" : ""}
+                      className={`transition-colors hover:text-blue-500 text-left ${
+                        darkMode ? "text-slate-400" : "text-slate-600"
+                      }`}
+                    >
+                      {link.name}
+                    </a>
+                  ) : (
+                    <button
+                      onClick={() => navigateToSection(link.sectionId)}
+                      className={`transition-colors hover:text-blue-500 text-left ${
+                        darkMode ? "text-slate-400" : "text-slate-600"
+                      }`}
+                    >
+                      {link.name}
+                    </button>
+                  )}
                 </li>
               ))}
             </ul>

@@ -9,14 +9,16 @@ import {
   FaBookReader,
 } from "react-icons/fa";
 import { HiCode } from "react-icons/hi";
+import { useLanguage } from "../context/LanguageContext";
+import { translations as t } from "../translations";
 
 const Journey = ({ darkMode }) => {
+  const { translate } = useLanguage();
   const milestones = [
     {
       year: "2024 - Present",
-      title: "Full-Stack Developer & Content Creator",
-      description:
-        'Building modern web applications with MERN stack and Java Spring Boot. Creating educational content on YouTube channel "Tolman Tube" and developing the SuccessBridge learning platform.',
+      title: translate(t.journeyCurrent),
+      description: translate(t.journeyCurrentDesc),
       icon: FaLaptopCode,
       color: "from-blue-500 to-purple-600",
       type: "work",
@@ -32,18 +34,16 @@ const Journey = ({ darkMode }) => {
     },
     {
       year: "2024",
-      title: "YouTube Channel Launch",
-      description:
-        'Launched "Tolman Tube" YouTube channel to share knowledge and help students learn technology. Started creating educational content and tutorials.',
+      title: translate(t.journeyYoutube),
+      description: translate(t.journeyYoutubeDesc),
       icon: FaBriefcase,
       color: "from-yellow-500 to-orange-600",
       type: "work",
     },
     {
       year: "2023 - 2024",
-      title: "Advanced Web Development Training",
-      description:
-        "Comprehensive training in full-stack development, mastering React, Node.js, Express, MongoDB, and modern JavaScript frameworks. Built multiple projects including task management and database systems.",
+      title: translate(t.journeyTraining),
+      description: translate(t.journeyTrainingDesc),
       icon: HiCode,
       color: "from-purple-500 to-pink-600",
       type: "education",
@@ -51,9 +51,8 @@ const Journey = ({ darkMode }) => {
 
     {
       year: "2022 - 2023",
-      title: "Started Software Development Journey",
-      description:
-        "Began learning software development fundamentals, HTML, CSS, JavaScript, and web technologies. Created first projects and started sharing knowledge online.",
+      title: translate(t.journeyStart),
+      description: translate(t.journeyStartDesc),
       icon: FaRocket,
       color: "from-orange-500 to-red-600",
       type: "milestone",
@@ -139,13 +138,13 @@ const Journey = ({ darkMode }) => {
           <h2
             className={`text-4xl md:text-5xl font-bold mb-4 ${darkMode ? "text-white" : "text-slate-900"}`}
           >
-            My <span className="text-gradient">Journey</span>
+            {translate(t.journeyTitle)}
           </h2>
           <div className="w-24 h-1 bg-gradient-to-r from-blue-500 to-purple-600 mx-auto mb-4"></div>
           <p
             className={`text-lg ${darkMode ? "text-slate-400" : "text-slate-600"}`}
           >
-            A timeline of my professional growth and learning milestones
+            {translate(t.journeySubtitle)}
           </p>
         </motion.div>
 
