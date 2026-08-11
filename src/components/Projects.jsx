@@ -6,7 +6,7 @@ import {
   FaChevronRight,
   FaCircle,
 } from "react-icons/fa";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { useLanguage } from "../context/LanguageContext";
 import { translations as t } from "../translations";
 
@@ -14,6 +14,7 @@ const Projects = ({ darkMode }) => {
   const { translate } = useLanguage();
   const [hoveredIndex, setHoveredIndex] = useState(null);
   const [activeImage, setActiveImage] = useState({});
+  const [failedImages, setFailedImages] = useState(() => new Set());
 
   const projects = [
     {
@@ -29,11 +30,21 @@ const Projects = ({ darkMode }) => {
         "Tailwind CSS",
       ],
       images: [
-        "https://picsum.photos/seed/successbridge1/800/400",
-        "https://picsum.photos/seed/successbridge2/800/400",
-        "https://picsum.photos/seed/successbridge3/800/400",
+        "/successbridge1.png",
+        "/successbridge3 (1).png",
+        "/successbridge3 (2).png",
       ],
       github: "https://github.com/TolesaTesfaye/SuccessBridge",
+      demo: "https://demo.com",
+      category: "Web Development",
+    },
+    {
+      title: translate(t.projectGBAAB),
+      description:
+        "Association project developed for GBAAB, providing digital solutions and online presence for the organization. Features membership management, event announcements, and community engagement tools.",
+      technologies: ["React", "Node.js", "Express", "MongoDB", "Tailwind CSS"],
+      images: ["/gbaab1.png", "/gbaab2.png", "/gbaab3.png"],
+      github: "https://github.com/TolesaTesfaye/GBAAB",
       demo: "https://demo.com",
       category: "Web Development",
     },
@@ -49,9 +60,9 @@ const Projects = ({ darkMode }) => {
         "Tailwind CSS",
       ],
       images: [
-        "https://picsum.photos/seed/taskmgmt1/800/400",
-        "https://picsum.photos/seed/taskmgmt2/800/400",
-        "https://picsum.photos/seed/taskmgmt3/800/400",
+        "/Screenshot 2026-05-29 213039.png",
+        "/Screenshot 2026-05-29 215926.png",
+        "/Screenshot 2026-08-11 153757.png",
       ],
       github: "https://github.com/TolesaTesfaye/Task-Managemant-System",
       demo: "https://demo.com",
@@ -69,68 +80,13 @@ const Projects = ({ darkMode }) => {
         "Vercel",
       ],
       images: [
-        "https://picsum.photos/seed/portfolio1/800/400",
-        "https://picsum.photos/seed/portfolio2/800/400",
-        "https://picsum.photos/seed/portfolio3/800/400",
+        "/portifolio1 (1).png",
+        "/portifolio1 (2).png",
+        "/portifolio1 (3).png",
       ],
       github: "https://github.com/TolesaTesfaye/my-portfolio-lastport",
       demo: "https://my-portfolio-lastport.vercel.app/",
       category: "Web Development",
-    },
-    {
-      title: translate(t.projectEagles),
-      description:
-        "Collaborative team project showcasing teamwork and development skills. Built with modern web technologies and best practices for scalable applications.",
-      technologies: [
-        "React",
-        "Node.js",
-        "Express",
-        "MongoDB",
-        "Team Collaboration",
-      ],
-      images: [
-        "https://picsum.photos/seed/eagles1/800/400",
-        "https://picsum.photos/seed/eagles2/800/400",
-        "https://picsum.photos/seed/eagles3/800/400",
-      ],
-      github: "https://github.com/TolesaTesfaye/EAGLES-TEAM-",
-      demo: "https://demo.com",
-      category: "Team Project",
-    },
-    {
-      title: translate(t.projectDatabase),
-      description:
-        "Comprehensive database management system with advanced querying, data visualization, backup automation, and performance monitoring. Supports multiple database engines.",
-      technologies: [
-        "Node.js",
-        "MySQL",
-        "MongoDB",
-        "PostgreSQL",
-        "Chart.js",
-        "Express",
-      ],
-      images: [
-        "https://picsum.photos/seed/database1/800/400",
-        "https://picsum.photos/seed/database2/800/400",
-        "https://picsum.photos/seed/database3/800/400",
-      ],
-      github: "https://github.com/TolesaTesfaye/database",
-      demo: "https://demo.com",
-      category: "Database",
-    },
-    {
-      title: translate(t.projectTolesaRepo),
-      description:
-        "Personal development repository containing various coding projects, experiments, and learning materials. Showcases continuous learning and skill development.",
-      technologies: ["JavaScript", "React", "Node.js", "Various Technologies"],
-      images: [
-        "https://picsum.photos/seed/tolesarepo1/800/400",
-        "https://picsum.photos/seed/tolesarepo2/800/400",
-        "https://picsum.photos/seed/tolesarepo3/800/400",
-      ],
-      github: "https://github.com/TolesaTesfaye/Tolesa-repo",
-      demo: "https://demo.com",
-      category: "Learning & Development",
     },
   ];
 
@@ -262,25 +218,37 @@ const Projects = ({ darkMode }) => {
                 {/* Image Carousel */}
                 <div className="relative h-48 overflow-hidden bg-gradient-to-br from-blue-500/20 to-purple-600/20">
                   <AnimatePresence mode="wait">
-                    <motion.img
-                      key={currentImage}
-                      src={project.images[currentImage]}
-                      alt={`${project.title} preview ${currentImage + 1}`}
-                      initial={{ opacity: 0, x: 50 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, x: -50 }}
-                      transition={{ duration: 0.3 }}
-                      className="absolute inset-0 w-full h-full object-cover"
-                      onError={(e) => {
-                        // Fallback to gradient placeholder if image fails to load
-                        e.target.style.display = "none";
-                        e.target.parentElement.innerHTML = `
-                          <div class="w-full h-full flex items-center justify-center text-6xl bg-gradient-to-br from-blue-500/20 to-purple-600/20">
-                            <span class="text-6xl opacity-50">...</span>
-                          </div>
-                        `;
-                      }}
-                    />
+                    {failedImages.has(`${index}-${currentImage}`) ? (
+                      <motion.div
+                        key={`placeholder-${currentImage}`}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.3 }}
+                        className="absolute inset-0 w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-500/20 to-purple-600/20"
+                      >
+                        <span className="text-6xl opacity-50">...</span>
+                      </motion.div>
+                    ) : (
+                      <motion.img
+                        key={currentImage}
+                        src={project.images[currentImage]}
+                        alt={`${project.title} preview ${currentImage + 1}`}
+                        initial={{ opacity: 0, x: 50 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -50 }}
+                        transition={{ duration: 0.3 }}
+                        className="absolute inset-0 w-full h-full object-cover"
+                        onError={() => {
+                          // Track failed image so React renders a placeholder instead
+                          setFailedImages((prev) => {
+                            const next = new Set(prev);
+                            next.add(`${index}-${currentImage}`);
+                            return next;
+                          });
+                        }}
+                      />
+                    )}
                   </AnimatePresence>
 
                   {/* Gradient overlay at bottom for readability */}
@@ -415,7 +383,9 @@ const Projects = ({ darkMode }) => {
                       }`}
                     >
                       <FaGithub />
-                      <span className="text-sm">{translate(t.projectsCode)}</span>
+                      <span className="text-sm">
+                        {translate(t.projectsCode)}
+                      </span>
                     </motion.a>
                     <motion.a
                       href={project.demo}
@@ -430,7 +400,9 @@ const Projects = ({ darkMode }) => {
                       }`}
                     >
                       <FaExternalLinkAlt />
-                      <span className="text-sm">{translate(t.projectsLiveDemo)}</span>
+                      <span className="text-sm">
+                        {translate(t.projectsLiveDemo)}
+                      </span>
                     </motion.a>
                   </div>
                 </div>

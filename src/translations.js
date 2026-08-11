@@ -281,10 +281,10 @@ export const translations = {
     om: "Sistimii Bulchiinsa Database",
     am: "የዳታቤዝ አስተዳደር ሥርዓት",
   },
-  projectTolesaRepo: {
-    en: "Tolesa Repository",
-    om: "Reespoozitorii Tolesa",
-    am: "የጦለሳ ማከማቻ",
+  projectGBAAB: {
+    en: "GBAAB Association",
+    om: "Dhaabbata GBAAB",
+    am: "የጂቢኤቢ ማህበር",
   },
 
   // Certificate Titles

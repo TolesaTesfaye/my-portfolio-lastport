@@ -1,11 +1,9 @@
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  FaCode,
   FaYoutube,
   FaChalkboardTeacher,
   FaImage,
   FaVideo,
-  FaGraduationCap,
   FaChevronLeft,
   FaChevronRight,
   FaCircle,
@@ -21,23 +19,6 @@ const Services = ({ darkMode }) => {
 
   const services = [
     {
-      title: translate(t.serviceWebDev),
-      description: translate(t.serviceWebDevDesc),
-      icon: FaCode,
-      features: [
-        "MERN Stack",
-        "Java & Spring Boot",
-        "API Development",
-        "Responsive Design",
-      ],
-      color: "from-blue-500 to-cyan-500",
-      images: [
-        "https://picsum.photos/seed/webdev1/800/400",
-        "https://picsum.photos/seed/webdev2/800/400",
-        "https://picsum.photos/seed/webdev3/800/400",
-      ],
-    },
-    {
       title: translate(t.serviceContent),
       description: translate(t.serviceContentDesc),
       icon: FaYoutube,
@@ -48,11 +29,7 @@ const Services = ({ darkMode }) => {
         "Tech Content",
       ],
       color: "from-red-500 to-pink-500",
-      images: [
-        "https://picsum.photos/seed/content1/800/400",
-        "https://picsum.photos/seed/content2/800/400",
-        "https://picsum.photos/seed/content3/800/400",
-      ],
+      images: ["/1k celebration.jpg", "/tolman.jpg", "/cover.jpg"],
     },
     {
       title: translate(t.serviceTeaching),
@@ -66,9 +43,9 @@ const Services = ({ darkMode }) => {
       ],
       color: "from-green-500 to-emerald-500",
       images: [
-        "https://picsum.photos/seed/teaching1/800/400",
-        "https://picsum.photos/seed/teaching2/800/400",
-        "https://picsum.photos/seed/teaching3/800/400",
+        "/olnlineteaching1.jpg",
+        "/onlineteching2 (1).jpg",
+        "/onlineteching2 (2).jpg",
       ],
     },
     {
@@ -83,9 +60,9 @@ const Services = ({ darkMode }) => {
       ],
       color: "from-purple-500 to-indigo-500",
       images: [
-        "https://picsum.photos/seed/photoedit1/800/400",
-        "https://picsum.photos/seed/photoedit2/800/400",
-        "https://picsum.photos/seed/photoedit3/800/400",
+        "/graphicsedesign (1).png",
+        "/graphicsedesign (2).png",
+        "/graphicsedesign.jpg",
       ],
     },
     {
@@ -99,28 +76,7 @@ const Services = ({ darkMode }) => {
         "Visual Effects",
       ],
       color: "from-orange-500 to-yellow-500",
-      images: [
-        "https://picsum.photos/seed/videoedit1/800/400",
-        "https://picsum.photos/seed/videoedit2/800/400",
-        "https://picsum.photos/seed/videoedit3/800/400",
-      ],
-    },
-    {
-      title: translate(t.serviceBridge),
-      description: translate(t.serviceBridgeDesc),
-      icon: FaGraduationCap,
-      features: [
-        "MERN Stack Development",
-        "Resource Library",
-        "Student Portal",
-        "Educational Tools",
-      ],
-      color: "from-teal-500 to-blue-500",
-      images: [
-        "https://picsum.photos/seed/successbridge1/800/400",
-        "https://picsum.photos/seed/successbridge2/800/400",
-        "https://picsum.photos/seed/successbridge3/800/400",
-      ],
+      images: ["/vedioediting (1).png", "/vedioediting (2).png", "/tolman.jpg"],
     },
   ];
 

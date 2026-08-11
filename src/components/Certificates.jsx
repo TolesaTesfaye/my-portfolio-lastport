@@ -1,97 +1,133 @@
-import { motion } from 'framer-motion'
-import { FaCertificate, FaAward, FaTrophy, FaMedal, FaExternalLinkAlt, FaStar } from 'react-icons/fa'
-import { SiFreecodecamp, SiSololearn, SiUdemy, SiCoursera } from 'react-icons/si'
-import { useState } from 'react'
+import { motion, AnimatePresence } from "framer-motion";
+import { useState } from "react";
+import {
+  FaCertificate,
+  FaTrophy,
+  FaAward,
+  FaMedal,
+  FaGraduationCap,
+  FaCode,
+  FaJava,
+  FaJs,
+  FaReact,
+  FaPython,
+  FaMobileAlt,
+  FaExternalLinkAlt,
+  FaCheckCircle,
+} from "react-icons/fa";
 import { useLanguage } from "../context/LanguageContext";
 import { translations as t } from "../translations";
 
 const Certificates = ({ darkMode }) => {
   const { translate } = useLanguage();
-  const [activeTab, setActiveTab] = useState('certificates')
+  const [activeTab, setActiveTab] = useState("certificates");
+  const [selectedCert, setSelectedCert] = useState(null);
 
   const certificates = [
     {
       title: translate(t.certFullStack),
-      issuer: 'FreeCodeCamp',
-      date: '2024',
-      icon: SiFreecodecamp,
-      color: 'from-green-500 to-emerald-500',
-      link: '#',
-      description: 'Comprehensive full-stack development certification covering MERN stack, APIs, and responsive design.',
+      issuer: "Udemy",
+      year: "2024",
+      icon: FaCode,
+      color: "from-blue-500 to-purple-600",
+      description:
+        "Comprehensive full-stack web development course covering MERN stack, REST APIs, authentication, and deployment.",
+      skills: ["React", "Node.js", "Express", "MongoDB"],
     },
     {
       title: translate(t.certJava),
-      issuer: 'Udemy',
-      date: '2024',
-      icon: SiUdemy,
-      color: 'from-purple-500 to-pink-500',
-      link: '#',
-      description: 'In-depth Java programming course covering OOP, data structures, algorithms, and Spring Boot.',
+      issuer: "Coursera",
+      year: "2023",
+      icon: FaJava,
+      color: "from-orange-500 to-red-600",
+      description:
+        "In-depth Java programming masterclass covering OOP, data structures, and Spring Boot framework.",
+      skills: ["Java", "Spring Boot", "OOP", "REST APIs"],
     },
     {
       title: translate(t.certJS),
-      issuer: 'FreeCodeCamp',
-      date: '2023',
-      icon: SiFreecodecamp,
-      color: 'from-yellow-500 to-orange-500',
-      link: '#',
-      description: 'Mastered JavaScript fundamentals, algorithms, data structures, and problem-solving techniques.',
+      issuer: "freeCodeCamp",
+      year: "2023",
+      icon: FaJs,
+      color: "from-yellow-400 to-orange-500",
+      description:
+        "JavaScript algorithms and data structures certification covering problem-solving and optimization techniques.",
+      skills: ["JavaScript", "Algorithms", "Data Structures"],
     },
     {
       title: translate(t.certReact),
-      issuer: 'Udemy',
-      date: '2024',
-      icon: SiUdemy,
-      color: 'from-cyan-500 to-blue-500',
-      link: '#',
-      description: 'Comprehensive React development including hooks, state management, and modern best practices.',
+      issuer: "Udemy",
+      year: "2024",
+      icon: FaReact,
+      color: "from-cyan-400 to-blue-600",
+      description:
+        "Complete React guide covering hooks, context, routing, state management, and performance optimization.",
+      skills: ["React", "Hooks", "Redux", "Next.js"],
     },
     {
       title: translate(t.certPython),
-      issuer: 'Sololearn',
-      date: '2023',
-      icon: SiSololearn,
-      color: 'from-blue-500 to-indigo-500',
-      link: '#',
-      description: 'Data science fundamentals with Python, including pandas, numpy, and data visualization.',
+      issuer: "DataCamp",
+      year: "2023",
+      icon: FaPython,
+      color: "from-green-400 to-emerald-600",
+      description:
+        "Python for data science covering NumPy, Pandas, data visualization, and machine learning basics.",
+      skills: ["Python", "NumPy", "Pandas", "ML"],
     },
     {
       title: translate(t.certResponsive),
-      issuer: 'FreeCodeCamp',
-      date: '2023',
-      icon: SiFreecodecamp,
-      color: 'from-teal-500 to-green-500',
-      link: '#',
-      description: 'Mastered responsive design principles, CSS Grid, Flexbox, and mobile-first development.',
+      issuer: "freeCodeCamp",
+      year: "2022",
+      icon: FaMobileAlt,
+      color: "from-pink-400 to-rose-600",
+      description:
+        "Responsive web design certification covering HTML5, CSS3, Flexbox, Grid, and mobile-first design.",
+      skills: ["HTML5", "CSS3", "Flexbox", "Grid"],
     },
-  ]
+  ];
 
   const achievements = [
     {
-      title: 'Top Performer Award',
-      description: 'Recognized as a top performer in software development projects and academic excellence.',
-      icon: FaTrophy,
-      color: 'from-yellow-400 to-orange-500',
-    },
-    {
-      title: 'SuccessBridge Platform Creator',
-      description: 'Developed and launched the SuccessBridge learning platform serving hundreds of students.',
+      title: "SuccessBridge Platform Creator",
+      description:
+        "Developed and launched SuccessBridge, a comprehensive student management platform connecting students, teachers, and parents.",
       icon: FaAward,
-      color: 'from-blue-400 to-purple-500',
+      color: "from-blue-500 to-purple-600",
+      year: "2024",
     },
     {
-      title: 'YouTube Content Creator',
-      description: 'Built "Tolman Tube" channel providing educational content to thousands of students.',
-      icon: FaStar,
-      color: 'from-red-400 to-pink-500',
+      title: "YouTube Content Creator",
+      description:
+        'Founded "Tolman Tube" YouTube channel, creating educational content and tutorials for students and developers.',
+      icon: FaTrophy,
+      color: "from-red-500 to-pink-600",
+      year: "2023",
     },
     {
-      title: 'Open Source Contributor',
-      description: 'Active contributor to open-source projects and GitHub repositories with growing community impact.',
+      title: "1K Subscribers Milestone",
+      description:
+        "Reached 1,000 subscribers on YouTube, marking a significant milestone in content creation journey.",
       icon: FaMedal,
-      color: 'from-green-400 to-teal-500',
+      color: "from-yellow-400 to-orange-500",
+      year: "2024",
     },
-  ]
+    {
+      title: "Software Engineering Student",
+      description:
+        "Pursuing Bachelor's degree in Software Engineering at Haramaya University, maintaining strong academic performance.",
+      icon: FaGraduationCap,
+      color: "from-green-400 to-emerald-600",
+      year: "2021 - Present",
+    },
+    {
+      title: "Team Project Leadership",
+      description:
+        "Led the EAGLES TEAM project, demonstrating teamwork, leadership, and collaborative development skills.",
+      icon: FaCheckCircle,
+      color: "from-cyan-400 to-blue-600",
+      year: "2024",
+    },
+  ];
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -101,27 +137,31 @@ const Certificates = ({ darkMode }) => {
         staggerChildren: 0.1,
       },
     },
-  }
+  };
 
   const itemVariants = {
-    hidden: { opacity: 0, y: 30 },
-    visible: { 
-      opacity: 1, 
+    hidden: { opacity: 0, y: 30, scale: 0.95 },
+    visible: {
+      opacity: 1,
       y: 0,
+      scale: 1,
       transition: {
         type: "spring",
         stiffness: 100,
-        damping: 12
-      }
+        damping: 12,
+      },
     },
-  }
+  };
 
   return (
-    <section id="certificates" className={`py-20 px-4 sm:px-6 lg:px-8 ${
-      darkMode 
-        ? 'bg-slate-800/30' 
-        : 'bg-gradient-to-br from-white via-slate-50/50 to-purple-50/30'
-    }`}>
+    <section
+      id="certificates"
+      className={`py-20 px-4 sm:px-6 lg:px-8 ${
+        darkMode
+          ? ""
+          : "bg-gradient-to-br from-slate-50/50 via-white to-purple-50/20"
+      }`}
+    >
       <div className="max-w-7xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -130,184 +170,285 @@ const Certificates = ({ darkMode }) => {
           transition={{ duration: 0.6 }}
           className="text-center mb-16"
         >
-          <h2 className={`text-4xl md:text-5xl font-bold mb-4 ${darkMode ? 'text-white' : 'text-slate-900'}`}>
+          <h2
+            className={`text-4xl md:text-5xl font-bold mb-4 ${darkMode ? "text-white" : "text-slate-900"}`}
+          >
             {translate(t.certTitle)}
           </h2>
           <div className="w-24 h-1 bg-gradient-to-r from-blue-500 to-purple-600 mx-auto mb-4"></div>
-          <p className={`text-lg ${darkMode ? 'text-slate-400' : 'text-slate-600'}`}>
+          <p
+            className={`text-lg ${darkMode ? "text-slate-400" : "text-slate-600"}`}
+          >
             {translate(t.certSubtitle)}
           </p>
         </motion.div>
 
-        {/* Tab Switcher */}
+        {/* Tabs */}
         <div className="flex justify-center mb-12">
-          <div className={`inline-flex rounded-xl p-1.5 backdrop-blur-sm border ${
-            darkMode 
-              ? 'bg-slate-800/50 border-slate-700' 
-              : 'bg-white/90 border-slate-200 shadow-lg'
-          }`}>
+          <div
+            className={`inline-flex rounded-full p-1 backdrop-blur-sm border ${
+              darkMode
+                ? "bg-gray-800/50 border-gray-700"
+                : "bg-white/80 border-gray-200"
+            }`}
+          >
             <button
-              onClick={() => setActiveTab('certificates')}
-              className={`px-6 py-3 rounded-lg font-semibold text-sm transition-all duration-300 flex items-center space-x-2 ${
-                activeTab === 'certificates'
-                  ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg'
-                  : `${darkMode ? 'text-slate-400 hover:text-white' : 'text-slate-600 hover:text-blue-600'}`
+              onClick={() => setActiveTab("certificates")}
+              className={`px-6 py-2 rounded-full text-sm font-semibold transition-all duration-300 flex items-center space-x-2 ${
+                activeTab === "certificates"
+                  ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg"
+                  : darkMode
+                    ? "text-gray-400 hover:text-white"
+                    : "text-gray-600 hover:text-blue-600"
               }`}
             >
               <FaCertificate />
               <span>{translate(t.certTabCert)}</span>
             </button>
             <button
-              onClick={() => setActiveTab('achievements')}
-              className={`px-6 py-3 rounded-lg font-semibold text-sm transition-all duration-300 flex items-center space-x-2 ${
-                activeTab === 'achievements'
-                  ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg'
-                  : `${darkMode ? 'text-slate-400 hover:text-white' : 'text-slate-600 hover:text-blue-600'}`
+              onClick={() => setActiveTab("achievements")}
+              className={`px-6 py-2 rounded-full text-sm font-semibold transition-all duration-300 flex items-center space-x-2 ${
+                activeTab === "achievements"
+                  ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg"
+                  : darkMode
+                    ? "text-gray-400 hover:text-white"
+                    : "text-gray-600 hover:text-blue-600"
               }`}
             >
-              <FaAward />
+              <FaTrophy />
               <span>{translate(t.certTabAchieve)}</span>
             </button>
           </div>
         </div>
 
-        {/* Certificates Grid */}
-        {activeTab === 'certificates' && (
-          <motion.div
-            key="certificates"
-            variants={containerVariants}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            className="grid md:grid-cols-2 lg:grid-cols-3 gap-8"
-          >
-            {certificates.map((cert, index) => (
-              <motion.div
-                key={index}
-                variants={itemVariants}
-                whileHover={{ 
-                  y: -8, 
-                  scale: 1.02,
-                  boxShadow: "0 15px 30px rgba(59, 130, 246, 0.2)"
-                }}
-                className={`backdrop-blur-sm rounded-xl p-6 border transition-all duration-300 relative overflow-hidden group ${
-                  darkMode 
-                    ? 'bg-slate-800/50 border-slate-700 hover:border-blue-500/50' 
-                    : 'bg-white/90 border-slate-200/80 hover:border-blue-400 shadow-xl hover:shadow-2xl'
-                }`}
-              >
-                <motion.div
-                  className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                />
-                
-                <div className="relative z-10">
-                  <div className="flex items-start justify-between mb-4">
-                    <motion.div
-                      whileHover={{ scale: 1.1, rotate: [0, -5, 5, 0] }}
-                      className={`w-14 h-14 rounded-lg bg-gradient-to-r ${cert.color} flex items-center justify-center`}
-                    >
-                      <cert.icon className="text-2xl text-white" />
-                    </motion.div>
-                    
-                    <span className={`text-sm font-medium px-3 py-1 rounded-full ${
-                      darkMode 
-                        ? 'bg-slate-700/50 text-slate-300' 
-                        : 'bg-slate-100 text-slate-600'
-                    }`}>
-                      {cert.date}
-                    </span>
-                  </div>
-
-                  <h3 className={`text-lg font-semibold mb-2 ${darkMode ? 'text-white' : 'text-slate-900'}`}>
-                    {cert.title}
-                  </h3>
-                  
-                  <p className={`text-sm font-medium mb-3 ${
-                    darkMode ? 'text-blue-400' : 'text-blue-600'
-                  }`}>
-                    {cert.issuer}
-                  </p>
-
-                  <p className={`text-sm mb-4 ${darkMode ? 'text-slate-400' : 'text-slate-600'}`}>
-                    {cert.description}
-                  </p>
-
-                  <motion.a
-                    href={cert.link}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    whileHover={{ scale: 1.05, x: 5 }}
-                    className={`inline-flex items-center space-x-2 text-sm font-medium transition-colors ${
-                      darkMode 
-                        ? 'text-blue-400 hover:text-blue-300' 
-                        : 'text-blue-600 hover:text-blue-700'
+        <AnimatePresence mode="wait">
+          {activeTab === "certificates" ? (
+            <motion.div
+              key="certificates"
+              variants={containerVariants}
+              initial="hidden"
+              animate="visible"
+              exit={{ opacity: 0, y: -20 }}
+              className="grid md:grid-cols-2 lg:grid-cols-3 gap-8"
+            >
+              {certificates.map((cert, index) => {
+                const Icon = cert.icon;
+                return (
+                  <motion.div
+                    key={index}
+                    variants={itemVariants}
+                    whileHover={{
+                      y: -5,
+                      scale: 1.02,
+                      boxShadow: "0 15px 30px rgba(59, 130, 246, 0.2)",
+                    }}
+                    className={`group relative backdrop-blur-sm rounded-xl overflow-hidden border transition-all duration-300 ${
+                      darkMode
+                        ? "bg-gray-800/50 border-gray-700 hover:border-blue-500/50"
+                        : "bg-white/95 border-gray-200/80 hover:border-blue-400 shadow-xl hover:shadow-2xl"
                     }`}
                   >
-                    <span>{translate(t.certView)}</span>
-                    <FaExternalLinkAlt className="text-xs" />
-                  </motion.a>
-                </div>
-              </motion.div>
-            ))}
-          </motion.div>
-        )}
+                    {/* Card Header with gradient */}
+                    <div
+                      className={`relative h-32 bg-gradient-to-br ${cert.color} flex items-center justify-center`}
+                    >
+                      <Icon className="text-6xl text-white/90 drop-shadow-lg" />
+                      <span className="absolute top-3 right-3 text-xs font-semibold px-3 py-1 rounded-full bg-white/20 text-white backdrop-blur-sm">
+                        {cert.year}
+                      </span>
+                    </div>
 
-        {/* Achievements Grid */}
-        {activeTab === 'achievements' && (
-          <motion.div
-            key="achievements"
-            variants={containerVariants}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            className="grid md:grid-cols-2 gap-8"
-          >
-            {achievements.map((achievement, index) => (
-              <motion.div
-                key={index}
-                variants={itemVariants}
-                whileHover={{ 
-                  y: -8, 
-                  scale: 1.02,
-                  boxShadow: "0 15px 30px rgba(59, 130, 246, 0.2)"
-                }}
-                className={`backdrop-blur-sm rounded-xl p-6 border transition-all duration-300 relative overflow-hidden group ${
-                  darkMode 
-                    ? 'bg-slate-800/50 border-slate-700 hover:border-blue-500/50' 
-                    : 'bg-white/90 border-slate-200/80 hover:border-blue-400 shadow-xl hover:shadow-2xl'
-                }`}
-              >
-                <motion.div
-                  className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                />
-                
-                <div className="relative z-10 flex items-start space-x-5">
-                  <motion.div
-                    whileHover={{ scale: 1.15, rotate: [0, -10, 10, 0] }}
-                    className={`w-16 h-16 rounded-xl bg-gradient-to-r ${achievement.color} flex items-center justify-center flex-shrink-0 shadow-lg`}
-                  >
-                    <achievement.icon className="text-2xl text-white" />
+                    {/* Card Content */}
+                    <div className="p-6">
+                      <h3
+                        className={`text-lg font-semibold mb-2 ${darkMode ? "text-white" : "text-gray-900"}`}
+                      >
+                        {cert.title}
+                      </h3>
+                      <p
+                        className={`text-sm mb-3 ${darkMode ? "text-gray-400" : "text-gray-600"}`}
+                      >
+                        {cert.issuer}
+                      </p>
+                      <p
+                        className={`text-sm mb-4 line-clamp-3 ${darkMode ? "text-gray-400" : "text-gray-600"}`}
+                      >
+                        {cert.description}
+                      </p>
+
+                      {/* Skills */}
+                      <div className="flex flex-wrap gap-2 mb-4">
+                        {cert.skills.map((skill, skillIndex) => (
+                          <span
+                            key={skillIndex}
+                            className={`text-xs px-2 py-1 rounded ${
+                              darkMode
+                                ? "bg-gray-700/50 text-gray-300"
+                                : "bg-gray-200 text-gray-700"
+                            }`}
+                          >
+                            {skill}
+                          </span>
+                        ))}
+                      </div>
+
+                      {/* View Certificate Button */}
+                      <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={() => setSelectedCert(cert)}
+                        className={`w-full flex items-center justify-center space-x-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-300 ${
+                          darkMode
+                            ? "bg-gray-700/50 text-gray-300 hover:bg-gray-600/50 hover:text-white"
+                            : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                        }`}
+                      >
+                        <FaExternalLinkAlt className="text-xs" />
+                        <span>{translate(t.certView)}</span>
+                      </motion.button>
+                    </div>
                   </motion.div>
-                  
-                  <div className="flex-1">
-                    <h3 className={`text-xl font-semibold mb-2 ${darkMode ? 'text-white' : 'text-slate-900'}`}>
-                      {achievement.title}
-                    </h3>
-                    <p className={`${darkMode ? 'text-slate-400' : 'text-slate-600'}`}>
-                      {achievement.description}
-                    </p>
-                    
-                    {/* Decorative accent */}
-                    <div className={`mt-3 w-16 h-1 rounded-full bg-gradient-to-r ${achievement.color}`}></div>
-                  </div>
+                );
+              })}
+            </motion.div>
+          ) : (
+            <motion.div
+              key="achievements"
+              variants={containerVariants}
+              initial="hidden"
+              animate="visible"
+              exit={{ opacity: 0, y: -20 }}
+              className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto"
+            >
+              {achievements.map((achievement, index) => {
+                const Icon = achievement.icon;
+                return (
+                  <motion.div
+                    key={index}
+                    variants={itemVariants}
+                    whileHover={{
+                      y: -5,
+                      scale: 1.02,
+                      boxShadow: "0 15px 30px rgba(59, 130, 246, 0.2)",
+                    }}
+                    className={`group relative backdrop-blur-sm rounded-xl overflow-hidden border transition-all duration-300 ${
+                      darkMode
+                        ? "bg-gray-800/50 border-gray-700 hover:border-blue-500/50"
+                        : "bg-white/95 border-gray-200/80 hover:border-blue-400 shadow-xl hover:shadow-2xl"
+                    }`}
+                  >
+                    <div className="p-6 flex items-start space-x-4">
+                      <div
+                        className={`flex-shrink-0 w-12 h-12 rounded-lg bg-gradient-to-br ${achievement.color} flex items-center justify-center`}
+                      >
+                        <Icon className="text-2xl text-white" />
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex items-center justify-between mb-2">
+                          <h3
+                            className={`text-lg font-semibold ${darkMode ? "text-white" : "text-gray-900"}`}
+                          >
+                            {achievement.title}
+                          </h3>
+                          <span
+                            className={`text-xs font-semibold px-2 py-1 rounded-full ${
+                              darkMode
+                                ? "bg-gray-700/50 text-gray-300"
+                                : "bg-gray-100 text-gray-600"
+                            }`}
+                          >
+                            {achievement.year}
+                          </span>
+                        </div>
+                        <p
+                          className={`text-sm ${darkMode ? "text-gray-400" : "text-gray-600"}`}
+                        >
+                          {achievement.description}
+                        </p>
+                      </div>
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+
+      {/* Certificate Modal */}
+      <AnimatePresence>
+        {selectedCert && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setSelectedCert(null)}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              transition={{ type: "spring", stiffness: 200, damping: 20 }}
+              onClick={(e) => e.stopPropagation()}
+              className={`relative w-full max-w-lg rounded-2xl overflow-hidden border ${
+                darkMode
+                  ? "bg-gray-900 border-gray-700"
+                  : "bg-white border-gray-200"
+              }`}
+            >
+              <div
+                className={`h-40 bg-gradient-to-br ${selectedCert.color} flex items-center justify-center`}
+              >
+                <selectedCert.icon className="text-8xl text-white/90 drop-shadow-lg" />
+              </div>
+              <div className="p-6">
+                <h3
+                  className={`text-2xl font-bold mb-2 ${darkMode ? "text-white" : "text-gray-900"}`}
+                >
+                  {selectedCert.title}
+                </h3>
+                <p
+                  className={`text-sm mb-4 ${darkMode ? "text-gray-400" : "text-gray-600"}`}
+                >
+                  {selectedCert.issuer} • {selectedCert.year}
+                </p>
+                <p
+                  className={`mb-4 ${darkMode ? "text-gray-300" : "text-gray-700"}`}
+                >
+                  {selectedCert.description}
+                </p>
+                <div className="flex flex-wrap gap-2 mb-6">
+                  {selectedCert.skills.map((skill, index) => (
+                    <span
+                      key={index}
+                      className={`text-xs px-3 py-1 rounded-full ${
+                        darkMode
+                          ? "bg-gray-700/50 text-gray-300"
+                          : "bg-gray-100 text-gray-700"
+                      }`}
+                    >
+                      {skill}
+                    </span>
+                  ))}
                 </div>
-              </motion.div>
-            ))}
+                <button
+                  onClick={() => setSelectedCert(null)}
+                  className={`w-full px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-300 ${
+                    darkMode
+                      ? "bg-gray-700/50 text-gray-300 hover:bg-gray-600/50 hover:text-white"
+                      : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                  }`}
+                >
+                  Close
+                </button>
+              </div>
+            </motion.div>
           </motion.div>
         )}
-      </div>
+      </AnimatePresence>
     </section>
-  )
-}
+  );
+};
 
-export default Certificates
+export default Certificates;
