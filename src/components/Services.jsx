@@ -29,7 +29,11 @@ const Services = ({ darkMode }) => {
         "Tech Content",
       ],
       color: "from-red-500 to-pink-500",
-      images: ["/1k celebration.jpg", "/tolman.jpg", "/cover.jpg"],
+      images: [
+        "/content creation (1).jpg",
+        "/content creation (2).jpg",
+        "/tolman.jpg",
+      ],
     },
     {
       title: translate(t.serviceTeaching),
