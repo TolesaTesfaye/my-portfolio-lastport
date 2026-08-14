@@ -181,9 +181,8 @@ const Hero = ({ darkMode }) => {
                 {translate(t.heroViewWork)}
               </motion.a>
               <motion.a
-                href="/Tolesa_Tesfaye_CV.html"
-                target="_blank"
-                rel="noopener noreferrer"
+                href="/Tolesa Tesfaye - Software Engineer CV.pdf"
+                download="Tolesa_Tesfaye_CV.pdf"
                 whileHover={{ scale: 1.05, borderColor: "rgb(168, 85, 247)" }}
                 whileTap={{ scale: 0.95 }}
                 className={`px-8 py-3 border-2 border-purple-500 rounded-lg font-semibold transition-all duration-300 ${
