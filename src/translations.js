@@ -266,6 +266,11 @@ export const translations = {
     om: "Sistimii Bulchiinsa Hojiitii",
     am: "የተግባር አስተዳደር ሥርዓት",
   },
+  projectRecruitment: {
+    en: "Recruitment Management System",
+    om: "Sistimii Bulchiinsa Qaxaraa",
+    am: "የቅጥር አስተዳደር ሥርዓት",
+  },
   projectPortfolio: {
     en: "Personal Portfolio",
     om: "Portifoolii Dhuunfaa",
