@@ -6,6 +6,27 @@ import { translations as t } from "../translations";
 const About = ({ darkMode }) => {
   const { translate } = useLanguage();
 
+  // Dynamic academic year calculation (started 2022, expected graduation 2026)
+  const startYear = 2022;
+  const currentYear = new Date().getFullYear();
+  const academicYear = currentYear - startYear + 1;
+
+  const getOrdinalSuffix = (num) => {
+    if (num >= 11 && num <= 13) return "th";
+    switch (num % 10) {
+      case 1:
+        return "st";
+      case 2:
+        return "nd";
+      case 3:
+        return "rd";
+      default:
+        return "th";
+    }
+  };
+
+  const yearOrdinal = `${academicYear}${getOrdinalSuffix(academicYear)}`;
+
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -32,7 +53,7 @@ const About = ({ darkMode }) => {
   const stats = [
     {
       icon: FaGraduationCap,
-      number: translate(t.aboutStudent),
+      number: `${yearOrdinal} Year ${translate(t.aboutStudent)}`,
       description: translate(t.aboutStudentDesc),
     },
     {
@@ -159,7 +180,7 @@ const About = ({ darkMode }) => {
         >
           {[
             {
-              title: translate(t.aboutStudent),
+              title: `${yearOrdinal} Year ${translate(t.aboutStudent)}`,
               description: translate(t.aboutStudentDesc),
               icon: FaGraduationCap,
             },

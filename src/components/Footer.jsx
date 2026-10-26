@@ -43,6 +43,10 @@ const Footer = ({ darkMode, navigateToSection, currentPage }) => {
         name: "Learning Resources",
         href: "https://github.com/TolesaTesfaye/Tolesa-repo",
       },
+      {
+        name: "Download CV / Resume",
+        href: "/Tolesa Tesfaye - Software Engineer CV.pdf",
+      },
     ],
     contact: [
       { name: "Email", href: "mailto:tolesatesfay273@gmail.com" },

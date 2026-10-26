@@ -7,6 +7,27 @@ import { translations as t } from "../translations";
 const Hero = ({ darkMode }) => {
   const { translate } = useLanguage();
 
+  // Dynamic academic year calculation (started 2022, expected graduation 2026)
+  const startYear = 2022;
+  const currentYear = new Date().getFullYear();
+  const academicYear = currentYear - startYear + 1;
+
+  const getOrdinalSuffix = (num) => {
+    if (num >= 11 && num <= 13) return "th";
+    switch (num % 10) {
+      case 1:
+        return "st";
+      case 2:
+        return "nd";
+      case 3:
+        return "rd";
+      default:
+        return "th";
+    }
+  };
+
+  const yearOrdinal = `${academicYear}${getOrdinalSuffix(academicYear)}`;
+
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -122,7 +143,7 @@ const Hero = ({ darkMode }) => {
               variants={itemVariants}
               className={`text-xl md:text-2xl mb-4 ${darkMode ? "text-slate-300" : "text-slate-700"}`}
             >
-              {translate(t.heroTitle)}
+              {yearOrdinal} Year {translate(t.heroTitle)}
             </motion.p>
 
             <motion.p
@@ -275,12 +296,12 @@ const Hero = ({ darkMode }) => {
               >
                 <div className="w-full h-full rounded-2xl overflow-hidden bg-gray-800">
                   <img
-                    src="/Tolli.jpg"
+                    src="/photo_2026-10-26_21-22-03.jpg"
                     alt={translate(t.heroName)}
-                    className="w-full h-full object-contain bg-gray-800"
+                    className="w-full h-full object-cover bg-gray-800"
                     onError={(e) => {
-                      if (e.target.src.includes("Tolli.jpg")) {
-                        e.target.src = "/tolman.jpg";
+                      if (e.target.src.includes("photo_2026-10-26_21-22-03.jpg")) {
+                        e.target.src = "/Tolli.jpg";
                       } else {
                         e.target.style.display = "none";
                         e.target.parentElement.style.background =

@@ -35,7 +35,7 @@ const Projects = ({ darkMode }) => {
         "/successbridge3 (2).png",
       ],
       github: "https://github.com/TolesaTesfaye/SuccessBridge",
-      demo: "https://demo.com",
+      demo: "https://github.com/TolesaTesfaye/SuccessBridge",
       category: "Web Development",
     },
     {
@@ -45,7 +45,7 @@ const Projects = ({ darkMode }) => {
       technologies: ["React", "Node.js", "Express", "MongoDB", "Tailwind CSS"],
       images: ["/gbaab1.png", "/gbaab2.png", "/gbaab3.png"],
       github: "https://github.com/TolesaTesfaye/GBAAB",
-      demo: "https://demo.com",
+      demo: "https://github.com/TolesaTesfaye/GBAAB",
       category: "Web Development",
     },
     {
@@ -65,7 +65,7 @@ const Projects = ({ darkMode }) => {
         "/task3.png",
       ],
       github: "https://github.com/TolesaTesfaye/Task-Managemant-System",
-      demo: "https://demo.com",
+      demo: "https://github.com/TolesaTesfaye/Task-Managemant-System",
       category: "Web Development",
     },
     {
@@ -86,7 +86,7 @@ const Projects = ({ darkMode }) => {
         "/recruitment3.png",
       ],
       github: "https://github.com/TolesaTesfaye/recruitment-management",
-      demo: "https://demo.com",
+      demo: "https://github.com/TolesaTesfaye/recruitment-management",
       category: "Web Development",
     },
     {
@@ -108,6 +108,26 @@ const Projects = ({ darkMode }) => {
       github: "https://github.com/TolesaTesfaye/my-portfolio-lastport",
       demo: "https://my-portfolio-lastport.vercel.app/",
       category: "Web Development",
+    },
+    {
+      title: translate(t.projectTelegramBot),
+      description:
+        "Telegram bot for the SuccessBridge learning platform that provides students with instant access to learning materials, quizzes, and study resources through chat commands. Built with Node.js and the Telegram Bot API. Web application: https://success-bridge-ten.vercel.app/",
+      technologies: [
+        "Node.js",
+        "Telegram Bot API",
+        "MongoDB",
+        "JavaScript",
+        "dotenv",
+      ],
+      images: [
+        "/botperview3 (1).png",
+        "/botperview3 (2).png",
+        "/botperview3 (3).png",
+      ],
+      github: "https://github.com/TolesaTesfaye/SuccessBridge",
+      demo: "https://t.me/successbridgebot",
+      category: "Bot Development",
     },
   ];
 

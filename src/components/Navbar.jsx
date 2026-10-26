@@ -174,7 +174,7 @@ const Navbar = ({
           </div>
 
           {/* Mobile Menu Button */}
-          <div className="md:hidden flex items-center space-x-4">
+          <div className="md:hidden flex items-center space-x-2">
             <motion.button
               onClick={() => setDarkMode(!darkMode)}
               whileTap={{ scale: 0.9 }}
@@ -182,6 +182,7 @@ const Navbar = ({
             >
               {darkMode ? <FaSun size={20} /> : <FaMoon size={20} />}
             </motion.button>
+            <LanguageSwitcher darkMode={darkMode} />
             <button
               onClick={() => setIsOpen(!isOpen)}
               className={darkMode ? "text-white" : "text-gray-900"}
@@ -220,6 +221,10 @@ const Navbar = ({
                 <span>{item.name}</span>
               </button>
             ))}
+            {/* Language Switcher in Mobile Menu */}
+            <div className="mt-4 px-3 pb-2 border-t border-slate-200/50 dark:border-slate-700/50">
+              <LanguageSwitcher darkMode={darkMode} />
+            </div>
           </div>
         </motion.div>
       )}

@@ -23,13 +23,41 @@ const Contact = ({ darkMode }) => {
   });
 
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState(false);
 
-  const handleSubmit = (e) => {
+  // Replace this with your own Formspree endpoint (or any form backend)
+  const FORM_ENDPOINT = "https://formspree.io/f/YOUR_FORM_ID";
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Form submitted:", formData);
-    setSubmitted(true);
-    setTimeout(() => setSubmitted(false), 4000);
-    setFormData({ name: "", email: "", message: "" });
+    setSubmitting(true);
+    setSubmitError(false);
+
+    try {
+      const response = await fetch(FORM_ENDPOINT, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          message: formData.message,
+        }),
+      });
+
+      if (response.ok) {
+        setSubmitted(true);
+        setFormData({ name: "", email: "", message: "" });
+        setTimeout(() => setSubmitted(false), 5000);
+      } else {
+        throw new Error("Failed to send message");
+      }
+    } catch (err) {
+      console.error("Contact form error:", err);
+      setSubmitError(true);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const handleChange = (e) => {
@@ -288,12 +316,17 @@ const Contact = ({ darkMode }) => {
 
               <motion.button
                 type="submit"
-                whileHover={{ scale: 1.05 }}
+                disabled={submitting}
+                whileHover={!submitting && { scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="w-full px-8 py-3 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg font-semibold hover:shadow-lg hover:shadow-purple-500/50 transition-all duration-300 flex items-center justify-center space-x-2"
+                className={`w-full px-8 py-3 rounded-lg font-semibold transition-all duration-300 flex items-center justify-center space-x-2 ${
+                  submitting
+                    ? "bg-gray-500 cursor-not-allowed"
+                    : "bg-gradient-to-r from-blue-500 to-purple-600 hover:shadow-lg hover:shadow-purple-500/50"
+                }`}
               >
                 <HiMail />
-                <span>{translate(t.contactSend)}</span>
+                <span>{submitting ? "Sending..." : translate(t.contactSend)}</span>
               </motion.button>
               {submitted && (
                 <motion.p
@@ -304,6 +337,17 @@ const Contact = ({ darkMode }) => {
                   }`}
                 >
                   {translate(t.contactSuccess)}
+                </motion.p>
+              )}
+              {submitError && (
+                <motion.p
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className={`text-center text-sm font-medium ${
+                    darkMode ? "text-red-400" : "text-red-600"
+                  }`}
+                >
+                  Failed to send message. Please try again or email directly.
                 </motion.p>
               )}
             </form>

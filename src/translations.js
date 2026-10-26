@@ -13,7 +13,7 @@ export const translations = {
   heroGreeting: { en: "Hello, I'm", om: "Akkam, Ani", am: "ሰላም፣ እኔ" },
   heroName: { en: "Tolesa Tesfaye", om: "Tolasaa Tasfaayee", am: "ጦለሳ ተስፋዬ" },
   heroTitle: {
-    en: "4th Year Software Engineering Student",
+    en: "Software Engineering Student",
     om: "Barataaa waggaa 4ffaa sooftware Ingineering ",
     am: "የ4ኛ ዓመት የሶፍትዌር ኢንጂነሪንግ ተማሪ",
   },
@@ -40,7 +40,7 @@ export const translations = {
   aboutHello: { en: "Hello, I'm", om: "Akkam, Ani", am: "ሰላም፣ እኔ" },
   aboutName: { en: "Tolesa Tesfaye", om: "Tolesa Tesfaye", am: "ጦለሳ ተስፋዬ" },
   aboutDesc1: {
-    en: "I'm a 4th-year Software Engineering student at Haramaya University with a deep passion for technology and innovation. My journey in tech started with curiosity and has grown into a full-fledged career in software development.",
+    en: "I'm a Software Engineering student at Haramaya University with a deep passion for technology and innovation. My journey in tech started with curiosity and has grown into a full-fledged career in software development.",
     om: "Ani bara 4ffaa barataa Injinarii Softiweerii kan Universiitii Haramayaa kan jaalala guddaa teeknooloojii fi odeeffannoo irratti qabu. Deemsi koo teeknooloojii keessatti fedhii irraa jalqabee hojiin guutuu ta'eetti guddiseera.",
     am: "የ4ኛ ዓመት የሶፍትዌር ኢንጂነሪንግ ተማሪ በሐረማያ ዩኒቨርሲቲ ለቴክኖሎጂ እና ፈጠራ ከፍተኛ ፍቅር ያለኝ። የቴክኖሎጂ ጉዞዬ በጥያቄ የተጀመረ ሲሆን ወደ ሙሉ የሶፍትዌር ልማት ሙያ አድጓል።",
   },
@@ -50,7 +50,7 @@ export const translations = {
     am: "በፉል-ስታክ የድር ልማት፣ በዩቲዩብ ላይ ይዘት በመፍጠር እና እንደ SuccessBridge ያሉ የትምህርት መድረኮችን በማዘጋጀት ላይ ያተኮርኩ ነው። ቀጣይነት ባለው ትምህርት እና እውቀትን ከሌሎች ጋር በማጋራት አምናለሁ።",
   },
   aboutStudent: {
-    en: "4th Year Student",
+    en: "Student",
     om: "Barataa Bara 4ffaa",
     am: "የ4ኛ ዓመት ተማሪ",
   },
@@ -290,6 +290,11 @@ export const translations = {
     en: "GBAAB Association",
     om: "Dhaabbata GBAAB",
     am: "የጂቢኤቢ ማህበር",
+  },
+  projectTelegramBot: {
+    en: "SuccessBridge Telegram Bot",
+    om: "Botii Telegram SuccessBridge",
+    am: "የSuccessBridge ቴለግራም ቦት",
   },
 
   // Certificate Titles
