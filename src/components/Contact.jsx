@@ -27,7 +27,7 @@ const Contact = ({ darkMode }) => {
   const [submitError, setSubmitError] = useState(false);
 
   // Replace this with your own Formspree endpoint (or any form backend)
-  const FORM_ENDPOINT = "https://formspree.io/f/YOUR_FORM_ID";
+  const FORM_ENDPOINT = "https://formspree.io/f/xvkkkwbe";
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -42,6 +42,7 @@ const Contact = ({ darkMode }) => {
           name: formData.name,
           email: formData.email,
           message: formData.message,
+          _replyto: formData.email,
         }),
       });
 
