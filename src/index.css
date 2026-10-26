@@ -5,10 +5,12 @@
 @layer base {
   html {
     scroll-behavior: smooth;
+    overflow-x: hidden;
   }
   
   body {
     @apply bg-slate-900 text-white transition-colors duration-300;
+    overflow-x: hidden;
   }
   
   body.light {
@@ -58,4 +60,3 @@
     }
   }
 }
-
