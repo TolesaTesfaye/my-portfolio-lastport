@@ -68,7 +68,7 @@ const Hero = ({ darkMode }) => {
   return (
     <section
       id="home"
-      className={`min-h-screen flex items-center justify-center relative overflow-hidden pt-16 ${
+      className={`min-h-screen flex items-center justify-center relative overflow-hidden overflow-x-hidden pt-16 ${
         darkMode
           ? ""
           : "bg-gradient-to-br from-white via-blue-50/30 to-purple-50/30"
@@ -292,7 +292,7 @@ const Hero = ({ darkMode }) => {
               <motion.div
                 whileHover={{ scale: 1.02 }}
                 transition={{ duration: 0.3 }}
-                className="relative w-80 md:w-96 aspect-[3/4] rounded-2xl overflow-hidden border-4 border-transparent bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 p-1"
+                className="relative w-64 md:w-96 max-w-full aspect-[3/4] rounded-2xl overflow-hidden border-4 border-transparent bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 p-1"
               >
                 <div className="w-full h-full rounded-2xl overflow-hidden bg-gray-800">
                   <img
@@ -316,12 +316,12 @@ const Hero = ({ darkMode }) => {
               <motion.div
                 animate={{ y: [0, -10, 0] }}
                 transition={{ duration: 4, repeat: Infinity }}
-                className="absolute -top-10 -right-10 w-20 h-20 bg-blue-500/15 rounded-full blur-xl"
+                className="absolute -top-4 -right-4 w-20 h-20 bg-blue-500/15 rounded-full blur-xl"
               ></motion.div>
               <motion.div
                 animate={{ y: [0, 10, 0] }}
                 transition={{ duration: 5, repeat: Infinity }}
-                className="absolute -bottom-10 -left-10 w-24 h-24 bg-purple-500/15 rounded-full blur-xl"
+                className="absolute -bottom-4 -left-4 w-24 h-24 bg-purple-500/15 rounded-full blur-xl"
               ></motion.div>
             </div>
           </motion.div>
