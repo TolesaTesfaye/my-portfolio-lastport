@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { FaGlobe } from "react-icons/fa";
+import { FaChevronDown, FaGlobe } from "react-icons/fa";
 import { useLanguage, LANGUAGES } from "../context/LanguageContext";
 
 const LanguageSwitcher = ({ darkMode }) => {
@@ -16,15 +16,20 @@ const LanguageSwitcher = ({ darkMode }) => {
         onClick={() => setIsOpen(!isOpen)}
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
-        className={`flex items-center space-x-1.5 px-3 py-2 rounded-lg transition-all duration-300 ${
+        className={`flex items-center space-x-2 px-1.5 py-2 transition-all duration-300 ${
           darkMode
-            ? "bg-slate-800/70 hover:bg-slate-700 text-slate-300 hover:text-white"
-            : "bg-slate-200/70 hover:bg-slate-300 text-slate-700 hover:text-slate-900"
+            ? "text-slate-300 hover:text-white"
+            : "text-slate-700 hover:text-blue-600"
         }`}
         aria-label="Switch language"
       >
-        <FaGlobe className="text-sm" />
+        <FaGlobe className="text-sm opacity-80" />
         <span className="text-sm font-medium">{currentLang.nativeName}</span>
+        <FaChevronDown
+          className={`text-[10px] transition-transform duration-300 ${
+            isOpen ? "rotate-180" : ""
+          }`}
+        />
       </motion.button>
 
       <AnimatePresence>

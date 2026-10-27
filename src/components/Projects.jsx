@@ -82,9 +82,9 @@ const Projects = ({ darkMode }) => {
         "Tailwind CSS",
       ],
       images: [
-        "/recruitment1.png",
-        "/recruitment2.png",
-        "/recruitment3.png",
+        "/recuritment1.png",
+        "/recuritment2.png",
+        "/recuritemtnt3.png",
       ],
       github: "https://github.com/TolesaTesfaye/recruitment-management",
       demo: "https://github.com/TolesaTesfaye/recruitment-management",

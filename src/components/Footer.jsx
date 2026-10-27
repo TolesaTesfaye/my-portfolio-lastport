@@ -50,7 +50,7 @@ const Footer = ({ darkMode, navigateToSection, currentPage }) => {
     ],
     contact: [
       { name: "Email", href: "mailto:tolesatesfay273@gmail.com" },
-      { name: "Phone", href: "tel:+251716000504" },
+      { name: "Phone", href: "tel:+251975863448" },
       { name: "Telegram", href: "https://t.me/+ap3RyRf-wvEyNTg0" },
       { name: "Location", sectionId: "contact" },
     ],

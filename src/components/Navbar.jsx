@@ -221,10 +221,6 @@ const Navbar = ({
                 <span>{item.name}</span>
               </button>
             ))}
-            {/* Language Switcher in Mobile Menu */}
-            <div className="mt-4 px-3 pb-2 border-t border-slate-200/50 dark:border-slate-700/50">
-              <LanguageSwitcher darkMode={darkMode} />
-            </div>
           </div>
         </motion.div>
       )}

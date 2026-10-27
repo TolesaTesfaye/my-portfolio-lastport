@@ -114,7 +114,7 @@ const PrivacyPolicy = ({ darkMode }) => {
               </p>
               <div className="bg-blue-50 dark:bg-slate-800 p-4 rounded-lg mt-4">
                 <p><strong>Email:</strong> tolesatesfay273@gmail.com</p>
-                <p><strong>Phone:</strong> +251 716 000 504</p>
+                <p><strong>Phone:</strong> +251 975 863 448</p>
                 <p><strong>Website:</strong> <a href="#contact" className="text-blue-600 hover:underline">Contact Form</a></p>
               </div>
             </section>

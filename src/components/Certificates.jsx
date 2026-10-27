@@ -7,11 +7,6 @@ import {
   FaMedal,
   FaGraduationCap,
   FaCode,
-  FaJava,
-  FaJs,
-  FaReact,
-  FaPython,
-  FaMobileAlt,
   FaExternalLinkAlt,
   FaCheckCircle,
 } from "react-icons/fa";
@@ -35,54 +30,26 @@ const Certificates = ({ darkMode }) => {
       skills: ["React", "Node.js", "Express", "MongoDB"],
     },
     {
-      title: translate(t.certJava),
-      issuer: "Coursera",
-      year: "2023",
-      icon: FaJava,
-      color: "from-orange-500 to-red-600",
+      title: "AWS AI Practitioner Challenge",
+      issuer: "AWS",
+      year: "2026",
+      icon: FaCertificate,
+      image: "/AWS%20AI%20practitioner%20challenge.jpg",
+      color: "from-orange-500 to-amber-600",
       description:
-        "In-depth Java programming masterclass covering OOP, data structures, and Spring Boot framework.",
-      skills: ["Java", "Spring Boot", "OOP", "REST APIs"],
+        "Certificate recognizing completion of the AWS AI Practitioner Challenge.",
+      skills: ["AWS", "Artificial Intelligence", "Cloud"],
     },
     {
-      title: translate(t.certJS),
-      issuer: "freeCodeCamp",
-      year: "2023",
-      icon: FaJs,
-      color: "from-yellow-400 to-orange-500",
+      title: "Leadership Excellence Award",
+      issuer: "Leadership Excellence Award",
+      year: "2026",
+      icon: FaAward,
+      image: "/leadership%20excelence%20award.jpg",
+      color: "from-purple-500 to-pink-600",
       description:
-        "JavaScript algorithms and data structures certification covering problem-solving and optimization techniques.",
-      skills: ["JavaScript", "Algorithms", "Data Structures"],
-    },
-    {
-      title: translate(t.certReact),
-      issuer: "Udemy",
-      year: "2024",
-      icon: FaReact,
-      color: "from-cyan-400 to-blue-600",
-      description:
-        "Complete React guide covering hooks, context, routing, state management, and performance optimization.",
-      skills: ["React", "Hooks", "Redux", "Next.js"],
-    },
-    {
-      title: translate(t.certPython),
-      issuer: "DataCamp",
-      year: "2023",
-      icon: FaPython,
-      color: "from-green-400 to-emerald-600",
-      description:
-        "Python for data science covering NumPy, Pandas, data visualization, and machine learning basics.",
-      skills: ["Python", "NumPy", "Pandas", "ML"],
-    },
-    {
-      title: translate(t.certResponsive),
-      issuer: "freeCodeCamp",
-      year: "2022",
-      icon: FaMobileAlt,
-      color: "from-pink-400 to-rose-600",
-      description:
-        "Responsive web design certification covering HTML5, CSS3, Flexbox, Grid, and mobile-first design.",
-      skills: ["HTML5", "CSS3", "Flexbox", "Grid"],
+        "Recognition for demonstrating leadership excellence and a strong commitment to achievement.",
+      skills: ["Leadership", "Excellence", "Achievement"],
     },
   ];
 
@@ -252,7 +219,15 @@ const Certificates = ({ darkMode }) => {
                     <div
                       className={`relative h-32 bg-gradient-to-br ${cert.color} flex items-center justify-center`}
                     >
-                      <Icon className="text-6xl text-white/90 drop-shadow-lg" />
+                      {cert.image ? (
+                        <img
+                          src={cert.image}
+                          alt={`${cert.title} certificate`}
+                          className="h-full w-full object-cover"
+                        />
+                      ) : (
+                        <Icon className="text-6xl text-white/90 drop-shadow-lg" />
+                      )}
                       <span className="absolute top-3 right-3 text-xs font-semibold px-3 py-1 rounded-full bg-white/20 text-white backdrop-blur-sm">
                         {cert.year}
                       </span>
@@ -397,11 +372,19 @@ const Certificates = ({ darkMode }) => {
                   : "bg-white border-gray-200"
               }`}
             >
-              <div
-                className={`h-40 bg-gradient-to-br ${selectedCert.color} flex items-center justify-center`}
-              >
-                <selectedCert.icon className="text-8xl text-white/90 drop-shadow-lg" />
-              </div>
+              {selectedCert.image ? (
+                <img
+                  src={selectedCert.image}
+                  alt={`${selectedCert.title} certificate`}
+                  className="max-h-[28rem] w-full object-contain bg-gray-100"
+                />
+              ) : (
+                <div
+                  className={`h-40 bg-gradient-to-br ${selectedCert.color} flex items-center justify-center`}
+                >
+                  <selectedCert.icon className="text-8xl text-white/90 drop-shadow-lg" />
+                </div>
+              )}
               <div className="p-6">
                 <h3
                   className={`text-2xl font-bold mb-2 ${darkMode ? "text-white" : "text-gray-900"}`}

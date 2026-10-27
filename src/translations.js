@@ -23,9 +23,9 @@ export const translations = {
     am: "ሐረማያ ዩኒቨርሲቲ",
   },
   heroDescription: {
-    en: 'Passionate Full-Stack Developer specializing in MERN stack, Java with Spring Boot, and modern web technologies. Content Creator at "Tolman Tube" YouTube channel and creator of SuccessBridge learning platform.',
-    om: 'Ofiitiin Qopheessaa Full-Stack kan MERN stack, Java Spring Boot, fi teeknooloojii weebii ammayyaa irratti hubannoo qabu. Uumaa Qabiyyee kan "Tolman Tube" YouTube channel fi uumaa platformii barannoo SuccessBridge.',
-    am: 'ፉል-ስታክ ገንቢ በMERN ስታክ፣ ጃቫ ከSpring Boot እና በዘመናዊ የድር ቴክኖሎጂዎች ላይ ያተኮረ። በ"Tolman Tube" የዩቲዩብ ቻናል የይዘት ፈጣሪ እና የSuccessBridge የትምህርት መድረክ ፈጣሪ።',
+    en: 'Passionate Full-Stack Developer specializing in MERN stack and modern web technologies. Content Creator at "Tolman Tube" YouTube channel and creator of SuccessBridge learning platform.',
+    om: 'Ofiitiin Qopheessaa Full-Stack kan MERN stack fi teeknooloojii weebii ammayyaa irratti hubannoo qabu. Uumaa Qabiyyee kan "Tolman Tube" YouTube channel fi uumaa platformii barannoo SuccessBridge.',
+    am: 'ፉል-ስታክ ገንቢ በMERN ስታክ እና በዘመናዊ የድር ቴክኖሎጂዎች ላይ ያተኮረ። በ"Tolman Tube" የዩቲዩብ ቻናል የይዘት ፈጣሪ እና የSuccessBridge የትምህርት መድረክ ፈጣሪ።',
   },
   heroGetInTouch: { en: "Get In Touch", om: "Qunnamaa", am: "ያግኙኝ" },
   heroViewWork: { en: "View My Work", om: "Hojii keenya ", am: "ሥራዬን ይመልከቱ" },

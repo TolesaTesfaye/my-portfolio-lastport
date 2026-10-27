@@ -2,7 +2,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   FaYoutube,
   FaChalkboardTeacher,
-  FaImage,
   FaVideo,
   FaChevronLeft,
   FaChevronRight,
@@ -50,23 +49,6 @@ const Services = ({ darkMode }) => {
         "/olnlineteaching1.jpg",
         "/onlineteching2 (1).jpg",
         "/onlineteching2 (2).jpg",
-      ],
-    },
-    {
-      title: translate(t.servicePhoto),
-      description: translate(t.servicePhotoDesc),
-      icon: FaImage,
-      features: [
-        "Adobe Photoshop",
-        "Canva Design",
-        "Image Enhancement",
-        "Creative Design",
-      ],
-      color: "from-purple-500 to-indigo-500",
-      images: [
-        "/graphicsedesign (1).png",
-        "/graphicsedesign (2).png",
-        "/graphicsedesign.jpg",
       ],
     },
     {

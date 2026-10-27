@@ -6,11 +6,20 @@ import {
   FaCss3Alt,
   FaJs,
   FaDatabase,
-  FaMobile,
-  FaBrain,
-  FaJava,
 } from 'react-icons/fa'
-import { SiMongodb, SiMysql, SiTailwindcss, SiTypescript, SiExpress, SiPhp, SiSpringboot } from 'react-icons/si'
+import {
+  SiMongodb,
+  SiMysql,
+  SiTailwindcss,
+  SiTypescript,
+  SiExpress,
+  SiNestjs,
+  SiFastify,
+  SiFastapi,
+  SiPostman,
+  SiGit,
+  SiGithub,
+} from 'react-icons/si'
 import { useLanguage } from "../context/LanguageContext";
 import { translations as t } from "../translations";
 
@@ -33,9 +42,10 @@ const Skills = ({ darkMode }) => {
       skills: [
         { name: 'Node.js', icon: FaNode, level: 85, color: 'text-green-400' },
         { name: 'Express.js', icon: SiExpress, level: 88, color: 'text-gray-400' },
-        { name: 'Java', icon: FaJava, level: 85, color: 'text-red-500' },
-        { name: 'Spring Boot', icon: SiSpringboot, level: 80, color: 'text-green-500' },
-        { name: 'PHP', icon: SiPhp, level: 75, color: 'text-indigo-400' },
+        { name: 'NestJS', icon: SiNestjs, level: 80, color: 'text-red-400' },
+        { name: 'Fastify', icon: SiFastify, level: 80, color: 'text-cyan-400' },
+        { name: 'FastAPI', icon: SiFastapi, level: 80, color: 'text-teal-400' },
+        { name: 'MERN Stack', icon: FaReact, level: 88, color: 'text-purple-400' },
       ],
     },
     {
@@ -43,10 +53,10 @@ const Skills = ({ darkMode }) => {
       skills: [
         { name: 'MongoDB', icon: SiMongodb, level: 85, color: 'text-green-500' },
         { name: 'MySQL', icon: SiMysql, level: 82, color: 'text-blue-600' },
-        { name: 'MERN Stack', icon: FaReact, level: 88, color: 'text-purple-400' },
         { name: 'Database Design', icon: FaDatabase, level: 85, color: 'text-purple-400' },
-        { name: 'AI Integration', icon: FaBrain, level: 75, color: 'text-pink-400' },
-        { name: 'Mobile Apps', icon: FaMobile, level: 78, color: 'text-indigo-400' },
+        { name: 'Postman', icon: SiPostman, level: 82, color: 'text-orange-400' },
+        { name: 'Git', icon: SiGit, level: 85, color: 'text-orange-500' },
+        { name: 'GitHub', icon: SiGithub, level: 85, color: 'text-gray-400' },
       ],
     },
   ]
@@ -157,7 +167,7 @@ const Skills = ({ darkMode }) => {
             {translate(t.skillsAdditional)}
           </h3>
           <div className="flex flex-wrap justify-center gap-4">
-            {['RESTful APIs', 'Git & GitHub', 'Responsive Design', 'UI/UX Design', 'Problem Solving', 'Team Collaboration', 'MERN Stack', 'Spring Framework', 'Object-Oriented Programming'].map((skill, index) => (
+            {['RESTful APIs', 'Git & GitHub', 'Responsive Design', 'Problem Solving', 'Team Collaboration', 'MERN Stack'].map((skill, index) => (
               <motion.div
                 key={index}
                 initial={{ opacity: 0, scale: 0.5 }}
@@ -182,4 +192,3 @@ const Skills = ({ darkMode }) => {
 }
 
 export default Skills
-

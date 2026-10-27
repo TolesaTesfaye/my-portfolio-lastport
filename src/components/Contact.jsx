@@ -78,8 +78,8 @@ const Contact = ({ darkMode }) => {
     {
       icon: FaPhone,
       label: "Phone",
-      value: "+251 716 000 504",
-      link: "tel:+251716000504",
+      value: "+251 975 863 448",
+      link: "tel:+251975863448",
     },
     {
       icon: FaMapMarkerAlt,
