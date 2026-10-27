@@ -1,6 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  FaGithub,
   FaExternalLinkAlt,
   FaChevronLeft,
   FaChevronRight,
@@ -35,7 +34,8 @@ const Projects = ({ darkMode }) => {
         "/successbridge3 (2).png",
       ],
       github: "https://github.com/TolesaTesfaye/SuccessBridge",
-      demo: "https://github.com/TolesaTesfaye/SuccessBridge",
+      demo: "https://success-bridge-ten.vercel.app/",
+      linkLabel: t.projectsProjectUrl,
       category: "Web Development",
     },
     {
@@ -45,7 +45,8 @@ const Projects = ({ darkMode }) => {
       technologies: ["React", "Node.js", "Express", "MongoDB", "Tailwind CSS"],
       images: ["/gbaab1.png", "/gbaab2.png", "/gbaab3.png"],
       github: "https://github.com/TolesaTesfaye/GBAAB",
-      demo: "https://github.com/TolesaTesfaye/GBAAB",
+      demo: "https://gamataa-barattoota-ada-aa-bargaa.vercel.app/",
+      linkLabel: t.projectsProjectUrl,
       category: "Web Development",
     },
     {
@@ -107,12 +108,13 @@ const Projects = ({ darkMode }) => {
       ],
       github: "https://github.com/TolesaTesfaye/my-portfolio-lastport",
       demo: "https://my-portfolio-lastport.vercel.app/",
+      linkLabel: t.projectsProjectUrl,
       category: "Web Development",
     },
     {
       title: translate(t.projectTelegramBot),
       description:
-        "Telegram bot for the SuccessBridge learning platform that provides students with instant access to learning materials, quizzes, and study resources through chat commands. Built with Node.js and the Telegram Bot API. Web application: https://success-bridge-ten.vercel.app/",
+        "Telegram bot for the SuccessBridge learning platform that provides students with instant access to learning materials, quizzes, and study resources through chat commands. Built with Node.js and the Telegram Bot API.",
       technologies: [
         "Node.js",
         "Telegram Bot API",
@@ -127,6 +129,7 @@ const Projects = ({ darkMode }) => {
       ],
       github: "https://github.com/TolesaTesfaye/SuccessBridge",
       demo: "https://t.me/successbridgebot",
+      linkLabel: t.projectsProjectUrl,
       category: "Bot Development",
     },
   ];
@@ -412,23 +415,6 @@ const Projects = ({ darkMode }) => {
                   {/* Links */}
                   <div className="flex space-x-4">
                     <motion.a
-                      href={project.github}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      whileHover={{ scale: 1.1 }}
-                      whileTap={{ scale: 0.9 }}
-                      className={`flex items-center space-x-2 transition-colors ${
-                        darkMode
-                          ? "text-gray-400 hover:text-white"
-                          : "text-gray-600 hover:text-blue-600"
-                      }`}
-                    >
-                      <FaGithub />
-                      <span className="text-sm">
-                        {translate(t.projectsCode)}
-                      </span>
-                    </motion.a>
-                    <motion.a
                       href={project.demo}
                       target="_blank"
                       rel="noopener noreferrer"
@@ -442,7 +428,7 @@ const Projects = ({ darkMode }) => {
                     >
                       <FaExternalLinkAlt />
                       <span className="text-sm">
-                        {translate(t.projectsLiveDemo)}
+                        {translate(project.linkLabel || t.projectsLiveDemo)}
                       </span>
                     </motion.a>
                   </div>

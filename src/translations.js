@@ -125,6 +125,7 @@ export const translations = {
   },
   projectsCode: { en: "Code", om: "Koodii", am: "ኮድ" },
   projectsLiveDemo: { en: "Live Demo", om: "Ibsa Jireenyaa", am: "የቀጥታ ማሳያ" },
+  projectsProjectUrl: { en: "Project URL", om: "URL Pirojektii", am: "የፕሮጀክት URL" },
 
   // Certificates
   certTitle: {
