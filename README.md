@@ -67,6 +67,11 @@ The backend uses Hono, Cloudflare Workers, D1, R2, Drizzle ORM, Zod, and HTTP-on
    npm run db:migrate:local
    npm run db:migrate:remote
    ```
+   Seed the existing portfolio content into the matching database:
+   ```bash
+   npm run db:seed:local
+   npm run db:seed:remote
+   ```
 4. Create secrets. Do not commit these values:
    ```bash
    npx wrangler secret put SESSION_SECRET
@@ -145,4 +150,3 @@ npm run build
 ## License
 
 This project is open source and available under the MIT License.
-
