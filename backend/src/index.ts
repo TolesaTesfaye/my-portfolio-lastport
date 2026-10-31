@@ -15,7 +15,8 @@ import type { Env } from "./types";
 const app = new Hono<{ Bindings: Env; Variables: { adminEmail: string } }>();
 const getEnv = (name: string, fallback = "") => {
   const deno = (globalThis as { Deno?: { env: { get: (key: string) => string | undefined } } }).Deno;
-  return deno?.env.get(name) || process.env[name] || fallback;
+  const nodeProcess = (globalThis as { process?: { env?: Record<string, string | undefined> } }).process;
+  return deno?.env.get(name) || nodeProcess?.env?.[name] || fallback;
 };
 const sql = neon(getEnv("DATABASE_URL"));
 const db = drizzle(sql);

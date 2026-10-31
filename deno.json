@@ -1,0 +1,7 @@
+{
+  "nodeModulesDir": "auto",
+  "tasks": {
+    "build": "deno check backend/src/deno.ts",
+    "start": "deno run --allow-net --allow-env backend/src/deno.ts"
+  }
+}
