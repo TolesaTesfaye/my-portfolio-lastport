@@ -2,7 +2,7 @@
 
 A modern, interactive, and professional portfolio website built with React and Tailwind CSS.
 
-The repository now includes an optional Cloudflare backend in `backend/`. The existing Vite portfolio remains visually unchanged and uses its original static data until `VITE_API_URL` is configured.
+The repository includes a Hono API in `backend/`. The Vite frontend uses its original static data until `VITE_API_URL` is configured.
 
 ## Features
 
@@ -48,7 +48,7 @@ npm run preview
 
 ### Frontend API configuration
 
-Copy `.env.example` to `.env.local` and set `VITE_API_URL` to the deployed Worker URL. Without this variable, the public site uses its existing local content and the contact form keeps its Formspree fallback.
+Copy `.env.example` to `.env.local` and set `VITE_API_URL` to the deployed Deno API URL. Without this variable, the public site uses its existing local content and the contact form keeps its Formspree fallback.
 
 ## Vercel + Deno Deploy + Neon
 
@@ -88,49 +88,6 @@ Vercel browser app
   -> DATABASE_URL
   -> Neon PostgreSQL
 ```
-
-## Legacy Cloudflare Backend
-
-The backend uses Hono, Cloudflare Workers, D1, R2, Drizzle ORM, Zod, and HTTP-only signed cookies.
-
-1. Create the resources without inventing IDs:
-   ```bash
-   cd backend
-   npx wrangler d1 create portfolio-db
-   npx wrangler r2 bucket create your-portfolio-assets
-   ```
-2. Replace the valid local placeholders `00000000-0000-0000-0000-000000000000` and `portfolio-assets-placeholder` in `backend/wrangler.jsonc` with the returned D1 `database_id` and your actual R2 bucket name. Set `FRONTEND_ORIGIN` to the exact Vercel origin.
-3. Install and apply the migration locally or remotely:
-   ```bash
-   npm install
-   npm run db:migrate:local
-   npm run db:migrate:remote
-   ```
-   Seed the existing portfolio content into the matching database:
-   ```bash
-   npm run db:seed:local
-   npm run db:seed:remote
-   ```
-4. Create secrets. Do not commit these values:
-   ```bash
-   npx wrangler secret put SESSION_SECRET
-   npx wrangler secret put ADMIN_SETUP_TOKEN
-   ```
-5. Deploy the Worker:
-   ```bash
-   npm run deploy
-   ```
-6. Create the first admin once, using the setup token. Passwords must be at least 12 characters:
-   ```bash
-   curl -X POST https://YOUR_WORKER_URL/api/auth/setup \
-     -H "Content-Type: application/json" \
-     -H "x-setup-token: YOUR_SETUP_TOKEN" \
-     -d '{"email":"you@example.com","password":"use-a-long-unique-password"}'
-   ```
-   Remove or rotate `ADMIN_SETUP_TOKEN` after setup.
-7. Set `VITE_API_URL=https://YOUR_WORKER_URL` in Vercel and redeploy the frontend.
-
-R2 files are validated to 10 MB and limited to JPEG, PNG, WebP, and PDF. D1 stores object keys and metadata, not file binaries. For production, set `PUBLIC_ASSET_BASE_URL` to the public Worker/custom asset origin. The login limiter is intentionally conservative; add a Cloudflare WAF/rate-limiting rule for stronger multi-instance protection.
 
 ### API surface
 
