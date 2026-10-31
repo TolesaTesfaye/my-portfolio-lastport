@@ -1,8 +1,16 @@
-declare module "drizzle-orm/sqlite-core" {
-  export const integer: any;
-  export const sqliteTable: any;
-  export const text: any;
-  export const index: any;
+declare module "drizzle-orm/node-postgres" {
+  export const drizzle: any;
 }
-declare module "drizzle-orm/d1" { export const drizzle: any; }
-declare module "drizzle-orm" { export const asc: any; export const desc: any; export const eq: any; }
+declare module "drizzle-orm" {
+  export const asc: any;
+  export const desc: any;
+  export const eq: any;
+}
+declare module "drizzle-orm/pg-core" {
+  export const boolean: any;
+  export const index: any;
+  export const integer: any;
+  export const pgTable: any;
+  export const text: any;
+  export const timestamp: any;
+}

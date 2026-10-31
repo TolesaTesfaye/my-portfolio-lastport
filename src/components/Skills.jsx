@@ -6,6 +6,7 @@ import {
   FaCss3Alt,
   FaJs,
   FaDatabase,
+  FaCode,
 } from 'react-icons/fa'
 import {
   SiMongodb,

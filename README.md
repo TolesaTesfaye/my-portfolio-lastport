@@ -50,7 +50,28 @@ npm run preview
 
 Copy `.env.example` to `.env.local` and set `VITE_API_URL` to the deployed Worker URL. Without this variable, the public site uses its existing local content and the contact form keeps its Formspree fallback.
 
-## Cloudflare Backend
+## Neon PostgreSQL Backend
+
+The backend runs as a standard Node.js/Hono service and uses Neon PostgreSQL. Neon CLI creates the root `.env.local` with `DATABASE_URL`; backend scripts load that file automatically during local development.
+
+From the repository root:
+
+```bash
+neon deploy
+```
+
+From `backend/`, create the schema and seed the existing portfolio data:
+
+```bash
+npm install
+npm run db:migrate
+npm run db:seed
+npm run dev
+```
+
+Set `SESSION_SECRET`, `ADMIN_SETUP_TOKEN`, and `FRONTEND_ORIGIN` in the backend deployment environment. File uploads are intentionally disabled until an object-storage provider is configured; the existing static portfolio assets remain available from the frontend.
+
+## Legacy Cloudflare Backend
 
 The backend uses Hono, Cloudflare Workers, D1, R2, Drizzle ORM, Zod, and HTTP-only signed cookies.
 

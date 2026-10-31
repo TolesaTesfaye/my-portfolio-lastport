@@ -9,6 +9,7 @@ import { useState, useEffect } from "react";
 import { useLanguage } from "../context/LanguageContext";
 import { translations as t } from "../translations";
 import { usePortfolioData } from "../context/PortfolioDataContext";
+import { assetUrl } from "../lib/api";
 
 const Projects = ({ darkMode }) => {
   const { translate } = useLanguage();
@@ -136,7 +137,7 @@ const Projects = ({ darkMode }) => {
     },
   ];
   const projects = data?.projects?.length
-    ? data.projects.map((project) => ({ ...project, images: project.imageKey ? [`${import.meta.env.VITE_API_URL}/api/files/${project.imageKey}`] : [], github: project.githubUrl, demo: project.liveUrl, technologies: project.technologies || [], category: "Project", linkLabel: t.projectsLiveDemo }))
+    ? data.projects.map((project) => ({ ...project, images: project.imageKey ? [assetUrl(project.imageKey)] : [], github: project.githubUrl, demo: project.liveUrl, technologies: project.technologies || [], category: "Project", linkLabel: t.projectsLiveDemo }))
     : staticProjects;
 
   // Initialize active image index for each project

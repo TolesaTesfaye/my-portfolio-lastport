@@ -13,6 +13,17 @@ export async function apiFetch(path, options = {}) {
   return response.status === 204 ? null : response.json();
 }
 
+export async function apiUpload(file) {
+  if (!API_URL) throw new Error("API is not configured");
+  const body = new FormData();
+  body.append("file", file);
+  const response = await fetch(`${API_URL}/api/upload`, { method: "POST", credentials: "include", body });
+  if (!response.ok) throw new Error((await response.json().catch(() => null))?.error || "Upload failed");
+  return response.json();
+}
+
+export const assetUrl = (key) => key ? (key.startsWith("/") || key.startsWith("http") ? key : `${API_URL}/api/files/${key}`) : "";
+
 export async function getPortfolioData() {
   if (!apiEnabled) return null;
   const [profile, skills, experience, projects, education, certificates, socialLinks] = await Promise.all([
