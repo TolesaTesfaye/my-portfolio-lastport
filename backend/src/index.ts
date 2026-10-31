@@ -1,9 +1,9 @@
 import { Hono } from "hono";
 import { cors } from "hono/cors";
-import { drizzle } from "drizzle-orm/node-postgres";
+import { drizzle } from "drizzle-orm/neon-http";
 import { asc, desc, eq } from "drizzle-orm";
 import { deleteCookie, getCookie } from "hono/cookie";
-import { Pool } from "pg";
+import { neon } from "@neondatabase/serverless";
 import { config } from "dotenv";
 config({ path: "../.env.local" });
 config();
@@ -13,13 +13,17 @@ import { certificateSchema, contactSchema, educationSchema, experienceSchema, lo
 import type { Env } from "./types";
 
 const app = new Hono<{ Bindings: Env; Variables: { adminEmail: string } }>();
-const pool = new Pool({ connectionString: process.env.DATABASE_URL });
-const db = drizzle(pool);
-const runtimeEnv: Env = { DB: pool, FRONTEND_ORIGIN: process.env.FRONTEND_ORIGIN || "http://localhost:5173", SESSION_SECRET: process.env.SESSION_SECRET || "local-development-session-secret-change-before-production", ADMIN_SETUP_TOKEN: process.env.ADMIN_SETUP_TOKEN };
+const getEnv = (name: string, fallback = "") => {
+  const deno = (globalThis as { Deno?: { env: { get: (key: string) => string | undefined } } }).Deno;
+  return deno?.env.get(name) || process.env[name] || fallback;
+};
+const sql = neon(getEnv("DATABASE_URL"));
+const db = drizzle(sql);
+const runtimeEnv: Env = { DB: sql, FRONTEND_ORIGIN: getEnv("FRONTEND_ORIGIN", "http://localhost:5173"), SESSION_SECRET: getEnv("SESSION_SECRET", "local-development-session-secret-change-before-production"), ADMIN_SETUP_TOKEN: getEnv("ADMIN_SETUP_TOKEN") };
 app.use("*", async (c, next) => { c.env = runtimeEnv; return next(); });
 const now = () => new Date(); const id = () => crypto.randomUUID();
 app.use("/api/*", async (c, next) => {
-  const allowedOrigins = [c.env.FRONTEND_ORIGIN, "http://localhost:5173", "http://127.0.0.1:5173"].filter(Boolean);
+  const allowedOrigins = [...c.env.FRONTEND_ORIGIN.split(",").map((origin) => origin.trim()), "http://localhost:5173", "http://127.0.0.1:5173"].filter(Boolean);
   return cors({ origin: (origin) => allowedOrigins.includes(origin) ? origin : undefined, credentials: true, allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"], allowHeaders: ["Content-Type"] })(c, next);
 });
 app.get("/", (c) => c.json({ ok: true, service: "tolesa-portfolio-api" }));

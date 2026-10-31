@@ -1,6 +1,9 @@
 declare module "drizzle-orm/node-postgres" {
   export const drizzle: any;
 }
+declare module "drizzle-orm/neon-http" {
+  export const drizzle: any;
+}
 declare module "drizzle-orm" {
   export const asc: any;
   export const desc: any;
@@ -14,3 +17,9 @@ declare module "drizzle-orm/pg-core" {
   export const text: any;
   export const timestamp: any;
 }
+declare const Deno: {
+  env: {
+    get(name: string): string | undefined;
+  };
+  serve(options: { port: number }, handler: (request: Request) => Response | Promise<Response>): void;
+};

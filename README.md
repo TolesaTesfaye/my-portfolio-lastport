@@ -50,9 +50,9 @@ npm run preview
 
 Copy `.env.example` to `.env.local` and set `VITE_API_URL` to the deployed Worker URL. Without this variable, the public site uses its existing local content and the contact form keeps its Formspree fallback.
 
-## Neon PostgreSQL Backend
+## Vercel + Deno Deploy + Neon
 
-The backend runs as a standard Node.js/Hono service and uses Neon PostgreSQL. Neon CLI creates the root `.env.local` with `DATABASE_URL`; backend scripts load that file automatically during local development.
+The production stack is Vercel for the Vite frontend, Deno Deploy for the Hono API, and Neon PostgreSQL for persistence. Neon CLI creates the root `.env.local` with `DATABASE_URL`; backend scripts load that file automatically during local development.
 
 From the repository root:
 
@@ -69,7 +69,25 @@ npm run db:seed
 npm run dev
 ```
 
-Set `SESSION_SECRET`, `ADMIN_SETUP_TOKEN`, and `FRONTEND_ORIGIN` in the backend deployment environment. File uploads are intentionally disabled until an object-storage provider is configured; the existing static portfolio assets remain available from the frontend.
+Set `DATABASE_URL`, `SESSION_SECRET`, `ADMIN_SETUP_TOKEN`, and `FRONTEND_ORIGIN` in Deno Deploy. Set `VITE_API_URL` in Vercel to the Deno Deploy URL. `FRONTEND_ORIGIN` must be the exact Vercel origin, without a trailing slash; multiple origins may be comma-separated for previews. File uploads are intentionally disabled until an object-storage provider is configured; the existing static portfolio assets remain available from the frontend.
+
+The Deno Deploy settings are:
+
+```text
+App directory: backend
+Build command: deno task build
+Entry point: src/deno.ts
+```
+
+The request flow is:
+
+```text
+Vercel browser app
+  -> VITE_API_URL
+  -> Deno Deploy Hono API
+  -> DATABASE_URL
+  -> Neon PostgreSQL
+```
 
 ## Legacy Cloudflare Backend
 
