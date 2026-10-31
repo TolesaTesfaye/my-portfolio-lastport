@@ -14,10 +14,13 @@ import CookiePolicy from "./components/CookiePolicy";
 import Disclaimer from "./components/Disclaimer";
 import Certificates from "./components/Certificates";
 import Journey from "./components/Journey";
+import AdminDashboard from "./components/admin/AdminDashboard";
 
 function App() {
   const [darkMode, setDarkMode] = useState(true);
   const [currentPage, setCurrentPage] = useState("home");
+
+  const isAdmin = window.location.pathname === "/admin" || window.location.hash === "#admin";
 
   useEffect(() => {
     if (darkMode) {
@@ -110,6 +113,7 @@ function App() {
   };
 
   return (
+    isAdmin ? <AdminDashboard /> :
     <div
       className={`min-h-screen transition-colors duration-300 ${
         darkMode

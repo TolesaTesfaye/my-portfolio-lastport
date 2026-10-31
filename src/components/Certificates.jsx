@@ -12,13 +12,15 @@ import {
 } from "react-icons/fa";
 import { useLanguage } from "../context/LanguageContext";
 import { translations as t } from "../translations";
+import { usePortfolioData } from "../context/PortfolioDataContext";
 
 const Certificates = ({ darkMode }) => {
   const { translate } = useLanguage();
+  const { data } = usePortfolioData();
   const [activeTab, setActiveTab] = useState("certificates");
   const [selectedCert, setSelectedCert] = useState(null);
 
-  const certificates = [
+  const staticCertificates = [
     {
       title: translate(t.certFullStack),
       issuer: "Udemy",
@@ -52,6 +54,9 @@ const Certificates = ({ darkMode }) => {
       skills: ["Leadership", "Excellence", "Achievement"],
     },
   ];
+  const certificates = data?.certificates?.length
+    ? data.certificates.map((certificate) => ({ ...certificate, issuer: certificate.issuer, year: certificate.issueDate || "", image: certificate.fileKey ? `${import.meta.env.VITE_API_URL}/api/files/${certificate.fileKey}` : undefined, skills: [], icon: FaCertificate, color: "from-blue-500 to-purple-600" }))
+    : staticCertificates;
 
   const achievements = [
     {

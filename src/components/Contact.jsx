@@ -12,9 +12,12 @@ import {
 import { HiMail } from "react-icons/hi";
 import { useLanguage } from "../context/LanguageContext";
 import { translations as t } from "../translations";
+import { apiFetch } from "../lib/api";
+import { usePortfolioData } from "../context/PortfolioDataContext";
 
 const Contact = ({ darkMode }) => {
   const { translate } = useLanguage();
+  const { data } = usePortfolioData();
 
   const [formData, setFormData] = useState({
     name: "",
@@ -35,16 +38,15 @@ const Contact = ({ darkMode }) => {
     setSubmitError(false);
 
     try {
-      const response = await fetch(FORM_ENDPOINT, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
+      const payload = {
           name: formData.name,
           email: formData.email,
           message: formData.message,
           _replyto: formData.email,
-        }),
-      });
+      };
+      const response = import.meta.env.VITE_API_URL
+        ? await apiFetch("/api/contact", { method: "POST", body: JSON.stringify(payload) }).then(() => ({ ok: true }))
+        : await fetch(FORM_ENDPOINT, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
 
       if (response.ok) {
         setSubmitted(true);
@@ -72,19 +74,19 @@ const Contact = ({ darkMode }) => {
     {
       icon: FaEnvelope,
       label: "Email",
-      value: "tolesatesfay273@gmail.com",
-      link: "mailto:tolesatesfay273@gmail.com",
+       value: data?.profile?.email || "tolesatesfay273@gmail.com",
+       link: `mailto:${data?.profile?.email || "tolesatesfay273@gmail.com"}`,
     },
     {
       icon: FaPhone,
       label: "Phone",
-      value: "+251 975 863 448",
-      link: "tel:+251975863448",
+       value: data?.profile?.phone || "+251 975 863 448",
+       link: `tel:${data?.profile?.phone || "+251975863448"}`,
     },
     {
       icon: FaMapMarkerAlt,
       label: "Location",
-      value: "Haramaya University, Ethiopia",
+       value: data?.profile?.location || "Haramaya University, Ethiopia",
       link: null,
     },
   ];

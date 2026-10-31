@@ -22,10 +22,12 @@ import {
 } from 'react-icons/si'
 import { useLanguage } from "../context/LanguageContext";
 import { translations as t } from "../translations";
+import { usePortfolioData } from "../context/PortfolioDataContext";
 
 const Skills = ({ darkMode }) => {
   const { translate } = useLanguage();
-  const skillCategories = [
+  const { data } = usePortfolioData();
+  const staticSkillCategories = [
     {
       title: translate(t.skillsFrontend),
       skills: [
@@ -59,7 +61,10 @@ const Skills = ({ darkMode }) => {
         { name: 'GitHub', icon: SiGithub, level: 85, color: 'text-gray-400' },
       ],
     },
-  ]
+  ];
+  const skillCategories = data?.skills?.length
+    ? Object.entries(data.skills.reduce((groups, skill) => ({ ...groups, [skill.category]: [...(groups[skill.category] || []), skill] }), {})).map(([title, values]) => ({ title, skills: values.map((skill) => ({ ...skill, level: skill.proficiency, icon: FaCode, color: "text-blue-400" })) }))
+    : staticSkillCategories;
 
   const containerVariants = {
     hidden: { opacity: 0 },

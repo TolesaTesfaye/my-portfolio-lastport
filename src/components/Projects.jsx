@@ -8,14 +8,16 @@ import {
 import { useState, useEffect } from "react";
 import { useLanguage } from "../context/LanguageContext";
 import { translations as t } from "../translations";
+import { usePortfolioData } from "../context/PortfolioDataContext";
 
 const Projects = ({ darkMode }) => {
   const { translate } = useLanguage();
+  const { data } = usePortfolioData();
   const [hoveredIndex, setHoveredIndex] = useState(null);
   const [activeImage, setActiveImage] = useState({});
   const [failedImages, setFailedImages] = useState(() => new Set());
 
-  const projects = [
+  const staticProjects = [
     {
       title: translate(t.projectSuccessBridge),
       description:
@@ -133,6 +135,9 @@ const Projects = ({ darkMode }) => {
       category: "Bot Development",
     },
   ];
+  const projects = data?.projects?.length
+    ? data.projects.map((project) => ({ ...project, images: project.imageKey ? [`${import.meta.env.VITE_API_URL}/api/files/${project.imageKey}`] : [], github: project.githubUrl, demo: project.liveUrl, technologies: project.technologies || [], category: "Project", linkLabel: t.projectsLiveDemo }))
+    : staticProjects;
 
   // Initialize active image index for each project
   useEffect(() => {

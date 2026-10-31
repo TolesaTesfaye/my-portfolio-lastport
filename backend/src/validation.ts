@@ -1,0 +1,12 @@
+import { z } from "zod";
+
+const optionalUrl = z.string().url().optional().or(z.literal(""));
+export const loginSchema = z.object({ email: z.string().email(), password: z.string().min(12).max(200) });
+export const profileSchema = z.object({ name: z.string().min(1).max(120), title: z.string().min(1).max(160), biography: z.string().max(5000), email: z.string().email(), phone: z.string().max(40).optional(), location: z.string().max(160).optional(), photoKey: z.string().max(300).optional(), resumeKey: z.string().max(300).optional() });
+export const skillSchema = z.object({ name: z.string().min(1).max(100), category: z.string().min(1).max(80), proficiency: z.number().int().min(0).max(100), icon: z.string().max(100).optional(), displayOrder: z.number().int().default(0), published: z.boolean().default(true) });
+export const experienceSchema = z.object({ position: z.string().min(1), organization: z.string().min(1), employmentType: z.string().optional(), description: z.string().min(1), startDate: z.string().min(1), endDate: z.string().optional(), currentlyWorking: z.boolean().default(false), location: z.string().optional(), published: z.boolean().default(true) });
+export const projectSchema = z.object({ title: z.string().min(1), description: z.string().min(1), technologies: z.array(z.string().min(1)).default([]), imageKey: z.string().optional(), githubUrl: optionalUrl, liveUrl: optionalUrl, featured: z.boolean().default(false), displayOrder: z.number().int().default(0), published: z.boolean().default(true) });
+export const educationSchema = z.object({ institution: z.string().min(1), degree: z.string().min(1), fieldOfStudy: z.string().optional(), startDate: z.string().optional(), endDate: z.string().optional(), description: z.string().optional(), published: z.boolean().default(true) });
+export const certificateSchema = z.object({ title: z.string().min(1), issuer: z.string().min(1), issueDate: z.string().optional(), credentialUrl: optionalUrl, fileKey: z.string().optional(), description: z.string().optional(), published: z.boolean().default(true) });
+export const socialSchema = z.object({ platform: z.string().min(1), url: z.string().url(), displayOrder: z.number().int().default(0), published: z.boolean().default(true) });
+export const contactSchema = z.object({ name: z.string().min(1).max(120), email: z.string().email(), subject: z.string().max(160).optional(), message: z.string().min(1).max(5000) });

@@ -3,9 +3,12 @@ import { FaGithub, FaLinkedin, FaEnvelope } from "react-icons/fa";
 import { FaYoutube, FaTelegram } from "react-icons/fa";
 import { useLanguage } from "../context/LanguageContext";
 import { translations as t } from "../translations";
+import { usePortfolioData } from "../context/PortfolioDataContext";
 
 const Hero = ({ darkMode }) => {
   const { translate } = useLanguage();
+  const { data } = usePortfolioData();
+  const profile = data?.profile;
 
   // Dynamic academic year calculation (started 2022, expected graduation 2026)
   const startYear = 2022;
@@ -134,7 +137,7 @@ const Hero = ({ darkMode }) => {
                   }}
                   transition={{ duration: 5, repeat: Infinity }}
                 >
-                  {translate(t.heroName)}
+                   {profile?.name || translate(t.heroName)}
                 </motion.span>
               </motion.h1>
             </motion.div>
@@ -143,7 +146,7 @@ const Hero = ({ darkMode }) => {
               variants={itemVariants}
               className={`text-xl md:text-2xl mb-4 ${darkMode ? "text-slate-300" : "text-slate-700"}`}
             >
-              {yearOrdinal} Year {translate(t.heroTitle)}
+              {yearOrdinal} Year {profile?.title || translate(t.heroTitle)}
             </motion.p>
 
             <motion.p
@@ -157,7 +160,7 @@ const Hero = ({ darkMode }) => {
               variants={itemVariants}
               className={`text-lg max-w-2xl mx-auto lg:mx-0 mb-12 leading-relaxed ${darkMode ? "text-slate-300" : "text-slate-700"}`}
             >
-              {translate(t.heroDescription)}
+              {profile?.biography || translate(t.heroDescription)}
             </motion.p>
 
             <motion.div
@@ -296,8 +299,8 @@ const Hero = ({ darkMode }) => {
               >
                 <div className="w-full h-full rounded-2xl overflow-hidden bg-gray-800">
                   <img
-                    src="/photo_2026-10-26_21-22-03.jpg"
-                    alt={translate(t.heroName)}
+                    src={profile?.photoKey ? `${import.meta.env.VITE_API_URL}/api/files/${profile.photoKey}` : "/photo_2026-10-26_21-22-03.jpg"}
+                    alt={profile?.name || translate(t.heroName)}
                     className="w-full h-full object-cover bg-gray-800"
                     onError={(e) => {
                       if (e.target.src.includes("photo_2026-10-26_21-22-03.jpg")) {
