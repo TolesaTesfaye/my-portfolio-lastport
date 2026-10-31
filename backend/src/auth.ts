@@ -7,7 +7,11 @@ const ITERATIONS = 600_000;
 const encoder = new TextEncoder();
 
 const b64 = (bytes: ArrayBuffer | Uint8Array) => btoa(String.fromCharCode(...new Uint8Array(bytes))).replaceAll("+", "-").replaceAll("/", "_").replace(/=+$/, "");
-const unb64 = (value: string) => Uint8Array.from(atob(value.replaceAll("-", "+").replaceAll("_", "/") + "==="), (c) => c.charCodeAt(0));
+const unb64 = (value: string) => {
+  const normalized = value.replaceAll("-", "+").replaceAll("_", "/");
+  const padding = (4 - (normalized.length % 4)) % 4;
+  return Uint8Array.from(atob(normalized + "=".repeat(padding)), (c) => c.charCodeAt(0));
+};
 
 export async function hashPassword(password: string) {
   const salt = crypto.getRandomValues(new Uint8Array(16));
@@ -36,7 +40,12 @@ export async function createSession(email: string, secret: string) {
 
 export async function sessionEmail(token: string | undefined, secret: string) {
   if (!token) return null;
-  const [email, expiry, signature] = token.split(".");
+  const decodedToken = decodeURIComponent(token);
+  const signatureStart = decodedToken.lastIndexOf(".");
+  const expiryStart = decodedToken.lastIndexOf(".", signatureStart - 1);
+  const email = decodedToken.slice(0, expiryStart);
+  const expiry = decodedToken.slice(expiryStart + 1, signatureStart);
+  const signature = decodedToken.slice(signatureStart + 1);
   if (!email || !expiry || !signature || Number(expiry) < Date.now()) return null;
   return (await sign(`${email}.${expiry}`, secret)) === signature ? email : null;
 }
