@@ -27,9 +27,10 @@ if (cloudinaryUrl) {
   cloudinary.config({
     cloud_name: parsed.hostname,
     api_key: decodeURIComponent(parsed.username),
-    api_secret: decodeURIComponent(parsed.password),
+    api_secret: decodeURIComponent(parsed.password.substring(1)), // Remove leading ':'
     secure: true,
   });
+  console.log("Cloudinary configured:", parsed.hostname);
 }
 const cloudinaryEnabled = Boolean(cloudinaryUrl);
 const runtimeEnv: Env = { DB: sql, FRONTEND_ORIGIN: getEnv("FRONTEND_ORIGIN", "http://localhost:5173"), SESSION_SECRET: getEnv("SESSION_SECRET", "local-development-session-secret-change-before-production"), ADMIN_SETUP_TOKEN: getEnv("ADMIN_SETUP_TOKEN") };
@@ -103,9 +104,14 @@ app.post("/api/upload", async (c) => {
       stream.end(buffer);
     });
     return c.json({ key: result.secure_url, publicId: result.public_id, url: result.secure_url }, 201);
-  } catch (error) {
-    console.error("Cloudinary upload failed", error);
-    return c.json({ error: "Cloudinary upload failed. Check the Render CLOUDINARY_URL value." }, 502);
+  } catch (error: any) {
+    console.error("Cloudinary upload failed:", error);
+    console.error("Error details:", error.message, error.http_code, error.error);
+    return c.json({ 
+      error: "Cloudinary upload failed", 
+      message: error.message || "Unknown error",
+      details: error.error?.message || "Check server logs for details"
+    }, 502);
   }
 });
 app.get("/api/files/:key{.+}", (c) => {
