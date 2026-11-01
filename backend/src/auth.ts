@@ -61,9 +61,12 @@ export function setSession(c: any, value: string) {
   });
 }
 export function clearSession(c: any) { deleteCookie(c, COOKIE, { path: "/" }); }
+export function sessionToken(c: any) {
+  return getCookie(c, COOKIE) || c.req.header("Authorization")?.replace(/^Bearer\s+/i, "");
+}
 
 export async function requireAdmin(c: any, next: Next) {
-  const email = await sessionEmail(getCookie(c, COOKIE), c.env.SESSION_SECRET);
+  const email = await sessionEmail(sessionToken(c), c.env.SESSION_SECRET);
   if (!email) return c.json({ error: "Authentication required" }, 401);
   c.set("adminEmail", email);
   return next();

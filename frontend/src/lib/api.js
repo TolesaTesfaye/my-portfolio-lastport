@@ -1,4 +1,5 @@
 const API_URL = (import.meta.env.VITE_API_URL || "").replace(/\/$/, "");
+const TOKEN_KEY = "portfolio_admin_token";
 
 export const apiEnabled = Boolean(API_URL);
 
@@ -6,6 +7,8 @@ export async function apiFetch(path, options = {}) {
   if (!API_URL) throw new Error("API is not configured");
   const headers = { ...(options.headers || {}) };
   if (options.body && !headers["Content-Type"]) headers["Content-Type"] = "application/json";
+  const token = localStorage.getItem(TOKEN_KEY);
+  if (token && !headers.Authorization) headers.Authorization = `Bearer ${token}`;
   const response = await fetch(`${API_URL}${path}`, {
     credentials: "include",
     ...options,
@@ -19,7 +22,10 @@ export async function apiUpload(file) {
   if (!API_URL) throw new Error("API is not configured");
   const body = new FormData();
   body.append("file", file);
-  const response = await fetch(`${API_URL}/api/upload`, { method: "POST", credentials: "include", body });
+  const headers = {};
+  const token = localStorage.getItem(TOKEN_KEY);
+  if (token) headers.Authorization = `Bearer ${token}`;
+  const response = await fetch(`${API_URL}/api/upload`, { method: "POST", credentials: "include", headers, body });
   if (!response.ok) throw new Error((await response.json().catch(() => null))?.error || "Upload failed");
   return response.json();
 }
