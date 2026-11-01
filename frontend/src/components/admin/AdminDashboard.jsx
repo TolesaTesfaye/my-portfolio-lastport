@@ -37,7 +37,12 @@ function ImageField({ value, onChange, label = "Image" }) {
 }
 
 function Editor({ module, initial, onClose, onSave }) {
-  const [form, setForm] = useState(initial);
+  const [form, setForm] = useState(() => ({
+    ...initial,
+    technologies: Array.isArray(initial.technologies)
+      ? initial.technologies.join(", ")
+      : initial.technologies || "",
+  }));
   const fields = module === "profile" ? profileFields : modules[module].fields;
   const config = module === "profile" ? { label: "Profile", fields } : modules[module];
   const set = (key, value) => setForm({ ...form, [key]: value });
@@ -50,10 +55,10 @@ export default function AdminDashboard() {
   const load = async (key = active) => { try { if (key === "profile") setProfile(await apiFetch("/api/profile")); else if (key === "messages") setMessages(await apiFetch("/api/messages")); else if (modules[key]) setRows(await apiFetch(modules[key].path)); } catch (e) { setNotice(e.message); } };
   useEffect(() => { if (authenticated && active !== "overview") load(); }, [authenticated, active]);
   useEffect(() => { if (!authenticated) return; Promise.all(Object.entries(modules).map(async ([key, item]) => [key, (await apiFetch(item.path)).length])).then(items => setAllCounts(Object.fromEntries(items))).catch(() => {}); }, [authenticated]);
-  const save = async (data) => { try { if (active === "profile") await apiFetch("/api/profile", { method: "PUT", body: JSON.stringify(data) }); else { const item = modules[active]; const payload = { ...data }; if ("technologies" in payload) payload.technologies = payload.technologies.split(",").map(v => v.trim()).filter(Boolean); await apiFetch(editing.id ? `${item.path}/${editing.id}` : item.path, { method: editing.id ? "PUT" : "POST", body: JSON.stringify(payload) }); } setEditing(null); setNotice("Changes saved and published."); load(); } catch (e) { setNotice(e.message); } };
+  const save = async (data) => { try { if (active === "profile") await apiFetch("/api/profile", { method: "PUT", body: JSON.stringify(data) }); else { const item = modules[active]; const payload = { ...data }; if ("technologies" in payload) payload.technologies = Array.isArray(payload.technologies) ? payload.technologies : payload.technologies.split(",").map(v => v.trim()).filter(Boolean); await apiFetch(editing.id ? `${item.path}/${editing.id}` : item.path, { method: editing.id ? "PUT" : "POST", body: JSON.stringify(payload) }); } setEditing(null); setNotice("Changes saved and published."); load(); } catch (e) { setNotice(e.message); } };
   const remove = async (row) => { if (!window.confirm(`Delete ${displayName(row)}?`)) return; try { await apiFetch(`${modules[active].path}/${row.id}`, { method: "DELETE" }); load(); setNotice("Item deleted."); } catch (e) { setNotice(e.message); } };
   const filtered = useMemo(() => rows.filter(row => Object.values(row).join(" ").toLowerCase().includes(query.toLowerCase())), [rows, query]);
-  if (!apiEnabled) return <div className="min-h-screen bg-[#0b1020] p-8 text-white"><h1 className="text-3xl font-bold">Admin API not configured</h1><p className="mt-2 text-slate-400">Set <code>VITE_API_URL</code> to the deployed Worker URL.</p></div>;
+  if (!apiEnabled) return <div className="min-h-screen bg-[#0b1020] p-8 text-white"><h1 className="text-3xl font-bold">Admin API not configured</h1><p className="mt-2 text-slate-400">Set <code>VITE_API_URL</code> to the deployed Render API URL.</p></div>;
   if (!authenticated) return <Login onLogin={() => setAuthenticated(true)} />;
   const nav = [["overview", "Overview", FiGrid], ["profile", "Profile", FiUser], ...Object.entries(modules).map(([key, item]) => [key, item.label, item.icon]), ["messages", "Messages", FiInbox]];
   const title = active === "overview" ? "Good morning, Tolesa" : active === "profile" ? "Profile" : active === "messages" ? "Messages" : modules[active].label;

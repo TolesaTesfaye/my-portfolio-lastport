@@ -6,12 +6,25 @@ import {
   FaYoutube,
   FaTelegram,
   FaEnvelope,
+  FaLink,
 } from "react-icons/fa";
 import { useLanguage } from "../context/LanguageContext";
 import { translations as t } from "../translations";
+import { usePortfolioData } from "../context/PortfolioDataContext";
+
+const iconForPlatform = (platform) => {
+  const value = platform.toLowerCase();
+  if (value.includes("github")) return FaGithub;
+  if (value.includes("linkedin")) return FaLinkedin;
+  if (value.includes("youtube")) return FaYoutube;
+  if (value.includes("telegram")) return FaTelegram;
+  if (value.includes("email")) return FaEnvelope;
+  return FaLink;
+};
 
 const Footer = ({ darkMode, navigateToSection, currentPage }) => {
   const { translate } = useLanguage();
+  const { data } = usePortfolioData();
   const currentYear = new Date().getFullYear();
 
   const footerLinks = {
@@ -56,7 +69,7 @@ const Footer = ({ darkMode, navigateToSection, currentPage }) => {
     ],
   };
 
-  const socialLinks = [
+  const staticSocialLinks = [
     {
       icon: FaGithub,
       href: "https://github.com/TolesaTesfaye",
@@ -75,6 +88,13 @@ const Footer = ({ darkMode, navigateToSection, currentPage }) => {
     },
     { icon: FaEnvelope, href: "#contact", label: "Email" },
   ];
+  const socialLinks = data?.socialLinks?.length
+    ? data.socialLinks.map((link) => ({
+        icon: iconForPlatform(link.platform),
+        href: link.url,
+        label: link.platform,
+      }))
+    : staticSocialLinks;
 
   return (
     <footer

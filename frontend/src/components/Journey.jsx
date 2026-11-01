@@ -11,10 +11,12 @@ import {
 import { HiCode } from "react-icons/hi";
 import { useLanguage } from "../context/LanguageContext";
 import { translations as t } from "../translations";
+import { usePortfolioData } from "../context/PortfolioDataContext";
 
 const Journey = ({ darkMode }) => {
   const { translate } = useLanguage();
-  const milestones = [
+  const { data } = usePortfolioData();
+  const staticMilestones = [
     {
       year: "2024 - Present",
       title: translate(t.journeyCurrent),
@@ -68,6 +70,26 @@ const Journey = ({ darkMode }) => {
       type: "education",
     },
   ];
+  const milestones = data?.experience?.length || data?.education?.length
+    ? [
+        ...(data.experience || []).map((item) => ({
+          year: `${item.startDate}${item.endDate ? ` - ${item.endDate}` : " - Present"}`,
+          title: `${item.position} at ${item.organization}`,
+          description: item.description,
+          icon: FaBriefcase,
+          color: "from-blue-500 to-purple-600",
+          type: "work",
+        })),
+        ...(data.education || []).map((item) => ({
+          year: [item.startDate, item.endDate].filter(Boolean).join(" - ") || "Education",
+          title: `${item.degree} at ${item.institution}`,
+          description: item.description || item.fieldOfStudy || "",
+          icon: FaGraduationCap,
+          color: "from-green-500 to-emerald-600",
+          type: "education",
+        })),
+      ]
+    : staticMilestones;
 
   const containerVariants = {
     hidden: { opacity: 0 },
