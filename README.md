@@ -86,7 +86,7 @@ Render runs `npm run db:migrate` before each deploy and checks `/api/health`. Af
 npm run db:seed
 ```
 
-Set `VITE_API_URL` in Vercel to the deployed Render URL. File uploads are intentionally disabled until an object-storage provider is configured; the existing static portfolio assets remain available from the frontend.
+Set `VITE_API_URL` in Vercel to the deployed Render URL. To enable admin image uploads, set `CLOUDINARY_URL` in Render using the format `cloudinary://api_key:api_secret@cloud_name`. The backend stores uploads in the `tolesa-portfolio` Cloudinary folder and returns their secure URL.
 
 The Render settings are:
 
