@@ -13,6 +13,7 @@ import {
 import { useLanguage } from "../context/LanguageContext";
 import { translations as t } from "../translations";
 import { usePortfolioData } from "../context/PortfolioDataContext";
+import { assetUrl } from "../lib/api";
 
 const Certificates = ({ darkMode }) => {
   const { translate } = useLanguage();
@@ -55,7 +56,7 @@ const Certificates = ({ darkMode }) => {
     },
   ];
   const certificates = data?.certificates?.length
-    ? data.certificates.map((certificate) => ({ ...certificate, issuer: certificate.issuer, year: certificate.issueDate || "", image: certificate.fileKey ? `${import.meta.env.VITE_API_URL}/api/files/${certificate.fileKey}` : undefined, skills: [], icon: FaCertificate, color: "from-blue-500 to-purple-600" }))
+    ? data.certificates.map((certificate) => ({ ...certificate, issuer: certificate.issuer, year: certificate.issueDate || "", image: certificate.fileKey ? assetUrl(certificate.fileKey) : undefined, skills: [], icon: FaCertificate, color: "from-blue-500 to-purple-600" }))
     : staticCertificates;
 
   const achievements = [

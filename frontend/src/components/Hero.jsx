@@ -4,6 +4,7 @@ import { FaYoutube, FaTelegram } from "react-icons/fa";
 import { useLanguage } from "../context/LanguageContext";
 import { translations as t } from "../translations";
 import { usePortfolioData } from "../context/PortfolioDataContext";
+import { assetUrl } from "../lib/api";
 
 const Hero = ({ darkMode }) => {
   const { translate } = useLanguage();
@@ -299,7 +300,7 @@ const Hero = ({ darkMode }) => {
               >
                 <div className="w-full h-full rounded-2xl overflow-hidden bg-gray-800">
                   <img
-                    src={profile?.photoKey ? `${import.meta.env.VITE_API_URL}/api/files/${profile.photoKey}` : "/photo_2026-10-26_21-22-03.jpg"}
+                    src={profile?.photoKey ? assetUrl(profile.photoKey) : "/photo_2026-10-26_21-22-03.jpg"}
                     alt={profile?.name || translate(t.heroName)}
                     className="w-full h-full object-cover bg-gray-800"
                     onError={(e) => {

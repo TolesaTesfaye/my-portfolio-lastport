@@ -4,6 +4,7 @@ import { drizzle } from "drizzle-orm/neon-http";
 import { asc, desc, eq } from "drizzle-orm";
 import { deleteCookie, getCookie } from "hono/cookie";
 import { neon } from "@neondatabase/serverless";
+import { v2 as cloudinary } from "cloudinary";
 import { config } from "dotenv";
 config({ path: "../.env.local" });
 config();
@@ -20,6 +21,17 @@ const getEnv = (name: string, fallback = "") => {
 };
 const sql = neon(getEnv("DATABASE_URL"));
 const db = drizzle(sql);
+const cloudinaryUrl = getEnv("CLOUDINARY_URL");
+if (cloudinaryUrl) {
+  const parsed = new URL(cloudinaryUrl);
+  cloudinary.config({
+    cloud_name: parsed.hostname,
+    api_key: decodeURIComponent(parsed.username),
+    api_secret: decodeURIComponent(parsed.password),
+    secure: true,
+  });
+}
+const cloudinaryEnabled = Boolean(cloudinaryUrl);
 const runtimeEnv: Env = { DB: sql, FRONTEND_ORIGIN: getEnv("FRONTEND_ORIGIN", "http://localhost:5173"), SESSION_SECRET: getEnv("SESSION_SECRET", "local-development-session-secret-change-before-production"), ADMIN_SETUP_TOKEN: getEnv("ADMIN_SETUP_TOKEN") };
 export async function bootstrapAdmin() {
   const email = getEnv("ADMIN_EMAIL").trim().toLowerCase();
@@ -75,8 +87,25 @@ app.put("/api/profile", async (c) => { const input = await parse(c, profileSchem
 app.post("/api/contact", async (c) => { const input = await parse(c, contactSchema); const timestamp = now(); await drizzle(c.env.DB).insert(contactMessages).values({ id: id(), ...input, createdAt: timestamp, updatedAt: timestamp }); return c.json({ ok: true }, 201); });
 app.get("/api/messages", async (c) => c.json(await drizzle(c.env.DB).select().from(contactMessages).orderBy(desc(contactMessages.createdAt))));
 app.delete("/api/messages/:id", async (c) => { await drizzle(c.env.DB).delete(contactMessages).where(eq(contactMessages.id, c.req.param("id"))); return c.body(null, 204); });
-app.post("/api/upload", (c) => c.json({ error: "File uploads are not configured" }, 501));
-app.get("/api/files/:key{.+}", (c) => c.json({ error: "File storage is not configured" }, 404));
+app.post("/api/upload", async (c) => {
+  if (!cloudinaryEnabled) return c.json({ error: "Cloudinary is not configured" }, 503);
+  const body = await c.req.parseBody();
+  const file = body.file;
+  if (!file || typeof file === "string" || !("arrayBuffer" in file)) return c.json({ error: "A file is required" }, 400);
+  const buffer = Buffer.from(await file.arrayBuffer());
+  const result = await new Promise<{ secure_url: string; public_id: string }>((resolve, reject) => {
+    const stream = cloudinary.uploader.upload_stream({ folder: "tolesa-portfolio", resource_type: "auto" }, (error, uploaded) => {
+      if (error || !uploaded) reject(error || new Error("Cloudinary upload failed"));
+      else resolve({ secure_url: uploaded.secure_url, public_id: uploaded.public_id });
+    });
+    stream.end(buffer);
+  });
+  return c.json({ key: result.secure_url, publicId: result.public_id, url: result.secure_url }, 201);
+});
+app.get("/api/files/:key{.+}", (c) => {
+  if (!cloudinaryEnabled) return c.json({ error: "Cloudinary is not configured" }, 503);
+  return c.redirect(cloudinary.url(decodeURIComponent(c.req.param("key")), { secure: true }), 302);
+});
 app.notFound((c) => c.json({ error: "Not found" }, 404));
 app.onError((error, c) => { if (error instanceof Response) return error; console.error(error); return c.json({ error: "Internal server error" }, 500); });
 export default app;
