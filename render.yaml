@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: tolesa-portfolio-api
+    runtime: node
+    rootDir: backend
+    buildCommand: npm ci && npm run typecheck
+    preDeployCommand: npm run db:migrate
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: FRONTEND_ORIGIN
+        sync: false
+      - key: SESSION_SECRET
+        generateValue: true
+      - key: ADMIN_SETUP_TOKEN
+        generateValue: true

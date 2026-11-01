@@ -1,8 +1,8 @@
 #!/bin/bash
 echo "Building project..."
-npm run build
+npm --prefix frontend run build
 
 echo "Deploying to Vercel..."
-npx vercel --prod --yes
+npx vercel frontend --prod --yes
 
 echo "Deployment complete!"
