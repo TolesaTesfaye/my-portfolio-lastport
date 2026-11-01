@@ -2,9 +2,9 @@ import { config } from "dotenv";
 config({ path: "../.env.local" });
 config();
 import { readFile } from "node:fs/promises";
-import { neon } from "@neondatabase/serverless";
+import pg from "pg";
 
-const sql = neon(process.env.DATABASE_URL || "");
+const client = new pg.Client({ connectionString: process.env.DATABASE_URL });
 const source = await readFile(new URL("../seed.sql", import.meta.url), "utf8");
 const statements = source
   .split(";")
@@ -19,5 +19,10 @@ const statements = source
   .filter(Boolean)
   .map((statement) => `${statement} ON CONFLICT DO NOTHING`);
 
-for (const statement of statements) await sql.query(statement);
-console.log(`Seeded ${statements.length} PostgreSQL statements.`);
+await client.connect();
+try {
+  for (const statement of statements) await client.query(statement);
+  console.log(`Seeded ${statements.length} PostgreSQL statements.`);
+} finally {
+  await client.end();
+}

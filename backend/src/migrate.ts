@@ -1,9 +1,9 @@
 import { config } from "dotenv";
 config({ path: "../.env.local" });
 config();
-import { neon } from "@neondatabase/serverless";
+import pg from "pg";
 
-const sql = neon(process.env.DATABASE_URL || "");
+const client = new pg.Client({ connectionString: process.env.DATABASE_URL });
 
 const statements = [
   `CREATE TABLE IF NOT EXISTS admins (id text PRIMARY KEY NOT NULL, email text NOT NULL UNIQUE, password_hash text NOT NULL, created_at timestamptz NOT NULL DEFAULT now(), updated_at timestamptz NOT NULL DEFAULT now())`,
@@ -22,5 +22,10 @@ const statements = [
   `CREATE INDEX IF NOT EXISTS messages_created_idx ON contact_messages (created_at)`,
 ];
 
-for (const statement of statements) await sql.query(statement);
-console.log(`Applied ${statements.length} PostgreSQL schema statements.`);
+await client.connect();
+try {
+  for (const statement of statements) await client.query(statement);
+  console.log(`Applied ${statements.length} PostgreSQL schema statements.`);
+} finally {
+  await client.end();
+}
