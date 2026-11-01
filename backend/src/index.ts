@@ -24,8 +24,14 @@ const runtimeEnv: Env = { DB: sql, FRONTEND_ORIGIN: getEnv("FRONTEND_ORIGIN", "h
 app.use("*", async (c, next) => { c.env = runtimeEnv; return next(); });
 const now = () => new Date(); const id = () => crypto.randomUUID();
 app.use("/api/*", async (c, next) => {
-  const allowedOrigins = [...c.env.FRONTEND_ORIGIN.split(",").map((origin) => origin.trim()), "http://localhost:5173", "http://127.0.0.1:5173"].filter(Boolean);
-  return cors({ origin: (origin) => allowedOrigins.includes(origin) ? origin : undefined, credentials: true, allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"], allowHeaders: ["Content-Type"] })(c, next);
+  const normalizeOrigin = (origin: string) => origin.trim().replace(/\/$/, "");
+  const allowedOrigins = new Set([
+    ...c.env.FRONTEND_ORIGIN.split(",").map(normalizeOrigin),
+    "https://my-portfolio-lastport.vercel.app",
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+  ].filter(Boolean));
+  return cors({ origin: (origin) => allowedOrigins.has(normalizeOrigin(origin)) ? origin : undefined, credentials: true, allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"], allowHeaders: ["Content-Type"] })(c, next);
 });
 app.get("/", (c) => c.json({ ok: true, service: "tolesa-portfolio-api" }));
 app.get("/api/health", (c) => c.json({ ok: true }));

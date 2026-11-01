@@ -4,10 +4,12 @@ export const apiEnabled = Boolean(API_URL);
 
 export async function apiFetch(path, options = {}) {
   if (!API_URL) throw new Error("API is not configured");
+  const headers = { ...(options.headers || {}) };
+  if (options.body && !headers["Content-Type"]) headers["Content-Type"] = "application/json";
   const response = await fetch(`${API_URL}${path}`, {
     credentials: "include",
-    headers: { "Content-Type": "application/json", ...(options.headers || {}) },
     ...options,
+    headers,
   });
   if (!response.ok) throw new Error((await response.json().catch(() => null))?.error || "Request failed");
   return response.status === 204 ? null : response.json();
