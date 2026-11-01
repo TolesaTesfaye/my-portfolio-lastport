@@ -77,6 +77,8 @@ The root [`render.yaml`](./render.yaml) is a Render Blueprint for the backend. I
 - `DATABASE_URL`: your Neon PostgreSQL connection string
 - `FRONTEND_ORIGIN`: the exact Vercel origin, without a trailing slash; multiple origins may be comma-separated for previews
 - `SESSION_SECRET` and `ADMIN_SETUP_TOKEN`: keep the generated values
+- `ADMIN_EMAIL`: email for the first administrator
+- `ADMIN_PASSWORD`: password for the first administrator; use at least 12 characters
 
 Render runs `npm run db:migrate` before each deploy and checks `/api/health`. After the first deploy, seed the database once from the Render Shell:
 

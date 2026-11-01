@@ -21,6 +21,16 @@ const getEnv = (name: string, fallback = "") => {
 const sql = neon(getEnv("DATABASE_URL"));
 const db = drizzle(sql);
 const runtimeEnv: Env = { DB: sql, FRONTEND_ORIGIN: getEnv("FRONTEND_ORIGIN", "http://localhost:5173"), SESSION_SECRET: getEnv("SESSION_SECRET", "local-development-session-secret-change-before-production"), ADMIN_SETUP_TOKEN: getEnv("ADMIN_SETUP_TOKEN") };
+export async function bootstrapAdmin() {
+  const email = getEnv("ADMIN_EMAIL").trim().toLowerCase();
+  const password = getEnv("ADMIN_PASSWORD");
+  if (!email && !password) return;
+  if (!email || password.length < 12) throw new Error("ADMIN_EMAIL and an ADMIN_PASSWORD of at least 12 characters are required");
+  const existing = (await db.select().from(admins).where(eq(admins.email, email)))[0];
+  if (existing) return;
+  await db.insert(admins).values({ id: crypto.randomUUID(), email, passwordHash: await hashPassword(password), createdAt: new Date(), updatedAt: new Date() });
+  console.log(`Created admin account for ${email}`);
+}
 app.use("*", async (c, next) => { c.env = runtimeEnv; return next(); });
 const now = () => new Date(); const id = () => crypto.randomUUID();
 app.use("/api/*", async (c, next) => {
