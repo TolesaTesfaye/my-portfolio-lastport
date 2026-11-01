@@ -92,15 +92,21 @@ app.post("/api/upload", async (c) => {
   const body = await c.req.parseBody();
   const file = body.file;
   if (!file || typeof file === "string" || !("arrayBuffer" in file)) return c.json({ error: "A file is required" }, 400);
-  const buffer = Buffer.from(await file.arrayBuffer());
-  const result = await new Promise<{ secure_url: string; public_id: string }>((resolve, reject) => {
-    const stream = cloudinary.uploader.upload_stream({ folder: "tolesa-portfolio", resource_type: "auto" }, (error, uploaded) => {
-      if (error || !uploaded) reject(error || new Error("Cloudinary upload failed"));
-      else resolve({ secure_url: uploaded.secure_url, public_id: uploaded.public_id });
+  try {
+    const buffer = Buffer.from(await file.arrayBuffer());
+    const result = await new Promise<{ secure_url: string; public_id: string }>((resolve, reject) => {
+      const stream = cloudinary.uploader.upload_stream({ folder: "tolesa-portfolio", resource_type: "auto" }, (error, uploaded) => {
+        if (error || !uploaded) reject(error || new Error("Cloudinary upload failed"));
+        else resolve({ secure_url: uploaded.secure_url, public_id: uploaded.public_id });
+      });
+      stream.on("error", reject);
+      stream.end(buffer);
     });
-    stream.end(buffer);
-  });
-  return c.json({ key: result.secure_url, publicId: result.public_id, url: result.secure_url }, 201);
+    return c.json({ key: result.secure_url, publicId: result.public_id, url: result.secure_url }, 201);
+  } catch (error) {
+    console.error("Cloudinary upload failed", error);
+    return c.json({ error: "Cloudinary upload failed. Check the Render CLOUDINARY_URL value." }, 502);
+  }
 });
 app.get("/api/files/:key{.+}", (c) => {
   if (!cloudinaryEnabled) return c.json({ error: "Cloudinary is not configured" }, 503);
