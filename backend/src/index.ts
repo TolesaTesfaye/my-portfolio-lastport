@@ -4,7 +4,9 @@ import { drizzle } from "drizzle-orm/neon-http";
 import { asc, desc, eq } from "drizzle-orm";
 import { deleteCookie, getCookie } from "hono/cookie";
 import { neon } from "@neondatabase/serverless";
-import { v2 as cloudinary } from "cloudinary";
+import { S3Client, GetObjectCommand } from "@aws-sdk/client-s3";
+import { Upload } from "@aws-sdk/lib-storage";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { config } from "dotenv";
 config({ path: "../.env.local" });
 config();
@@ -21,19 +23,27 @@ const getEnv = (name: string, fallback = "") => {
 };
 const sql = neon(getEnv("DATABASE_URL"));
 const db = drizzle(sql);
-const cloudinaryUrl = getEnv("CLOUDINARY_URL");
-if (cloudinaryUrl) {
-  const parsed = new URL(cloudinaryUrl);
-  const apiSecret = parsed.password.startsWith(':') ? parsed.password.substring(1) : parsed.password;
-  cloudinary.config({
-    cloud_name: parsed.hostname,
-    api_key: parsed.username,
-    api_secret: apiSecret,
-    secure: true,
+
+// Backblaze B2 Configuration
+const b2KeyId = getEnv("B2_KEY_ID");
+const b2ApplicationKey = getEnv("B2_APPLICATION_KEY");
+const b2BucketName = getEnv("B2_BUCKET_NAME");
+const b2Endpoint = getEnv("B2_ENDPOINT"); // e.g., https://s3.us-west-004.backblazeb2.com
+const b2Region = getEnv("B2_REGION", "us-west-004");
+
+let s3Client: S3Client | null = null;
+if (b2KeyId && b2ApplicationKey && b2BucketName && b2Endpoint) {
+  s3Client = new S3Client({
+    endpoint: b2Endpoint,
+    region: b2Region,
+    credentials: {
+      accessKeyId: b2KeyId,
+      secretAccessKey: b2ApplicationKey,
+    },
   });
-  console.log("Cloudinary configured:", parsed.hostname, "API Key:", parsed.username, "Secret length:", apiSecret.length);
+  console.log("B2 Storage configured:", b2BucketName, "Endpoint:", b2Endpoint);
 }
-const cloudinaryEnabled = Boolean(cloudinaryUrl);
+const storageEnabled = Boolean(s3Client);
 const runtimeEnv: Env = { DB: sql, FRONTEND_ORIGIN: getEnv("FRONTEND_ORIGIN", "http://localhost:5173"), SESSION_SECRET: getEnv("SESSION_SECRET", "local-development-session-secret-change-before-production"), ADMIN_SETUP_TOKEN: getEnv("ADMIN_SETUP_TOKEN") };
 export async function bootstrapAdmin() {
   const email = getEnv("ADMIN_EMAIL").trim().toLowerCase();
@@ -47,16 +57,21 @@ export async function bootstrapAdmin() {
 }
 app.use("*", async (c, next) => { c.env = runtimeEnv; return next(); });
 const now = () => new Date(); const id = () => crypto.randomUUID();
-app.use("/api/*", async (c, next) => {
-  const normalizeOrigin = (origin: string) => origin.trim().replace(/\/$/, "");
-  const allowedOrigins = new Set([
-    ...c.env.FRONTEND_ORIGIN.split(",").map(normalizeOrigin),
-    "https://my-portfolio-lastport.vercel.app",
-    "http://localhost:5173",
-    "http://127.0.0.1:5173",
-  ].filter(Boolean));
-  return cors({ origin: (origin) => allowedOrigins.has(normalizeOrigin(origin)) ? origin : undefined, credentials: true, allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"], allowHeaders: ["Content-Type", "Authorization"] })(c, next);
-});
+
+// CORS middleware - must come before other routes
+app.use("*", cors({
+  origin: ["http://localhost:5173", "http://127.0.0.1:5173", "https://my-portfolio-lastport.vercel.app"],
+  credentials: true,
+  allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowHeaders: ["Content-Type", "Authorization"],
+  exposeHeaders: ["Content-Length", "Set-Cookie"],
+  maxAge: 600,
+}));
+
+// Test endpoints to verify CORS configuration
+app.get("/test", (c) => c.json({ ok: true, message: "CORS test endpoint", timestamp: new Date().toISOString() }));
+app.get("/api/test", (c) => c.json({ ok: true, message: "API CORS test endpoint", timestamp: new Date().toISOString() }));
+
 app.get("/", (c) => c.json({ ok: true, service: "tolesa-portfolio-api" }));
 app.get("/api/health", (c) => c.json({ ok: true }));
 
@@ -90,34 +105,65 @@ app.post("/api/contact", async (c) => { const input = await parse(c, contactSche
 app.get("/api/messages", async (c) => c.json(await drizzle(c.env.DB).select().from(contactMessages).orderBy(desc(contactMessages.createdAt))));
 app.delete("/api/messages/:id", async (c) => { await drizzle(c.env.DB).delete(contactMessages).where(eq(contactMessages.id, c.req.param("id"))); return c.body(null, 204); });
 app.post("/api/upload", async (c) => {
-  if (!cloudinaryEnabled) return c.json({ error: "Cloudinary is not configured" }, 503);
+  if (!storageEnabled) return c.json({ error: "Storage is not configured" }, 503);
   const body = await c.req.parseBody();
   const file = body.file;
   if (!file || typeof file === "string" || !("arrayBuffer" in file)) return c.json({ error: "A file is required" }, 400);
+  
   try {
     const buffer = Buffer.from(await file.arrayBuffer());
-    const result = await new Promise<{ secure_url: string; public_id: string }>((resolve, reject) => {
-      const stream = cloudinary.uploader.upload_stream({ folder: "tolesa-portfolio", resource_type: "auto" }, (error, uploaded) => {
-        if (error || !uploaded) reject(error || new Error("Cloudinary upload failed"));
-        else resolve({ secure_url: uploaded.secure_url, public_id: uploaded.public_id });
-      });
-      stream.on("error", reject);
-      stream.end(buffer);
+    const filename = `${Date.now()}-${crypto.randomUUID()}-${file.name}`;
+    const key = `portfolio/${filename}`;
+    
+    // Upload to B2 using S3 SDK
+    const upload = new Upload({
+      client: s3Client!,
+      params: {
+        Bucket: b2BucketName,
+        Key: key,
+        Body: buffer,
+        ContentType: file.type || 'application/octet-stream',
+      },
     });
-    return c.json({ key: result.secure_url, publicId: result.public_id, url: result.secure_url }, 201);
-  } catch (error: any) {
-    console.error("Cloudinary upload failed:", error);
-    console.error("Error details:", error.message, error.http_code, error.error);
+
+    await upload.done();
+    
+    // Return the key - frontend will request signed URL via /api/files/:key
     return c.json({ 
-      error: "Cloudinary upload failed", 
+      key: key, 
+      publicId: key,
+      url: `/api/files/${encodeURIComponent(key)}`
+    }, 201);
+  } catch (error: any) {
+    console.error("B2 upload failed:", error);
+    console.error("Error details:", error.message, error.Code);
+    return c.json({ 
+      error: "Upload failed", 
       message: error.message || "Unknown error",
-      details: error.error?.message || "Check server logs for details"
+      details: error.Code || "Check server logs for details"
     }, 502);
   }
 });
-app.get("/api/files/:key{.+}", (c) => {
-  if (!cloudinaryEnabled) return c.json({ error: "Cloudinary is not configured" }, 503);
-  return c.redirect(cloudinary.url(decodeURIComponent(c.req.param("key")), { secure: true }), 302);
+app.get("/api/files/:key{.+}", async (c) => {
+  if (!storageEnabled) return c.json({ error: "Storage is not configured" }, 503);
+  
+  try {
+    const key = decodeURIComponent(c.req.param("key"));
+    
+    // Generate a signed URL that expires in 1 hour
+    const command = new GetObjectCommand({
+      Bucket: b2BucketName,
+      Key: key,
+    });
+    
+    const signedUrl = await getSignedUrl(s3Client!, command, { expiresIn: 3600 });
+    
+    // Redirect to the signed URL
+    return c.redirect(signedUrl, 302);
+  } catch (error: any) {
+    console.error("Failed to generate signed URL:", error);
+    return c.json({ error: "Failed to retrieve file" }, 500);
+  }
 });
 app.notFound((c) => c.json({ error: "Not found" }, 404));
 app.onError((error, c) => { if (error instanceof Response) return error; console.error(error); return c.json({ error: "Internal server error" }, 500); });
