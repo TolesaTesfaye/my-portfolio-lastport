@@ -60,10 +60,21 @@ const now = () => new Date(); const id = () => crypto.randomUUID();
 
 // CORS middleware - must come before other routes
 app.use("*", cors({
-  origin: ["http://localhost:5173", "http://127.0.0.1:5173", "https://my-portfolio-lastport.vercel.app"],
+  origin: (origin) => {
+    // Allow localhost for development
+    if (!origin || origin.startsWith("http://localhost") || origin.startsWith("http://127.0.0.1")) {
+      return origin || "*";
+    }
+    // Allow all Vercel deployments (production + previews)
+    if (origin.endsWith(".vercel.app")) {
+      return origin;
+    }
+    // Fallback to configured origin
+    return "https://my-portfolio-lastport.vercel.app";
+  },
   credentials: true,
   allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowHeaders: ["Content-Type", "Authorization"],
+  allowHeaders: ["Content-Type", "Authorization", "Cookie"],
   exposeHeaders: ["Content-Length", "Set-Cookie"],
   maxAge: 600,
 }));
