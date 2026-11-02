@@ -12,6 +12,7 @@ import { HiCode } from "react-icons/hi";
 import { useLanguage } from "../context/LanguageContext";
 import { translations as t } from "../translations";
 import { usePortfolioData } from "../context/PortfolioDataContext";
+import { assetUrl } from "../lib/api";
 
 const Journey = ({ darkMode }) => {
   const { translate } = useLanguage();
@@ -72,22 +73,36 @@ const Journey = ({ darkMode }) => {
   ];
   const milestones = data?.experience?.length || data?.education?.length
     ? [
-        ...(data.experience || []).map((item) => ({
-          year: `${item.startDate}${item.endDate ? ` - ${item.endDate}` : " - Present"}`,
-          title: `${item.position} at ${item.organization}`,
-          description: item.description,
-          icon: FaBriefcase,
-          color: "from-blue-500 to-purple-600",
-          type: "work",
-        })),
-        ...(data.education || []).map((item) => ({
-          year: [item.startDate, item.endDate].filter(Boolean).join(" - ") || "Education",
-          title: `${item.degree} at ${item.institution}`,
-          description: item.description || item.fieldOfStudy || "",
-          icon: FaGraduationCap,
-          color: "from-green-500 to-emerald-600",
-          type: "education",
-        })),
+        ...(data.experience || []).map((item) => {
+          const imageUrl = item.images?.length > 0 
+            ? assetUrl(item.images[0].imageKey) 
+            : null;
+          
+          return {
+            year: `${item.startDate}${item.endDate ? ` - ${item.endDate}` : " - Present"}`,
+            title: `${item.position} at ${item.organization}`,
+            description: item.description,
+            icon: FaBriefcase,
+            color: "from-blue-500 to-purple-600",
+            type: "work",
+            imageUrl
+          };
+        }),
+        ...(data.education || []).map((item) => {
+          const imageUrl = item.images?.length > 0 
+            ? assetUrl(item.images[0].imageKey) 
+            : null;
+          
+          return {
+            year: [item.startDate, item.endDate].filter(Boolean).join(" - ") || "Education",
+            title: `${item.degree} at ${item.institution}`,
+            description: item.description || item.fieldOfStudy || "",
+            icon: FaGraduationCap,
+            color: "from-green-500 to-emerald-600",
+            type: "education",
+            imageUrl
+          };
+        }),
       ]
     : staticMilestones;
 
@@ -279,6 +294,20 @@ const Journey = ({ darkMode }) => {
                       >
                         {milestone.description}
                       </p>
+
+                      {/* Milestone Image */}
+                      {milestone.imageUrl && (
+                        <div className="mt-4">
+                          <img 
+                            src={milestone.imageUrl} 
+                            alt={milestone.title}
+                            className="w-full h-32 object-cover rounded-lg"
+                            onError={(e) => {
+                              e.currentTarget.style.display = 'none';
+                            }}
+                          />
+                        </div>
+                      )}
 
                       {/* Bottom accent gradient */}
                       <div

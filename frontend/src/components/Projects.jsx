@@ -137,7 +137,27 @@ const Projects = ({ darkMode }) => {
     },
   ];
   const projects = data?.projects?.length
-    ? data.projects.map((project) => ({ ...project, images: project.imageKey ? [assetUrl(project.imageKey)] : [], github: project.githubUrl, demo: project.liveUrl, technologies: project.technologies || [], category: "Project", linkLabel: t.projectsLiveDemo }))
+    ? data.projects.map((project) => {
+        // Use the images array from the database (project_images table)
+        let projectImages = [];
+        if (project.images && project.images.length > 0) {
+          // Use the gallery images from project_images table
+          projectImages = project.images.map(img => assetUrl(img.imageKey));
+        } else if (project.imageKey) {
+          // Fallback to single imageKey if no gallery images
+          projectImages = [assetUrl(project.imageKey)];
+        }
+        
+        return {
+          ...project,
+          images: projectImages.length > 0 ? projectImages : ["/placeholder.png"], // Fallback to placeholder if no images
+          github: project.githubUrl,
+          demo: project.liveUrl,
+          technologies: project.technologies || [],
+          category: "Project",
+          linkLabel: t.projectsLiveDemo
+        };
+      })
     : staticProjects;
 
   // Initialize active image index for each project
@@ -154,26 +174,30 @@ const Projects = ({ darkMode }) => {
     if (hoveredIndex === null) return;
 
     const interval = setInterval(() => {
+      const project = projects[hoveredIndex];
+      const imageCount = project?.images?.length || 1;
       setActiveImage((prev) => ({
         ...prev,
-        [hoveredIndex]: ((prev[hoveredIndex] || 0) + 1) % 3,
+        [hoveredIndex]: ((prev[hoveredIndex] || 0) + 1) % imageCount,
       }));
     }, 2500);
 
     return () => clearInterval(interval);
-  }, [hoveredIndex]);
+  }, [hoveredIndex, projects]);
 
   const nextImage = (projectIndex) => {
+    const imageCount = projects[projectIndex]?.images?.length || 1;
     setActiveImage((prev) => ({
       ...prev,
-      [projectIndex]: ((prev[projectIndex] || 0) + 1) % 3,
+      [projectIndex]: ((prev[projectIndex] || 0) + 1) % imageCount,
     }));
   };
 
   const prevImage = (projectIndex) => {
+    const imageCount = projects[projectIndex]?.images?.length || 1;
     setActiveImage((prev) => ({
       ...prev,
-      [projectIndex]: ((prev[projectIndex] || 0) - 1 + 3) % 3,
+      [projectIndex]: ((prev[projectIndex] || 0) - 1 + imageCount) % imageCount,
     }));
   };
 
@@ -307,7 +331,7 @@ const Projects = ({ darkMode }) => {
                   />
 
                   {/* Navigation Arrows - show on hover */}
-                  {hoveredIndex === index && (
+                  {hoveredIndex === index && project.images.length > 1 && (
                     <>
                       <motion.button
                         initial={{ opacity: 0, x: -10 }}
@@ -344,7 +368,7 @@ const Projects = ({ darkMode }) => {
 
                   {/* Dots Indicator */}
                   <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center space-x-2 z-20">
-                    {[0, 1, 2].map((dotIndex) => (
+                    {project.images.map((_, dotIndex) => (
                       <button
                         key={dotIndex}
                         onClick={(e) => {
@@ -383,7 +407,7 @@ const Projects = ({ darkMode }) => {
                         : "bg-white/70 text-gray-800"
                     }`}
                   >
-                    {currentImage + 1}/3
+                    {currentImage + 1}/{project.images.length}
                   </span>
                 </div>
 

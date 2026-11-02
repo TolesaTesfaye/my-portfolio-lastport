@@ -56,7 +56,27 @@ const Certificates = ({ darkMode }) => {
     },
   ];
   const certificates = data?.certificates?.length
-    ? data.certificates.map((certificate) => ({ ...certificate, issuer: certificate.issuer, year: certificate.issueDate || "", image: certificate.fileKey ? assetUrl(certificate.fileKey) : undefined, skills: [], icon: FaCertificate, color: "from-blue-500 to-purple-600" }))
+    ? data.certificates.map((certificate) => {
+        // Use images array from certificate_images table
+        let certImages = [];
+        if (certificate.images && certificate.images.length > 0) {
+          certImages = certificate.images.map(img => assetUrl(img.imageKey));
+        } else if (certificate.fileKey) {
+          // Fallback to single fileKey if no gallery images
+          certImages = [assetUrl(certificate.fileKey)];
+        }
+        
+        return {
+          ...certificate,
+          issuer: certificate.issuer,
+          year: certificate.issueDate || "",
+          image: certImages.length > 0 ? certImages[0] : undefined, // Use first image for display
+          images: certImages, // Store all images for potential carousel
+          skills: [],
+          icon: FaCertificate,
+          color: "from-blue-500 to-purple-600"
+        };
+      })
     : staticCertificates;
 
   const achievements = [

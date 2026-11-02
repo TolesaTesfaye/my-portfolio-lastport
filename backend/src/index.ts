@@ -8,9 +8,9 @@ import { S3Client, GetObjectCommand } from "@aws-sdk/client-s3";
 import { Upload } from "@aws-sdk/lib-storage";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { config } from "dotenv";
-config({ path: "../.env.local" });
+config({ path: ".dev.vars" });
 config();
-import { admins, certificates, contactMessages, education, experiences, profiles, projectTechnologies, projects, skills, socialLinks } from "./db/schema";
+import { admins, certificates, contactMessages, education, experiences, profiles, projectTechnologies, projectImages, certificateImages, skillImages, experienceImages, educationImages, projects, skills, socialLinks } from "./db/schema";
 import { clearSession, createSession, hashPassword, requireAdmin, sessionEmail, sessionToken, setSession, verifyPassword } from "./auth";
 import { certificateSchema, contactSchema, educationSchema, experienceSchema, loginSchema, profileSchema, projectSchema, skillSchema, socialSchema } from "./validation";
 import type { Env } from "./types";
@@ -44,12 +44,12 @@ if (b2KeyId && b2ApplicationKey && b2BucketName && b2Endpoint) {
   console.log("B2 Storage configured:", b2BucketName, "Endpoint:", b2Endpoint);
 }
 const storageEnabled = Boolean(s3Client);
-const runtimeEnv: Env = { DB: sql, FRONTEND_ORIGIN: getEnv("FRONTEND_ORIGIN", "http://localhost:5173"), SESSION_SECRET: getEnv("SESSION_SECRET", "local-development-session-secret-change-before-production"), ADMIN_SETUP_TOKEN: getEnv("ADMIN_SETUP_TOKEN") };
+const runtimeEnv: Env = { DB: db, FRONTEND_ORIGIN: getEnv("FRONTEND_ORIGIN", "http://localhost:5173"), SESSION_SECRET: getEnv("SESSION_SECRET", "local-development-session-secret-change-before-production"), ADMIN_SETUP_TOKEN: getEnv("ADMIN_SETUP_TOKEN") };
 export async function bootstrapAdmin() {
   const email = getEnv("ADMIN_EMAIL").trim().toLowerCase();
   const password = getEnv("ADMIN_PASSWORD");
   if (!email && !password) return;
-  if (!email || password.length < 12) throw new Error("ADMIN_EMAIL and an ADMIN_PASSWORD of at least 12 characters are required");
+  if (!email || password.length < 8) throw new Error("ADMIN_EMAIL and an ADMIN_PASSWORD of at least 8 characters are required");
   const existing = (await db.select().from(admins).where(eq(admins.email, email)))[0];
   if (existing) return;
   await db.insert(admins).values({ id: crypto.randomUUID(), email, passwordHash: await hashPassword(password), createdAt: new Date(), updatedAt: new Date() });
@@ -83,27 +83,91 @@ app.use("/api/*", async (c, next) => {
   return isPublicAuth || (!isWrite && !isPrivateRead) ? next() : requireAdmin(c, next);
 });
 
-app.post("/api/auth/login", async (c) => { const input = await parse(c, loginSchema); const attempts = Number(getCookie(c, "login_attempts") || 0); if (attempts >= 8) return c.json({ error: "Too many attempts" }, 429); const db = drizzle(c.env.DB); const admin = (await db.select().from(admins).where(eq(admins.email, input.email.toLowerCase())))[0]; if (!admin || !(await verifyPassword(input.password, admin.passwordHash))) { c.header("Set-Cookie", `login_attempts=${attempts + 1}; Max-Age=900; HttpOnly; Secure; SameSite=Lax; Path=/`); return c.json({ error: "Invalid credentials" }, 401); } deleteCookie(c, "login_attempts", { path: "/" }); const token = await createSession(admin.email, c.env.SESSION_SECRET); setSession(c, token); return c.json({ email: admin.email, token }); });
+app.post("/api/auth/login", async (c) => { 
+  try {
+    const input = await parse(c, loginSchema); 
+    const attempts = Number(getCookie(c, "login_attempts") || 0); 
+    if (attempts >= 8) return c.json({ error: "Too many attempts" }, 429); 
+    const admin = (await c.env.DB.select().from(admins).where(eq(admins.email, input.email.toLowerCase())))[0]; 
+    if (!admin || !(await verifyPassword(input.password, admin.passwordHash))) { 
+      c.header("Set-Cookie", `login_attempts=${attempts + 1}; Max-Age=900; HttpOnly; Secure; SameSite=Lax; Path=/`); 
+      return c.json({ error: "Invalid credentials" }, 401); 
+    } 
+    deleteCookie(c, "login_attempts", { path: "/" }); 
+    const token = await createSession(admin.email, c.env.SESSION_SECRET); 
+    setSession(c, token); 
+    return c.json({ email: admin.email, token }); 
+  } catch (error) {
+    console.error("Login error:", error);
+    return c.json({ error: "Internal server error" }, 500);
+  }
+});
 app.post("/api/auth/logout", (c) => { clearSession(c); return c.json({ ok: true }); });
 app.get("/api/auth/me", async (c) => { const email = await sessionEmail(sessionToken(c), c.env.SESSION_SECRET); return email ? c.json({ email }) : c.json({ error: "Unauthenticated" }, 401); });
-app.post("/api/auth/setup", async (c) => { if (c.req.header("x-setup-token")?.trim() !== c.env.ADMIN_SETUP_TOKEN?.trim()) return c.json({ error: "Forbidden" }, 403); const input = await parse(c, loginSchema); const db = drizzle(c.env.DB); if ((await db.select().from(admins).where(eq(admins.email, input.email.toLowerCase())))[0]) return c.json({ error: "Admin exists" }, 409); const timestamp = now(); await db.insert(admins).values({ id: id(), email: input.email.toLowerCase(), passwordHash: await hashPassword(input.password), createdAt: timestamp, updatedAt: timestamp }); return c.json({ ok: true }, 201); });
+app.post("/api/auth/setup", async (c) => { if (c.req.header("x-setup-token")?.trim() !== c.env.ADMIN_SETUP_TOKEN?.trim()) return c.json({ error: "Forbidden" }, 403); const input = await parse(c, loginSchema); if ((await c.env.DB.select().from(admins).where(eq(admins.email, input.email.toLowerCase())))[0]) return c.json({ error: "Admin exists" }, 409); const timestamp = now(); await c.env.DB.insert(admins).values({ id: id(), email: input.email.toLowerCase(), passwordHash: await hashPassword(input.password), createdAt: timestamp, updatedAt: timestamp }); return c.json({ ok: true }, 201); });
 
 type Table = typeof skills | typeof experiences | typeof projects | typeof education | typeof certificates | typeof socialLinks;
-const publicList = async (c: any, table: Table) => { const isAdmin = Boolean(await sessionEmail(sessionToken(c), c.env.SESSION_SECRET)); const query = drizzle(c.env.DB).select().from(table); return c.json(await (isAdmin ? query : query.where(eq((table as any).published, true))).orderBy(asc((table as any).displayOrder || (table as any).createdAt))); };
-const crud = (path: string, table: any, schema: any) => { app.get(path, (c) => publicList(c, table)); app.post(path, async (c) => { const input: any = await parse(c, schema); const timestamp = now(); const row = { ...input, id: id(), createdAt: timestamp, updatedAt: timestamp }; await drizzle(c.env.DB).insert(table).values(row); return c.json(row, 201); }); app.put(`${path}/:id`, async (c) => { const input: any = await parse(c, schema.partial()); const row = { ...input, updatedAt: now() }; await drizzle(c.env.DB).update(table).set(row).where(eq(table.id, c.req.param("id"))); return c.json({ id: c.req.param("id"), ...row }); }); app.delete(`${path}/:id`, async (c) => { await drizzle(c.env.DB).delete(table).where(eq(table.id, c.req.param("id"))); return c.body(null, 204); }); };
-crud("/api/skills", skills, skillSchema); crud("/api/experience", experiences, experienceSchema); crud("/api/education", education, educationSchema); crud("/api/certificates", certificates, certificateSchema); crud("/api/social-links", socialLinks, socialSchema);
+const publicList = async (c: any, table: Table) => { const isAdmin = Boolean(await sessionEmail(sessionToken(c), c.env.SESSION_SECRET)); const query = c.env.DB.select().from(table); return c.json(await (isAdmin ? query : query.where(eq((table as any).published, true))).orderBy(asc((table as any).displayOrder || (table as any).createdAt))); };
 
-app.get("/api/projects", async (c) => { const isAdmin = Boolean(await sessionEmail(sessionToken(c), c.env.SESSION_SECRET)); const query = drizzle(c.env.DB).select().from(projects); const rows = await (isAdmin ? query : query.where(eq(projects.published, true))).orderBy(asc(projects.displayOrder)); return c.json(await Promise.all(rows.map(async (project: any) => ({ ...project, technologies: (await drizzle(c.env.DB).select().from(projectTechnologies).where(eq(projectTechnologies.projectId, project.id))).map((t: any) => t.technology) })))); });
-app.get("/api/projects/:id", async (c) => c.json((await drizzle(c.env.DB).select().from(projects).where(eq(projects.id, c.req.param("id"))))[0]));
-app.post("/api/projects", async (c) => { const input = await parse(c, projectSchema); const timestamp = now(); const project = { id: id(), ...input, createdAt: timestamp, updatedAt: timestamp }; const db = drizzle(c.env.DB); await db.insert(projects).values(project); if (input.technologies.length) await db.insert(projectTechnologies).values(input.technologies.map((technology) => ({ id: id(), projectId: project.id, technology }))); return c.json(project, 201); });
-app.put("/api/projects/:id", async (c) => { const input = await parse(c, projectSchema.partial()); const db = drizzle(c.env.DB); const { technologies, ...project } = input; await db.update(projects).set({ ...project, updatedAt: now() }).where(eq(projects.id, c.req.param("id"))); if (technologies) { await db.delete(projectTechnologies).where(eq(projectTechnologies.projectId, c.req.param("id"))); await db.insert(projectTechnologies).values(technologies.map((technology) => ({ id: id(), projectId: c.req.param("id"), technology }))); } return c.json({ id: c.req.param("id"), ...input }); });
-app.delete("/api/projects/:id", async (c) => { await drizzle(c.env.DB).delete(projects).where(eq(projects.id, c.req.param("id"))); return c.body(null, 204); });
+// Social Links (no images needed)
+const crud = (path: string, table: any, schema: any) => { app.get(path, (c) => publicList(c, table)); app.post(path, async (c) => { const input: any = await parse(c, schema); const timestamp = now(); const row = { ...input, id: id(), createdAt: timestamp, updatedAt: timestamp }; await c.env.DB.insert(table).values(row); return c.json(row, 201); }); app.put(`${path}/:id`, async (c) => { const input: any = await parse(c, schema.partial()); const row = { ...input, updatedAt: now() }; await c.env.DB.update(table).set(row).where(eq(table.id, c.req.param("id"))); return c.json({ id: c.req.param("id"), ...row }); }); app.delete(`${path}/:id`, async (c) => { await c.env.DB.delete(table).where(eq(table.id, c.req.param("id"))); return c.body(null, 204); }); };
+crud("/api/social-links", socialLinks, socialSchema);
 
-app.get("/api/profile", async (c) => c.json((await drizzle(c.env.DB).select().from(profiles))[0]));
-app.put("/api/profile", async (c) => { const input = await parse(c, profileSchema); const db = drizzle(c.env.DB); const existing = (await db.select().from(profiles))[0]; if (existing) await db.update(profiles).set({ ...input, updatedAt: now() }).where(eq(profiles.id, existing.id)); else await db.insert(profiles).values({ id: id(), ...input, createdAt: now(), updatedAt: now() }); return c.json(input); });
-app.post("/api/contact", async (c) => { const input = await parse(c, contactSchema); const timestamp = now(); await drizzle(c.env.DB).insert(contactMessages).values({ id: id(), ...input, createdAt: timestamp, updatedAt: timestamp }); return c.json({ ok: true }, 201); });
-app.get("/api/messages", async (c) => c.json(await drizzle(c.env.DB).select().from(contactMessages).orderBy(desc(contactMessages.createdAt))));
-app.delete("/api/messages/:id", async (c) => { await drizzle(c.env.DB).delete(contactMessages).where(eq(contactMessages.id, c.req.param("id"))); return c.body(null, 204); });
+// Skills with images
+app.get("/api/skills", async (c) => { const isAdmin = Boolean(await sessionEmail(sessionToken(c), c.env.SESSION_SECRET)); const query = c.env.DB.select().from(skills); const rows = await (isAdmin ? query : query.where(eq(skills.published, true))).orderBy(asc(skills.displayOrder)); return c.json(await Promise.all(rows.map(async (skill: any) => ({ ...skill, images: (await c.env.DB.select().from(skillImages).where(eq(skillImages.skillId, skill.id)).orderBy(asc(skillImages.displayOrder))).map((img: any) => ({ id: img.id, imageKey: img.imageKey, displayOrder: img.displayOrder })) })))); });
+app.post("/api/skills", async (c) => { const input = await parse(c, skillSchema); const timestamp = now(); const item = { id: id(), ...input, createdAt: timestamp, updatedAt: timestamp }; await c.env.DB.insert(skills).values(item); return c.json(item, 201); });
+app.put("/api/skills/:id", async (c) => { const input = await parse(c, skillSchema.partial()); await c.env.DB.update(skills).set({ ...input, updatedAt: now() }).where(eq(skills.id, c.req.param("id"))); return c.json({ id: c.req.param("id"), ...input }); });
+app.delete("/api/skills/:id", async (c) => { await c.env.DB.delete(skills).where(eq(skills.id, c.req.param("id"))); return c.body(null, 204); });
+app.get("/api/skills/:id/images", async (c) => { const images = await c.env.DB.select().from(skillImages).where(eq(skillImages.skillId, c.req.param("id"))).orderBy(asc(skillImages.displayOrder)); return c.json(images); });
+app.post("/api/skills/:id/images", async (c) => { const body = await c.req.json(); if (!body.imageKey) return c.json({ error: "imageKey is required" }, 400); const timestamp = now(); const image = { id: id(), skillId: c.req.param("id"), imageKey: body.imageKey, displayOrder: body.displayOrder || 0, createdAt: timestamp, updatedAt: timestamp }; await c.env.DB.insert(skillImages).values(image); return c.json(image, 201); });
+app.delete("/api/skills/:skillId/images/:imageId", async (c) => { await c.env.DB.delete(skillImages).where(eq(skillImages.id, c.req.param("imageId"))); return c.body(null, 204); });
+
+// Experience with images
+app.get("/api/experience", async (c) => { const isAdmin = Boolean(await sessionEmail(sessionToken(c), c.env.SESSION_SECRET)); const query = c.env.DB.select().from(experiences); const rows = await (isAdmin ? query : query.where(eq(experiences.published, true))).orderBy(asc(experiences.createdAt)); return c.json(await Promise.all(rows.map(async (exp: any) => ({ ...exp, images: (await c.env.DB.select().from(experienceImages).where(eq(experienceImages.experienceId, exp.id)).orderBy(asc(experienceImages.displayOrder))).map((img: any) => ({ id: img.id, imageKey: img.imageKey, displayOrder: img.displayOrder })) })))); });
+app.post("/api/experience", async (c) => { const input = await parse(c, experienceSchema); const timestamp = now(); const item = { id: id(), ...input, createdAt: timestamp, updatedAt: timestamp }; await c.env.DB.insert(experiences).values(item); return c.json(item, 201); });
+app.put("/api/experience/:id", async (c) => { const input = await parse(c, experienceSchema.partial()); await c.env.DB.update(experiences).set({ ...input, updatedAt: now() }).where(eq(experiences.id, c.req.param("id"))); return c.json({ id: c.req.param("id"), ...input }); });
+app.delete("/api/experience/:id", async (c) => { await c.env.DB.delete(experiences).where(eq(experiences.id, c.req.param("id"))); return c.body(null, 204); });
+app.get("/api/experience/:id/images", async (c) => { const images = await c.env.DB.select().from(experienceImages).where(eq(experienceImages.experienceId, c.req.param("id"))).orderBy(asc(experienceImages.displayOrder)); return c.json(images); });
+app.post("/api/experience/:id/images", async (c) => { const body = await c.req.json(); if (!body.imageKey) return c.json({ error: "imageKey is required" }, 400); const timestamp = now(); const image = { id: id(), experienceId: c.req.param("id"), imageKey: body.imageKey, displayOrder: body.displayOrder || 0, createdAt: timestamp, updatedAt: timestamp }; await c.env.DB.insert(experienceImages).values(image); return c.json(image, 201); });
+app.delete("/api/experience/:experienceId/images/:imageId", async (c) => { await c.env.DB.delete(experienceImages).where(eq(experienceImages.id, c.req.param("imageId"))); return c.body(null, 204); });
+
+// Education with images
+app.get("/api/education", async (c) => { const isAdmin = Boolean(await sessionEmail(sessionToken(c), c.env.SESSION_SECRET)); const query = c.env.DB.select().from(education); const rows = await (isAdmin ? query : query.where(eq(education.published, true))).orderBy(asc(education.createdAt)); return c.json(await Promise.all(rows.map(async (edu: any) => ({ ...edu, images: (await c.env.DB.select().from(educationImages).where(eq(educationImages.educationId, edu.id)).orderBy(asc(educationImages.displayOrder))).map((img: any) => ({ id: img.id, imageKey: img.imageKey, displayOrder: img.displayOrder })) })))); });
+app.post("/api/education", async (c) => { const input = await parse(c, educationSchema); const timestamp = now(); const item = { id: id(), ...input, createdAt: timestamp, updatedAt: timestamp }; await c.env.DB.insert(education).values(item); return c.json(item, 201); });
+app.put("/api/education/:id", async (c) => { const input = await parse(c, educationSchema.partial()); await c.env.DB.update(education).set({ ...input, updatedAt: now() }).where(eq(education.id, c.req.param("id"))); return c.json({ id: c.req.param("id"), ...input }); });
+app.delete("/api/education/:id", async (c) => { await c.env.DB.delete(education).where(eq(education.id, c.req.param("id"))); return c.body(null, 204); });
+app.get("/api/education/:id/images", async (c) => { const images = await c.env.DB.select().from(educationImages).where(eq(educationImages.educationId, c.req.param("id"))).orderBy(asc(educationImages.displayOrder)); return c.json(images); });
+app.post("/api/education/:id/images", async (c) => { const body = await c.req.json(); if (!body.imageKey) return c.json({ error: "imageKey is required" }, 400); const timestamp = now(); const image = { id: id(), educationId: c.req.param("id"), imageKey: body.imageKey, displayOrder: body.displayOrder || 0, createdAt: timestamp, updatedAt: timestamp }; await c.env.DB.insert(educationImages).values(image); return c.json(image, 201); });
+app.delete("/api/education/:educationId/images/:imageId", async (c) => { await c.env.DB.delete(educationImages).where(eq(educationImages.id, c.req.param("imageId"))); return c.body(null, 204); });
+
+// Certificates with images
+app.get("/api/certificates", async (c) => { const isAdmin = Boolean(await sessionEmail(sessionToken(c), c.env.SESSION_SECRET)); const query = c.env.DB.select().from(certificates); const rows = await (isAdmin ? query : query.where(eq(certificates.published, true))).orderBy(asc(certificates.createdAt)); return c.json(await Promise.all(rows.map(async (cert: any) => ({ ...cert, images: (await c.env.DB.select().from(certificateImages).where(eq(certificateImages.certificateId, cert.id)).orderBy(asc(certificateImages.displayOrder))).map((img: any) => ({ id: img.id, imageKey: img.imageKey, displayOrder: img.displayOrder })) })))); });
+app.get("/api/certificates/:id", async (c) => { const cert = (await c.env.DB.select().from(certificates).where(eq(certificates.id, c.req.param("id"))))[0]; if (!cert) return c.json({ error: "Not found" }, 404); const images = await c.env.DB.select().from(certificateImages).where(eq(certificateImages.certificateId, cert.id)).orderBy(asc(certificateImages.displayOrder)); return c.json({ ...cert, images: images.map((img: any) => ({ id: img.id, imageKey: img.imageKey, displayOrder: img.displayOrder })) }); });
+app.post("/api/certificates", async (c) => { const input = await parse(c, certificateSchema); const timestamp = now(); const cert = { id: id(), ...input, createdAt: timestamp, updatedAt: timestamp }; await c.env.DB.insert(certificates).values(cert); return c.json(cert, 201); });
+app.put("/api/certificates/:id", async (c) => { const input = await parse(c, certificateSchema.partial()); await c.env.DB.update(certificates).set({ ...input, updatedAt: now() }).where(eq(certificates.id, c.req.param("id"))); return c.json({ id: c.req.param("id"), ...input }); });
+app.delete("/api/certificates/:id", async (c) => { await c.env.DB.delete(certificates).where(eq(certificates.id, c.req.param("id"))); return c.body(null, 204); });
+
+// Certificate Images API
+app.get("/api/certificates/:id/images", async (c) => { const images = await c.env.DB.select().from(certificateImages).where(eq(certificateImages.certificateId, c.req.param("id"))).orderBy(asc(certificateImages.displayOrder)); return c.json(images); });
+app.post("/api/certificates/:id/images", async (c) => { const body = await c.req.json(); if (!body.imageKey) return c.json({ error: "imageKey is required" }, 400); const timestamp = now(); const image = { id: id(), certificateId: c.req.param("id"), imageKey: body.imageKey, displayOrder: body.displayOrder || 0, createdAt: timestamp, updatedAt: timestamp }; await c.env.DB.insert(certificateImages).values(image); return c.json(image, 201); });
+app.delete("/api/certificates/:certificateId/images/:imageId", async (c) => { await c.env.DB.delete(certificateImages).where(eq(certificateImages.id, c.req.param("imageId"))); return c.body(null, 204); });
+
+app.get("/api/projects", async (c) => { const isAdmin = Boolean(await sessionEmail(sessionToken(c), c.env.SESSION_SECRET)); const query = c.env.DB.select().from(projects); const rows = await (isAdmin ? query : query.where(eq(projects.published, true))).orderBy(asc(projects.displayOrder)); return c.json(await Promise.all(rows.map(async (project: any) => ({ ...project, technologies: (await c.env.DB.select().from(projectTechnologies).where(eq(projectTechnologies.projectId, project.id))).map((t: any) => t.technology), images: (await c.env.DB.select().from(projectImages).where(eq(projectImages.projectId, project.id)).orderBy(asc(projectImages.displayOrder))).map((img: any) => ({ id: img.id, imageKey: img.imageKey, displayOrder: img.displayOrder })) })))); });
+app.get("/api/projects/:id", async (c) => { const project = (await c.env.DB.select().from(projects).where(eq(projects.id, c.req.param("id"))))[0]; if (!project) return c.json({ error: "Not found" }, 404); const images = await c.env.DB.select().from(projectImages).where(eq(projectImages.projectId, project.id)).orderBy(asc(projectImages.displayOrder)); return c.json({ ...project, images: images.map((img: any) => ({ id: img.id, imageKey: img.imageKey, displayOrder: img.displayOrder })) }); });
+app.post("/api/projects", async (c) => { const input = await parse(c, projectSchema); const timestamp = now(); const project = { id: id(), ...input, createdAt: timestamp, updatedAt: timestamp }; await c.env.DB.insert(projects).values(project); if (input.technologies.length) await c.env.DB.insert(projectTechnologies).values(input.technologies.map((technology) => ({ id: id(), projectId: project.id, technology }))); return c.json(project, 201); });
+app.put("/api/projects/:id", async (c) => { const input = await parse(c, projectSchema.partial()); const { technologies, ...project } = input; await c.env.DB.update(projects).set({ ...project, updatedAt: now() }).where(eq(projects.id, c.req.param("id"))); if (technologies) { await c.env.DB.delete(projectTechnologies).where(eq(projectTechnologies.projectId, c.req.param("id"))); await c.env.DB.insert(projectTechnologies).values(technologies.map((technology) => ({ id: id(), projectId: c.req.param("id"), technology }))); } return c.json({ id: c.req.param("id"), ...input }); });
+app.delete("/api/projects/:id", async (c) => { await c.env.DB.delete(projects).where(eq(projects.id, c.req.param("id"))); return c.body(null, 204); });
+
+// Project Images API
+app.get("/api/projects/:id/images", async (c) => { const images = await c.env.DB.select().from(projectImages).where(eq(projectImages.projectId, c.req.param("id"))).orderBy(asc(projectImages.displayOrder)); return c.json(images); });
+app.post("/api/projects/:id/images", async (c) => { const body = await c.req.json(); if (!body.imageKey) return c.json({ error: "imageKey is required" }, 400); const timestamp = now(); const image = { id: id(), projectId: c.req.param("id"), imageKey: body.imageKey, displayOrder: body.displayOrder || 0, createdAt: timestamp, updatedAt: timestamp }; await c.env.DB.insert(projectImages).values(image); return c.json(image, 201); });
+app.delete("/api/projects/:projectId/images/:imageId", async (c) => { await c.env.DB.delete(projectImages).where(eq(projectImages.id, c.req.param("imageId"))); return c.body(null, 204); });
+
+app.get("/api/profile", async (c) => c.json((await c.env.DB.select().from(profiles))[0]));
+app.put("/api/profile", async (c) => { const input = await parse(c, profileSchema); const db = c.env.DB; const existing = (await db.select().from(profiles))[0]; if (existing) await db.update(profiles).set({ ...input, updatedAt: now() }).where(eq(profiles.id, existing.id)); else await db.insert(profiles).values({ id: id(), ...input, createdAt: now(), updatedAt: now() }); return c.json(input); });
+app.post("/api/contact", async (c) => { const input = await parse(c, contactSchema); const timestamp = now(); await c.env.DB.insert(contactMessages).values({ id: id(), ...input, createdAt: timestamp, updatedAt: timestamp }); return c.json({ ok: true }, 201); });
+app.get("/api/messages", async (c) => c.json(await c.env.DB.select().from(contactMessages).orderBy(desc(contactMessages.createdAt))));
+app.delete("/api/messages/:id", async (c) => { await c.env.DB.delete(contactMessages).where(eq(contactMessages.id, c.req.param("id"))); return c.body(null, 204); });
 app.post("/api/upload", async (c) => {
   if (!storageEnabled) return c.json({ error: "Storage is not configured" }, 503);
   const body = await c.req.parseBody();

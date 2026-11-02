@@ -30,7 +30,15 @@ export async function apiUpload(file) {
   return response.json();
 }
 
-export const assetUrl = (key) => key ? (key.startsWith("/") || key.startsWith("http") ? key : `${API_URL}/api/files/${key}`) : "";
+export const assetUrl = (key) => {
+  if (!key) return "";
+  // If it's already a full URL, use it as-is
+  if (key.startsWith("http://") || key.startsWith("https://")) return key;
+  // If it starts with /, remove it (legacy local paths - now all from B2)
+  if (key.startsWith("/")) key = key.substring(1);
+  // All assets are now served from B2 via the API
+  return `${API_URL}/api/files/${encodeURIComponent(key)}`;
+};
 
 export async function getPortfolioData() {
   if (!apiEnabled) return null;

@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 const optionalUrl = z.string().url().optional().or(z.literal(""));
-export const loginSchema = z.object({ email: z.string().email(), password: z.string().min(12).max(200) });
+export const loginSchema = z.object({ email: z.string().email(), password: z.string().min(8).max(200) });
 export const profileSchema = z.object({ name: z.string().min(1).max(120), title: z.string().min(1).max(160), biography: z.string().max(5000), email: z.string().email(), phone: z.string().max(40).optional(), location: z.string().max(160).optional(), photoKey: z.string().max(300).optional(), resumeKey: z.string().max(300).optional() });
 export const skillSchema = z.object({ name: z.string().min(1).max(100), category: z.string().min(1).max(80), proficiency: z.number().int().min(0).max(100), icon: z.string().max(100).optional(), displayOrder: z.number().int().default(0), published: z.boolean().default(true) });
 export const experienceSchema = z.object({ position: z.string().min(1), organization: z.string().min(1), employmentType: z.string().optional(), description: z.string().min(1), startDate: z.string().min(1), endDate: z.string().optional(), currentlyWorking: z.boolean().default(false), location: z.string().optional(), published: z.boolean().default(true) });
