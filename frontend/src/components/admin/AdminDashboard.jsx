@@ -1,3 +1,4 @@
+// Admin Dashboard - Enhanced Image Gallery v2.1
 import { useEffect, useMemo, useState } from "react";
 import {
   FiActivity, FiArrowUpRight, FiBookOpen, FiBriefcase, FiCheck, FiChevronRight,
