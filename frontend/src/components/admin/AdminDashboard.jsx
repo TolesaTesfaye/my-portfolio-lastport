@@ -38,6 +38,7 @@ function ImageGalleryField({ itemId, apiPath, onImagesChange }) {
   const [images, setImages] = useState([]);
   const [uploading, setUploading] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [dragOver, setDragOver] = useState(false);
   
   useEffect(() => {
     if (itemId) {
@@ -49,8 +50,7 @@ function ImageGalleryField({ itemId, apiPath, onImagesChange }) {
     }
   }, [itemId, apiPath]);
   
-  const uploadImage = async (event) => {
-    const file = event.target.files?.[0];
+  const uploadImage = async (file) => {
     if (!file) return;
     setUploading(true);
     try {
@@ -60,17 +60,33 @@ function ImageGalleryField({ itemId, apiPath, onImagesChange }) {
           method: "POST",
           body: JSON.stringify({ imageKey: uploadResult.key, displayOrder: images.length })
         });
-        setImages([...images, newImage]);
-        onImagesChange?.([...images, newImage]);
+        const updated = [...images, newImage];
+        setImages(updated);
+        onImagesChange?.(updated);
       } else {
         const tempImage = { id: `temp-${Date.now()}`, imageKey: uploadResult.key, displayOrder: images.length };
-        setImages([...images, tempImage]);
-        onImagesChange?.([...images, tempImage]);
+        const updated = [...images, tempImage];
+        setImages(updated);
+        onImagesChange?.(updated);
       }
     } catch (e) {
       alert(e.message);
     } finally {
       setUploading(false);
+    }
+  };
+  
+  const handleFileInput = (event) => {
+    const file = event.target.files?.[0];
+    if (file) uploadImage(file);
+  };
+  
+  const handleDrop = (event) => {
+    event.preventDefault();
+    setDragOver(false);
+    const file = event.dataTransfer.files?.[0];
+    if (file && file.type.startsWith('image/')) {
+      uploadImage(file);
     }
   };
   
@@ -88,7 +104,133 @@ function ImageGalleryField({ itemId, apiPath, onImagesChange }) {
     }
   };
   
-  return <div className="md:col-span-2"><div className="mb-3"><label className="text-sm font-medium text-slate-300">Preview Images Gallery</label><p className="mt-1 text-xs text-slate-500">Upload multiple preview images</p></div>{loading ? <div className="rounded-2xl border border-white/10 bg-white/[.025] p-8 text-center text-sm text-slate-500">Loading images...</div> : <><div className="mb-4 flex flex-wrap gap-3">{images.map((image) => <div key={image.id} className="group relative overflow-hidden rounded-lg border border-white/10 bg-white/[.025] w-32 h-24"><img src={assetUrl(image.imageKey)} alt="Preview" className="h-full w-full object-cover" /><button type="button" onClick={() => deleteImage(image.id, image.imageKey)} className="absolute top-1 right-1 flex h-6 w-6 items-center justify-center rounded-full bg-rose-500 text-white opacity-0 transition-opacity hover:bg-rose-600 group-hover:opacity-100"><FiX size={14} /></button></div>)}</div><label className="flex cursor-pointer items-center justify-center gap-3 rounded-2xl border border-dashed border-white/15 bg-white/[.025] px-6 py-8 text-sm font-medium text-slate-300 transition hover:border-indigo-400 hover:bg-indigo-500/5 hover:text-white"><FiUploadCloud size={20} />{uploading ? "Uploading..." : `Add ${images.length > 0 ? "another" : "preview"} image`}<input type="file" accept="image/png,image/jpeg,image/webp,image/jpg" onChange={uploadImage} disabled={uploading} className="hidden" /></label></>}</div>;
+  return (
+    <div className="md:col-span-2">
+      <div className="mb-4 flex items-center justify-between">
+        <div>
+          <label className="text-sm font-semibold text-slate-200">Preview Images Gallery</label>
+          <p className="mt-1 text-xs text-slate-500">Drag & drop or click to upload • {images.length} image{images.length !== 1 ? 's' : ''}</p>
+        </div>
+        {images.length > 0 && (
+          <span className="rounded-full bg-indigo-500/10 px-3 py-1 text-xs font-medium text-indigo-300">
+            {images.length} {images.length === 1 ? 'image' : 'images'}
+          </span>
+        )}
+      </div>
+      
+      {loading ? (
+        <div className="rounded-2xl border border-white/10 bg-white/[.025] p-12 text-center">
+          <div className="mx-auto h-8 w-8 animate-spin rounded-full border-2 border-indigo-500 border-t-transparent"></div>
+          <p className="mt-3 text-sm text-slate-500">Loading gallery...</p>
+        </div>
+      ) : (
+        <>
+          {/* Image Grid */}
+          {images.length > 0 && (
+            <div className="mb-5 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
+              {images.map((image, index) => (
+                <div
+                  key={image.id}
+                  className="group relative aspect-video overflow-hidden rounded-xl border border-white/10 bg-white/[.025] transition-all hover:border-indigo-400/50 hover:shadow-lg hover:shadow-indigo-500/10"
+                >
+                  {/* Image */}
+                  <img
+                    src={assetUrl(image.imageKey)}
+                    alt={`Preview ${index + 1}`}
+                    className="h-full w-full object-cover transition-transform group-hover:scale-105"
+                  />
+                  
+                  {/* Overlay on hover */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
+                  
+                  {/* Delete button */}
+                  <button
+                    type="button"
+                    onClick={() => deleteImage(image.id, image.imageKey)}
+                    className="absolute right-2 top-2 flex h-7 w-7 items-center justify-center rounded-lg bg-rose-500 text-white opacity-0 shadow-lg transition-all hover:bg-rose-600 hover:scale-110 group-hover:opacity-100"
+                    title="Delete image"
+                  >
+                    <FiTrash2 size={14} />
+                  </button>
+                  
+                  {/* Image number badge */}
+                  <div className="absolute bottom-2 left-2 rounded-md bg-black/50 px-2 py-1 text-xs font-medium text-white backdrop-blur-sm">
+                    #{index + 1}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+          
+          {/* Upload Area */}
+          <label
+            onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+            onDragLeave={() => setDragOver(false)}
+            onDrop={handleDrop}
+            className={`flex cursor-pointer flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed px-6 py-10 text-center transition-all ${
+              dragOver
+                ? 'border-indigo-400 bg-indigo-500/10 scale-[1.02]'
+                : uploading
+                ? 'border-white/10 bg-white/[.025] cursor-not-allowed'
+                : 'border-white/15 bg-white/[.025] hover:border-indigo-400 hover:bg-indigo-500/5'
+            }`}
+          >
+            {uploading ? (
+              <>
+                <div className="h-12 w-12 animate-spin rounded-full border-3 border-indigo-500 border-t-transparent"></div>
+                <div>
+                  <p className="text-sm font-medium text-slate-300">Uploading image...</p>
+                  <p className="mt-1 text-xs text-slate-500">Please wait</p>
+                </div>
+              </>
+            ) : dragOver ? (
+              <>
+                <FiUploadCloud size={32} className="text-indigo-400" />
+                <div>
+                  <p className="text-sm font-medium text-indigo-300">Drop image here</p>
+                  <p className="mt-1 text-xs text-slate-500">Release to upload</p>
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="rounded-full bg-indigo-500/10 p-3">
+                  <FiImage size={24} className="text-indigo-400" />
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-slate-200">
+                    {images.length > 0 ? 'Add another image' : 'Upload preview images'}
+                  </p>
+                  <p className="mt-1 text-xs text-slate-500">
+                    Drag & drop or click to browse • PNG, JPG, WebP
+                  </p>
+                </div>
+                <div className="mt-2 rounded-lg bg-white/[.04] px-4 py-2 text-xs font-medium text-slate-400">
+                  Click or drag here
+                </div>
+              </>
+            )}
+            <input
+              type="file"
+              accept="image/png,image/jpeg,image/webp,image/jpg"
+              onChange={handleFileInput}
+              disabled={uploading}
+              className="hidden"
+            />
+          </label>
+          
+          {/* Tips */}
+          {images.length === 0 && (
+            <div className="mt-4 rounded-xl bg-indigo-500/5 border border-indigo-400/10 p-4">
+              <p className="text-xs font-medium text-indigo-300">💡 Pro tip</p>
+              <p className="mt-1 text-xs leading-relaxed text-slate-400">
+                Upload multiple images to create an image carousel on your portfolio. First image will be the default preview.
+              </p>
+            </div>
+          )}
+        </>
+      )}
+    </div>
+  );
 }
 
 function ImageField({ value, onChange, label = "Image" }) {
