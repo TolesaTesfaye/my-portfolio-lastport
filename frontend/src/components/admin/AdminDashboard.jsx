@@ -109,7 +109,7 @@ function ImageGalleryField({ itemId, apiPath, onImagesChange }) {
     <div className="md:col-span-2">
       <div className="mb-4 flex items-center justify-between">
         <div>
-          <label className="text-sm font-semibold text-slate-200">Preview Images Gallery</label>
+          <label className="text-sm font-semibold text-slate-200">🎨 Preview Images Gallery (Enhanced v2.1)</label>
           <p className="mt-1 text-xs text-slate-500">Drag & drop or click to upload • {images.length} image{images.length !== 1 ? 's' : ''}</p>
         </div>
         {images.length > 0 && (
