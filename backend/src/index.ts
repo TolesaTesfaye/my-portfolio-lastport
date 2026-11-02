@@ -125,7 +125,20 @@ const crud = (path: string, table: any, schema: any) => { app.get(path, (c) => p
 crud("/api/social-links", socialLinks, socialSchema);
 
 // Skills with images
-app.get("/api/skills", async (c) => { const isAdmin = Boolean(await sessionEmail(sessionToken(c), c.env.SESSION_SECRET)); const query = c.env.DB.select().from(skills); const rows = await (isAdmin ? query : query.where(eq(skills.published, true))).orderBy(asc(skills.displayOrder)); return c.json(await Promise.all(rows.map(async (skill: any) => ({ ...skill, images: (await c.env.DB.select().from(skillImages).where(eq(skillImages.skillId, skill.id)).orderBy(asc(skillImages.displayOrder))).map((img: any) => ({ id: img.id, imageKey: img.imageKey, displayOrder: img.displayOrder })) })))); });
+app.get("/api/skills", async (c) => {
+  try {
+    const isAdmin = Boolean(await sessionEmail(sessionToken(c), c.env.SESSION_SECRET));
+    const query = c.env.DB.select().from(skills);
+    const rows = await (isAdmin ? query : query.where(eq(skills.published, true))).orderBy(asc(skills.displayOrder));
+    return c.json(await Promise.all(rows.map(async (skill: any) => ({
+      ...skill,
+      images: (await c.env.DB.select().from(skillImages).where(eq(skillImages.skillId, skill.id)).orderBy(asc(skillImages.displayOrder))).map((img: any) => ({ id: img.id, imageKey: img.imageKey, displayOrder: img.displayOrder }))
+    }))));
+  } catch (error) {
+    console.error("Get skills error:", error);
+    return c.json({ error: "Failed to fetch skills", details: error instanceof Error ? error.message : String(error) }, 500);
+  }
+});
 app.post("/api/skills", async (c) => { const input = await parse(c, skillSchema); const timestamp = now(); const item = { id: id(), ...input, createdAt: timestamp, updatedAt: timestamp }; await c.env.DB.insert(skills).values(item); return c.json(item, 201); });
 app.put("/api/skills/:id", async (c) => { const input = await parse(c, skillSchema.partial()); await c.env.DB.update(skills).set({ ...input, updatedAt: now() }).where(eq(skills.id, c.req.param("id"))); return c.json({ id: c.req.param("id"), ...input }); });
 app.delete("/api/skills/:id", async (c) => { await c.env.DB.delete(skills).where(eq(skills.id, c.req.param("id"))); return c.body(null, 204); });
@@ -143,7 +156,20 @@ app.post("/api/experience/:id/images", async (c) => { const body = await c.req.j
 app.delete("/api/experience/:experienceId/images/:imageId", async (c) => { await c.env.DB.delete(experienceImages).where(eq(experienceImages.id, c.req.param("imageId"))); return c.body(null, 204); });
 
 // Education with images
-app.get("/api/education", async (c) => { const isAdmin = Boolean(await sessionEmail(sessionToken(c), c.env.SESSION_SECRET)); const query = c.env.DB.select().from(education); const rows = await (isAdmin ? query : query.where(eq(education.published, true))).orderBy(asc(education.createdAt)); return c.json(await Promise.all(rows.map(async (edu: any) => ({ ...edu, images: (await c.env.DB.select().from(educationImages).where(eq(educationImages.educationId, edu.id)).orderBy(asc(educationImages.displayOrder))).map((img: any) => ({ id: img.id, imageKey: img.imageKey, displayOrder: img.displayOrder })) })))); });
+app.get("/api/education", async (c) => {
+  try {
+    const isAdmin = Boolean(await sessionEmail(sessionToken(c), c.env.SESSION_SECRET));
+    const query = c.env.DB.select().from(education);
+    const rows = await (isAdmin ? query : query.where(eq(education.published, true))).orderBy(asc(education.createdAt));
+    return c.json(await Promise.all(rows.map(async (edu: any) => ({
+      ...edu,
+      images: (await c.env.DB.select().from(educationImages).where(eq(educationImages.educationId, edu.id)).orderBy(asc(educationImages.displayOrder))).map((img: any) => ({ id: img.id, imageKey: img.imageKey, displayOrder: img.displayOrder }))
+    }))));
+  } catch (error) {
+    console.error("Get education error:", error);
+    return c.json({ error: "Failed to fetch education", details: error instanceof Error ? error.message : String(error) }, 500);
+  }
+});
 app.post("/api/education", async (c) => { const input = await parse(c, educationSchema); const timestamp = now(); const item = { id: id(), ...input, createdAt: timestamp, updatedAt: timestamp }; await c.env.DB.insert(education).values(item); return c.json(item, 201); });
 app.put("/api/education/:id", async (c) => { const input = await parse(c, educationSchema.partial()); await c.env.DB.update(education).set({ ...input, updatedAt: now() }).where(eq(education.id, c.req.param("id"))); return c.json({ id: c.req.param("id"), ...input }); });
 app.delete("/api/education/:id", async (c) => { await c.env.DB.delete(education).where(eq(education.id, c.req.param("id"))); return c.body(null, 204); });
