@@ -8,5 +8,6 @@
     "allowImportingTsExtensions": true,
     "noEmit": true
   },
-  "include": ["src/**/*.ts", "drizzle.config.ts"]
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules", "drizzle.config.ts", "run-all-migrations.ts"]
 }
