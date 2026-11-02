@@ -212,7 +212,18 @@ app.get("/api/profile", async (c) => {
 
 app.put("/api/profile", async (c) => {
   try {
-    const input = await parse(c, profileSchema.partial());
+    const rawBody = await c.req.text();
+    console.log("Profile update request body:", rawBody);
+    
+    const bodyJson = JSON.parse(rawBody);
+    const validation = profileSchema.partial().safeParse(bodyJson);
+    
+    if (!validation.success) {
+      console.error("Profile validation failed:", validation.error);
+      return c.json({ error: "Invalid input", details: validation.error.errors }, 400);
+    }
+    
+    const input = validation.data;
     const db = c.env.DB;
     const existing = (await db.select().from(profiles))[0];
     
@@ -226,6 +237,7 @@ app.put("/api/profile", async (c) => {
     }
   } catch (error) {
     console.error("Update profile error:", error);
+    console.error("Error stack:", error instanceof Error ? error.stack : "No stack");
     return c.json({ error: "Failed to update profile", details: error instanceof Error ? error.message : String(error) }, 500);
   }
 });
