@@ -24,13 +24,14 @@ const db = drizzle(sql);
 const cloudinaryUrl = getEnv("CLOUDINARY_URL");
 if (cloudinaryUrl) {
   const parsed = new URL(cloudinaryUrl);
+  const apiSecret = parsed.password.startsWith(':') ? parsed.password.substring(1) : parsed.password;
   cloudinary.config({
     cloud_name: parsed.hostname,
-    api_key: decodeURIComponent(parsed.username),
-    api_secret: decodeURIComponent(parsed.password.substring(1)), // Remove leading ':'
+    api_key: parsed.username,
+    api_secret: apiSecret,
     secure: true,
   });
-  console.log("Cloudinary configured:", parsed.hostname);
+  console.log("Cloudinary configured:", parsed.hostname, "API Key:", parsed.username, "Secret length:", apiSecret.length);
 }
 const cloudinaryEnabled = Boolean(cloudinaryUrl);
 const runtimeEnv: Env = { DB: sql, FRONTEND_ORIGIN: getEnv("FRONTEND_ORIGIN", "http://localhost:5173"), SESSION_SECRET: getEnv("SESSION_SECRET", "local-development-session-secret-change-before-production"), ADMIN_SETUP_TOKEN: getEnv("ADMIN_SETUP_TOKEN") };
