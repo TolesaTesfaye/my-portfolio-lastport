@@ -174,8 +174,35 @@ app.get("/api/projects/:id/images", async (c) => { const images = await c.env.DB
 app.post("/api/projects/:id/images", async (c) => { const body = await c.req.json(); if (!body.imageKey) return c.json({ error: "imageKey is required" }, 400); const timestamp = now(); const image = { id: id(), projectId: c.req.param("id"), imageKey: body.imageKey, displayOrder: body.displayOrder || 0, createdAt: timestamp, updatedAt: timestamp }; await c.env.DB.insert(projectImages).values(image); return c.json(image, 201); });
 app.delete("/api/projects/:projectId/images/:imageId", async (c) => { await c.env.DB.delete(projectImages).where(eq(projectImages.id, c.req.param("imageId"))); return c.body(null, 204); });
 
-app.get("/api/profile", async (c) => c.json((await c.env.DB.select().from(profiles))[0]));
-app.put("/api/profile", async (c) => { const input = await parse(c, profileSchema); const db = c.env.DB; const existing = (await db.select().from(profiles))[0]; if (existing) await db.update(profiles).set({ ...input, updatedAt: now() }).where(eq(profiles.id, existing.id)); else await db.insert(profiles).values({ id: id(), ...input, createdAt: now(), updatedAt: now() }); return c.json(input); });
+app.get("/api/profile", async (c) => {
+  try {
+    const profile = (await c.env.DB.select().from(profiles))[0];
+    return c.json(profile || null);
+  } catch (error) {
+    console.error("Get profile error:", error);
+    return c.json({ error: "Failed to fetch profile" }, 500);
+  }
+});
+
+app.put("/api/profile", async (c) => {
+  try {
+    const input = await parse(c, profileSchema.partial());
+    const db = c.env.DB;
+    const existing = (await db.select().from(profiles))[0];
+    
+    if (existing) {
+      await db.update(profiles).set({ ...input, updatedAt: now() }).where(eq(profiles.id, existing.id));
+      return c.json({ ...existing, ...input, updatedAt: now() });
+    } else {
+      const newProfile = { id: id(), ...input, createdAt: now(), updatedAt: now() };
+      await db.insert(profiles).values(newProfile);
+      return c.json(newProfile, 201);
+    }
+  } catch (error) {
+    console.error("Update profile error:", error);
+    return c.json({ error: "Failed to update profile", details: error instanceof Error ? error.message : String(error) }, 500);
+  }
+});
 app.post("/api/contact", async (c) => { const input = await parse(c, contactSchema); const timestamp = now(); await c.env.DB.insert(contactMessages).values({ id: id(), ...input, createdAt: timestamp, updatedAt: timestamp }); return c.json({ ok: true }, 201); });
 app.get("/api/messages", async (c) => c.json(await c.env.DB.select().from(contactMessages).orderBy(desc(contactMessages.createdAt))));
 app.delete("/api/messages/:id", async (c) => { await c.env.DB.delete(contactMessages).where(eq(contactMessages.id, c.req.param("id"))); return c.body(null, 204); });
