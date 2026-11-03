@@ -24,7 +24,6 @@ import {
 import { useLanguage } from "../context/LanguageContext";
 import { translations as t } from "../translations";
 import { usePortfolioData } from "../context/PortfolioDataContext";
-import { assetUrl } from "../lib/api";
 
 const Skills = ({ darkMode }) => {
   const { translate } = useLanguage();
@@ -71,17 +70,11 @@ const Skills = ({ darkMode }) => {
       }), {})).map(([title, values]) => ({ 
         title, 
         skills: values.map((skill) => {
-          // Get first image from images array if available
-          const imageUrl = skill.images?.length > 0 
-            ? assetUrl(skill.images[0].imageKey) 
-            : null;
-          
           return {
             ...skill,
             level: skill.proficiency,
             icon: FaCode,
             color: "text-blue-400",
-            imageUrl // Add image URL
           };
         })
       }))
@@ -154,19 +147,7 @@ const Skills = ({ darkMode }) => {
                   >
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center space-x-3">
-                        {skill.imageUrl ? (
-                          <img 
-                            src={skill.imageUrl} 
-                            alt={skill.name}
-                            className="w-8 h-8 rounded object-cover"
-                            onError={(e) => {
-                              // Fallback to icon if image fails to load
-                              e.currentTarget.style.display = 'none';
-                              e.currentTarget.nextElementSibling?.classList.remove('hidden');
-                            }}
-                          />
-                        ) : null}
-                        <skill.icon className={`text-2xl ${skill.color} ${skill.imageUrl ? 'hidden' : ''}`} />
+                        <skill.icon className={`text-2xl ${skill.color}`} />
                         <span className={`font-medium ${darkMode ? 'text-gray-300' : 'text-gray-800'}`}>
                           {skill.name}
                         </span>
