@@ -4,8 +4,9 @@ import {
   FiActivity, FiArrowUpRight, FiBookOpen, FiBriefcase, FiCheck, FiChevronRight,
   FiClock, FiEdit3, FiExternalLink, FiFileText, FiFolder, FiGrid, FiImage,
   FiInbox, FiLayers, FiLink, FiLogOut, FiMail, FiMenu, FiPlus, FiSearch,
-  FiSettings, FiTrash2, FiUploadCloud, FiUser, FiX,
+  FiSettings, FiSun, FiTrash2, FiUploadCloud, FiUser, FiX,
 } from "react-icons/fi";
+import { FiMoon } from "react-icons/fi";
 import { apiEnabled, apiFetch, apiUpload, assetUrl } from "../../lib/api";
 
 const modules = {
@@ -260,6 +261,7 @@ function Editor({ module, initial, onClose, onSave }) {
 
 export default function AdminDashboard() {
   const [authenticated, setAuthenticated] = useState(false); const [active, setActive] = useState("overview"); const [rows, setRows] = useState([]); const [allCounts, setAllCounts] = useState({}); const [editing, setEditing] = useState(null); const [profile, setProfile] = useState(null); const [messages, setMessages] = useState([]); const [query, setQuery] = useState(""); const [notice, setNotice] = useState(""); const [menuOpen, setMenuOpen] = useState(false);
+  const [darkMode, setDarkMode] = useState(() => localStorage.getItem("portfolio-admin-theme") !== "light");
   useEffect(() => { if (apiEnabled) apiFetch("/api/auth/me").then(() => setAuthenticated(true)).catch(() => {}); }, []);
   const load = async (key = active) => { try { if (key === "profile") setProfile(await apiFetch("/api/profile")); else if (key === "messages") setMessages(await apiFetch("/api/messages")); else if (modules[key]) setRows(await apiFetch(modules[key].path)); } catch (e) { setNotice(e.message); } };
   useEffect(() => { if (authenticated && active !== "overview") load(); }, [authenticated, active]);
@@ -276,7 +278,7 @@ export default function AdminDashboard() {
   const contentNav = nav.filter(([key]) => !["overview", "profile", "messages"].includes(key));
 
   return (
-    <div className="min-h-screen bg-[#080c18] text-slate-100 selection:bg-indigo-500/30">
+    <div data-admin-theme={darkMode ? "dark" : "light"} className="min-h-screen bg-[#080c18] text-slate-100 selection:bg-indigo-500/30">
       <aside className={`fixed inset-y-0 left-0 z-40 flex w-[280px] flex-col border-r border-white/[.08] bg-[#0d1324] px-4 py-5 shadow-2xl shadow-black/20 transition-transform lg:translate-x-0 ${menuOpen ? "translate-x-0" : "-translate-x-full"}`}>
         <div className="flex items-center justify-between px-3">
           <div className="flex items-center gap-3">
@@ -307,7 +309,10 @@ export default function AdminDashboard() {
             <h1 className="mt-1 text-lg font-semibold tracking-tight">{title}</h1>
           </div>
           <div className="ml-auto flex items-center gap-2 sm:gap-3">
-            <span className="hidden items-center gap-2 rounded-xl border border-white/[.08] bg-white/[.03] px-3 py-2 text-xs text-slate-400 md:flex"><span className="h-1.5 w-1.5 rounded-full bg-indigo-400" /> Dark mode</span>
+            <button type="button" onClick={() => { const next = !darkMode; setDarkMode(next); localStorage.setItem("portfolio-admin-theme", next ? "dark" : "light"); }} aria-label={`Switch to ${darkMode ? "light" : "dark"} mode`} className="flex items-center gap-2 rounded-xl border border-white/[.08] bg-white/[.03] px-3 py-2 text-xs text-slate-400 transition hover:border-indigo-400/40 hover:text-white">
+              {darkMode ? <FiMoon /> : <FiSun className="text-amber-400" />}
+              {darkMode ? "Dark mode" : "Light mode"}
+            </button>
             <a href="/" target="_blank" rel="noreferrer" className="hidden items-center gap-2 rounded-xl border border-white/[.08] px-3 py-2 text-sm text-slate-400 transition hover:border-indigo-400/40 hover:text-white sm:flex"><FiExternalLink /> View site</a>
             <button onClick={async () => { await apiFetch("/api/auth/logout", { method: "POST" }); setAuthenticated(false); }} className="flex items-center gap-2 rounded-xl border border-white/[.08] px-3 py-2 text-sm text-slate-400 transition hover:border-rose-400/50 hover:text-rose-300"><FiLogOut /> <span className="hidden sm:inline">Sign out</span></button>
           </div>
