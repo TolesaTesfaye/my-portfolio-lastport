@@ -55,7 +55,7 @@ const Certificates = ({ darkMode }) => {
       skills: ["Leadership", "Excellence", "Achievement"],
     },
   ];
-  const certificates = data?.certificates?.length
+  const certificates = Array.isArray(data?.certificates)
     ? data.certificates.map((certificate) => {
         // Use images array from certificate_images table
         let certImages = [];

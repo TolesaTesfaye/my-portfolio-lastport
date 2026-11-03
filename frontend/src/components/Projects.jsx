@@ -136,7 +136,7 @@ const Projects = ({ darkMode }) => {
       category: "Bot Development",
     },
   ];
-  const projects = data?.projects?.length
+  const projects = Array.isArray(data?.projects)
     ? data.projects.map((project) => {
         // Use the images array from the database (project_images table)
         let projectImages = [];

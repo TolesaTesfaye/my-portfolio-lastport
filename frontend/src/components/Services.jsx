@@ -69,7 +69,7 @@ const Services = ({ darkMode }) => {
     },
   ];
   const iconMap = { FaYoutube, FaChalkboardTeacher, FaVideo };
-  const services = data?.services?.length
+  const services = Array.isArray(data?.services)
     ? data.services.map((service, index) => ({
         ...service,
         icon: iconMap[service.icon] || FaVideo,

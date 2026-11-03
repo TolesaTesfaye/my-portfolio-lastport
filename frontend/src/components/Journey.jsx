@@ -12,7 +12,6 @@ import { HiCode } from "react-icons/hi";
 import { useLanguage } from "../context/LanguageContext";
 import { translations as t } from "../translations";
 import { usePortfolioData } from "../context/PortfolioDataContext";
-import { assetUrl } from "../lib/api";
 
 const Journey = ({ darkMode }) => {
   const { translate } = useLanguage();
@@ -74,33 +73,25 @@ const Journey = ({ darkMode }) => {
   const milestones = data?.experience?.length || data?.education?.length
     ? [
         ...(data.experience || []).map((item) => {
-          const imageUrl = item.images?.length > 0 
-            ? assetUrl(item.images[0].imageKey) 
-            : null;
-          
           return {
             year: `${item.startDate}${item.endDate ? ` - ${item.endDate}` : " - Present"}`,
             title: `${item.position} at ${item.organization}`,
             description: item.description,
+            details: [item.employmentType, item.location].filter(Boolean),
             icon: FaBriefcase,
             color: "from-blue-500 to-purple-600",
             type: "work",
-            imageUrl
           };
         }),
         ...(data.education || []).map((item) => {
-          const imageUrl = item.images?.length > 0 
-            ? assetUrl(item.images[0].imageKey) 
-            : null;
-          
           return {
             year: [item.startDate, item.endDate].filter(Boolean).join(" - ") || "Education",
             title: `${item.degree} at ${item.institution}`,
             description: item.description || item.fieldOfStudy || "",
+            details: [item.fieldOfStudy].filter(Boolean),
             icon: FaGraduationCap,
             color: "from-green-500 to-emerald-600",
             type: "education",
-            imageUrl
           };
         }),
       ]
@@ -289,25 +280,23 @@ const Journey = ({ darkMode }) => {
                         {milestone.title}
                       </h3>
 
+                      {milestone.details?.length > 0 && (
+                        <p
+                          className={`mb-3 text-xs font-medium uppercase tracking-wide ${
+                            darkMode ? "text-blue-400" : "text-blue-600"
+                          }`}
+                        >
+                          {milestone.details.join(" • ")}
+                        </p>
+                      )}
+
                       <p
-                        className={`text-sm leading-relaxed ${darkMode ? "text-slate-400" : "text-slate-600"}`}
+                        className={`whitespace-pre-wrap break-words text-sm leading-relaxed ${
+                          darkMode ? "text-slate-400" : "text-slate-600"
+                        }`}
                       >
                         {milestone.description}
                       </p>
-
-                      {/* Milestone Image */}
-                      {milestone.imageUrl && (
-                        <div className="mt-4">
-                          <img 
-                            src={milestone.imageUrl} 
-                            alt={milestone.title}
-                            className="w-full h-32 object-cover rounded-lg"
-                            onError={(e) => {
-                              e.currentTarget.style.display = 'none';
-                            }}
-                          />
-                        </div>
-                      )}
 
                       {/* Bottom accent gradient */}
                       <div

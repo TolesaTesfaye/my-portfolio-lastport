@@ -18,6 +18,19 @@ export async function apiFetch(path, options = {}) {
   return response.status === 204 ? null : response.json();
 }
 
+export async function publicApiFetch(path, options = {}) {
+  if (!API_URL) throw new Error("API is not configured");
+  const headers = { ...(options.headers || {}) };
+  if (options.body && !headers["Content-Type"]) headers["Content-Type"] = "application/json";
+  const response = await fetch(`${API_URL}${path}`, {
+    credentials: "omit",
+    ...options,
+    headers,
+  });
+  if (!response.ok) throw new Error((await response.json().catch(() => null))?.error || "Request failed");
+  return response.status === 204 ? null : response.json();
+}
+
 export async function apiUpload(file) {
   if (!API_URL) throw new Error("API is not configured");
   const body = new FormData();
@@ -43,8 +56,8 @@ export const assetUrl = (key) => {
 export async function getPortfolioData() {
   if (!apiEnabled) return null;
   const [profile, skills, experience, projects, education, certificates, socialLinks, services] = await Promise.all([
-    apiFetch("/api/profile"), apiFetch("/api/skills"), apiFetch("/api/experience"), apiFetch("/api/projects"),
-    apiFetch("/api/education"), apiFetch("/api/certificates"), apiFetch("/api/social-links"), apiFetch("/api/services"),
+    publicApiFetch("/api/profile"), publicApiFetch("/api/skills"), publicApiFetch("/api/experience"), publicApiFetch("/api/projects"),
+    publicApiFetch("/api/education"), publicApiFetch("/api/certificates"), publicApiFetch("/api/social-links"), publicApiFetch("/api/services"),
   ]);
   return { profile, skills, experience, projects, education, certificates, socialLinks, services };
 }

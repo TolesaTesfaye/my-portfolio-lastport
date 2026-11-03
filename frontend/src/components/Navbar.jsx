@@ -18,6 +18,8 @@ import { HiCode } from "react-icons/hi";
 import LanguageSwitcher from "./LanguageSwitcher";
 import { useLanguage } from "../context/LanguageContext";
 import { translations as t } from "../translations";
+import { usePortfolioData } from "../context/PortfolioDataContext";
+import { assetUrl } from "../lib/api";
 
 const Navbar = ({
   darkMode,
@@ -38,6 +40,10 @@ const Navbar = ({
   }, []);
 
   const { translate } = useLanguage();
+  const { data } = usePortfolioData();
+  const profileImage = data?.profile?.photoKey
+    ? assetUrl(data.profile.photoKey)
+    : "/photo_2026-10-26_21-22-03.jpg";
 
   const navItems = [
     {
@@ -115,13 +121,21 @@ const Navbar = ({
               className="relative"
             >
               <div
-                className={`w-10 h-10 rounded-lg flex items-center justify-center font-bold text-lg border-2 ${
+                className={`w-10 h-10 overflow-hidden rounded-lg flex items-center justify-center font-bold text-lg border-2 ${
                   darkMode
                     ? "bg-gradient-to-br from-blue-500 to-purple-600 border-blue-400/50 text-white"
                     : "bg-gradient-to-br from-blue-500 to-purple-600 border-blue-400/50 text-white shadow-lg"
                 }`}
               >
-                TT
+                <img
+                  src={profileImage}
+                  alt="Tolesa Tesfaye"
+                  className="h-full w-full object-cover"
+                  onError={(event) => {
+                    event.currentTarget.style.display = "none";
+                    event.currentTarget.parentElement.textContent = "TT";
+                  }}
+                />
               </div>
               {/* Glow effect */}
               <div className="absolute inset-0 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 opacity-20 blur-md -z-10"></div>

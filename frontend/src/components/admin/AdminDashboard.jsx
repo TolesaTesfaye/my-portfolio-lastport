@@ -3,8 +3,9 @@ import { useEffect, useMemo, useState } from "react";
 import {
   FiActivity, FiArrowUpRight, FiBookOpen, FiBriefcase, FiCheck, FiChevronRight,
   FiClock, FiEdit3, FiExternalLink, FiFileText, FiFolder, FiGrid, FiImage,
-  FiInbox, FiLayers, FiLink, FiLogOut, FiMail, FiMenu, FiPlus, FiSearch,
-  FiSettings, FiSun, FiTrash2, FiUploadCloud, FiUser, FiX,
+  FiBell, FiGithub, FiGlobe, FiInbox, FiLayers, FiLink, FiLogOut, FiMail, FiMenu, FiPlus, FiSearch,
+  FiStar,
+  FiChevronDown, FiSettings, FiSun, FiTrash2, FiUploadCloud, FiUser, FiX,
 } from "react-icons/fi";
 import { FiMoon } from "react-icons/fi";
 import { apiEnabled, apiFetch, apiUpload, assetUrl } from "../../lib/api";
@@ -260,13 +261,21 @@ function Editor({ module, initial, onClose, onSave }) {
 }
 
 export default function AdminDashboard() {
-  const [authenticated, setAuthenticated] = useState(false); const [active, setActive] = useState("overview"); const [rows, setRows] = useState([]); const [allCounts, setAllCounts] = useState({}); const [editing, setEditing] = useState(null); const [profile, setProfile] = useState(null); const [messages, setMessages] = useState([]); const [query, setQuery] = useState(""); const [notice, setNotice] = useState(""); const [menuOpen, setMenuOpen] = useState(false);
+  const [authenticated, setAuthenticated] = useState(false); const [active, setActive] = useState("overview"); const [rows, setRows] = useState([]); const [allCounts, setAllCounts] = useState({}); const [editing, setEditing] = useState(null); const [profile, setProfile] = useState(null); const [messages, setMessages] = useState([]); const [query, setQuery] = useState(""); const [notice, setNotice] = useState(""); const [menuOpen, setMenuOpen] = useState(false); const [sidebarCollapsed, setSidebarCollapsed] = useState(true); const [headerMenuOpen, setHeaderMenuOpen] = useState(false);
   const [darkMode, setDarkMode] = useState(() => localStorage.getItem("portfolio-admin-theme") !== "light");
   useEffect(() => { if (apiEnabled) apiFetch("/api/auth/me").then(() => setAuthenticated(true)).catch(() => {}); }, []);
   const load = async (key = active) => { try { if (key === "profile") setProfile(await apiFetch("/api/profile")); else if (key === "messages") setMessages(await apiFetch("/api/messages")); else if (modules[key]) setRows(await apiFetch(modules[key].path)); } catch (e) { setNotice(e.message); } };
+  useEffect(() => { if (authenticated) apiFetch("/api/profile").then(setProfile).catch(() => {}); }, [authenticated]);
+  useEffect(() => {
+    if (!authenticated) return undefined;
+    const refreshMessages = () => apiFetch("/api/messages").then(setMessages).catch(() => {});
+    refreshMessages();
+    const interval = window.setInterval(refreshMessages, 30000);
+    return () => window.clearInterval(interval);
+  }, [authenticated]);
   useEffect(() => { if (authenticated && active !== "overview") load(); }, [authenticated, active]);
   useEffect(() => { if (!authenticated) return; Promise.all(Object.entries(modules).map(async ([key, item]) => [key, (await apiFetch(item.path)).length])).then(items => setAllCounts(Object.fromEntries(items))).catch(() => {}); }, [authenticated]);
-  const save = async (data) => { try { if (active === "profile") await apiFetch("/api/profile", { method: "PUT", body: JSON.stringify(data) }); else { const item = modules[active]; const payload = { ...data }; if ("technologies" in payload) payload.technologies = Array.isArray(payload.technologies) ? payload.technologies : payload.technologies.split(",").map(v => v.trim()).filter(Boolean); await apiFetch(editing.id ? `${item.path}/${editing.id}` : item.path, { method: editing.id ? "PUT" : "POST", body: JSON.stringify(payload) }); } setEditing(null); setNotice("Changes saved and published."); load(); } catch (e) { setNotice(e.message); } };
+  const save = async (data) => { try { if (active === "profile") await apiFetch("/api/profile", { method: "PUT", body: JSON.stringify(data) }); else { const item = modules[active]; const payload = { ...data }; if ("technologies" in payload) payload.technologies = Array.isArray(payload.technologies) ? payload.technologies : payload.technologies.split(",").map(v => v.trim()).filter(Boolean); await apiFetch(editing.id ? `${item.path}/${editing.id}` : item.path, { method: editing.id ? "PUT" : "POST", body: JSON.stringify(payload) }); } setEditing(null); setNotice(active !== "profile" && data.published === false ? "Changes saved. This item is hidden from your portfolio." : "Changes saved."); load(); } catch (e) { setNotice(e.message); } };
   const remove = async (row) => { if (!window.confirm(`Delete ${displayName(row)}?`)) return; try { await apiFetch(`${modules[active].path}/${row.id}`, { method: "DELETE" }); load(); setNotice("Item deleted."); } catch (e) { setNotice(e.message); } };
   const filtered = useMemo(() => rows.filter(row => Object.values(row).join(" ").toLowerCase().includes(query.toLowerCase())), [rows, query]);
   if (!apiEnabled) return <div className="min-h-screen bg-[#0b1020] p-8 text-white"><h1 className="text-3xl font-bold">Admin API not configured</h1><p className="mt-2 text-slate-400">Set <code>VITE_API_URL</code> to the deployed Render API URL.</p></div>;
@@ -278,47 +287,69 @@ export default function AdminDashboard() {
   const contentNav = nav.filter(([key]) => !["overview", "profile", "messages"].includes(key));
 
   return (
-    <div data-admin-theme={darkMode ? "dark" : "light"} className="min-h-screen bg-[#080c18] text-slate-100 selection:bg-indigo-500/30">
-      <aside className={`fixed inset-y-0 left-0 z-40 flex w-[280px] flex-col border-r border-white/[.08] bg-[#0d1324] px-4 py-5 shadow-2xl shadow-black/20 transition-transform lg:translate-x-0 ${menuOpen ? "translate-x-0" : "-translate-x-full"}`}>
-        <div className="flex items-center justify-between px-3">
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 to-fuchsia-500 text-lg font-bold shadow-lg shadow-indigo-500/20">T</div>
-            <div><p className="font-semibold tracking-tight">Content studio</p><p className="text-xs text-slate-500">Portfolio admin</p></div>
-          </div>
+    <div data-admin-theme={darkMode ? "dark" : "light"} className="admin-shell relative min-h-screen overflow-hidden bg-[#080c18] text-slate-100 selection:bg-indigo-500/30">
+      <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden" aria-hidden="true">
+        <div className="admin-orb admin-orb-one" />
+        <div className="admin-orb admin-orb-two" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(99,102,241,.08),transparent_38%)]" />
+      </div>
+      <aside className={`fixed inset-y-0 left-0 z-40 flex flex-col border-r border-white/[.08] bg-[#0d1324] py-5 shadow-2xl shadow-black/20 transition-all duration-300 lg:translate-x-0 ${sidebarCollapsed ? "w-[88px] px-3" : "w-[220px] px-3"} ${menuOpen ? "translate-x-0" : "-translate-x-full"}`}>
+        <div className="flex justify-end px-3">
           <button onClick={() => setMenuOpen(false)} className="rounded-lg p-2 text-slate-500 hover:bg-white/[.05] hover:text-white lg:hidden" aria-label="Close navigation"><FiX /></button>
         </div>
 
-        <nav className="mt-8 flex-1 space-y-7 overflow-y-auto pr-1">
-          <NavGroup label="Workspace" items={nav.filter(([key]) => ["overview", "profile"].includes(key))} active={active} onNavigate={navigate} />
-          <NavGroup label="Portfolio content" items={contentNav} active={active} onNavigate={navigate} />
-          <NavGroup label="Communication" items={nav.filter(([key]) => key === "messages")} active={active} onNavigate={navigate} unreadMessages={unreadMessages} />
+        <nav className="mt-8 flex-1 space-y-1 overflow-y-auto pr-1">
+          <NavGroup label="Workspace" items={nav.filter(([key]) => ["overview", "profile"].includes(key))} active={active} onNavigate={navigate} collapsed={sidebarCollapsed} />
+          <NavGroup label="Portfolio content" items={contentNav} active={active} onNavigate={navigate} collapsed={sidebarCollapsed} />
+          <NavGroup label="Communication" items={nav.filter(([key]) => key === "messages")} active={active} onNavigate={navigate} unreadMessages={unreadMessages} collapsed={sidebarCollapsed} />
         </nav>
 
-        <div className="mt-5 rounded-2xl border border-emerald-400/15 bg-emerald-400/[.05] p-4">
-          <div className="flex items-center gap-2 text-xs font-medium text-emerald-300"><span className="h-2 w-2 rounded-full bg-emerald-400 shadow-[0_0_12px_#34d399]" /> Portfolio is live</div>
-          <p className="mt-2 text-xs leading-5 text-slate-500">Changes are published to your public portfolio after saving.</p>
-          <a href="/" target="_blank" rel="noreferrer" className="mt-3 flex items-center gap-1 text-xs font-medium text-slate-400 hover:text-white">View website <FiExternalLink /></a>
-        </div>
+        <button onClick={() => setSidebarCollapsed(!sidebarCollapsed)} className={`mt-5 flex w-full shrink-0 items-center rounded-xl border border-white/[.08] bg-white/[.03] p-3 text-slate-400 transition hover:border-indigo-400/40 hover:bg-indigo-500/10 hover:text-white ${sidebarCollapsed ? "justify-center" : "justify-start gap-3"}`} aria-label={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"} title={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}>
+          <FiMenu size={20} />
+          {!sidebarCollapsed && <span className="text-sm">Collapse sidebar</span>}
+        </button>
+
       </aside>
 
-      <main className="min-h-screen lg:pl-[280px]">
-        <header className="sticky top-0 z-30 flex min-h-[76px] items-center justify-between border-b border-white/[.08] bg-[#080c18]/90 px-5 backdrop-blur-xl sm:px-8">
+      <main className={`relative z-10 min-h-screen transition-[padding] duration-300 ${sidebarCollapsed ? "lg:pl-[88px]" : "lg:pl-[220px]"}`}>
+        <header className={`sticky top-0 z-30 flex min-h-[76px] items-center justify-between border-b px-5 backdrop-blur-xl transition-colors sm:px-8 ${darkMode ? "border-white/[.08] bg-[#080c18]/90" : "border-slate-200 bg-white/90"}`}>
           <button onClick={() => setMenuOpen(true)} className="rounded-xl p-2 text-slate-400 hover:bg-white/[.05] hover:text-white lg:hidden" aria-label="Open navigation"><FiMenu size={22} /></button>
-          <div className="hidden lg:block">
-            <p className="text-[11px] font-semibold uppercase tracking-[.2em] text-slate-500">Workspace / {active}</p>
-            <h1 className="mt-1 text-lg font-semibold tracking-tight">{title}</h1>
+          <div className="hidden items-center gap-3 lg:flex">
+            <div className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-indigo-500 to-fuchsia-500 text-white shadow-lg shadow-indigo-500/20" title="Administrator">
+              {profile?.photoKey ? <img src={assetUrl(profile.photoKey)} alt={profile.name || "Administrator"} className="h-full w-full object-cover" /> : <FiUser size={18} />}
+            </div>
+            <div>
+              <p className="text-sm font-semibold">Tolesa Tesfaye</p>
+              <p className="text-xs text-slate-500">Administrator</p>
+            </div>
           </div>
-          <div className="ml-auto flex items-center gap-2 sm:gap-3">
-            <button type="button" onClick={() => { const next = !darkMode; setDarkMode(next); localStorage.setItem("portfolio-admin-theme", next ? "dark" : "light"); }} aria-label={`Switch to ${darkMode ? "light" : "dark"} mode`} className="flex items-center gap-2 rounded-xl border border-white/[.08] bg-white/[.03] px-3 py-2 text-xs text-slate-400 transition hover:border-indigo-400/40 hover:text-white">
-              {darkMode ? <FiMoon /> : <FiSun className="text-amber-400" />}
-              {darkMode ? "Dark mode" : "Light mode"}
+          <div className="relative ml-auto">
+            <button type="button" onClick={() => setHeaderMenuOpen(!headerMenuOpen)} className="flex items-center gap-2 rounded-xl border border-white/[.08] bg-white/[.03] p-2 text-slate-300 transition hover:border-indigo-400/40 hover:text-white" aria-expanded={headerMenuOpen} aria-label="Open account menu">
+              <span className="relative flex h-8 w-8 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-indigo-500 to-fuchsia-500 text-white">
+                {profile?.photoKey ? <img src={assetUrl(profile.photoKey)} alt="" className="h-full w-full object-cover" /> : <FiUser size={16} />}
+              </span>
+              <span className="hidden text-sm font-medium sm:block">{profile?.name || "Account"}</span>
+              <FiChevronDown className={`transition-transform ${headerMenuOpen ? "rotate-180" : ""}`} />
             </button>
-            <a href="/" target="_blank" rel="noreferrer" className="hidden items-center gap-2 rounded-xl border border-white/[.08] px-3 py-2 text-sm text-slate-400 transition hover:border-indigo-400/40 hover:text-white sm:flex"><FiExternalLink /> View site</a>
-            <button onClick={async () => { await apiFetch("/api/auth/logout", { method: "POST" }); setAuthenticated(false); }} className="flex items-center gap-2 rounded-xl border border-white/[.08] px-3 py-2 text-sm text-slate-400 transition hover:border-rose-400/50 hover:text-rose-300"><FiLogOut /> <span className="hidden sm:inline">Sign out</span></button>
+            {headerMenuOpen && (
+              <div className={`absolute right-0 top-[calc(100%+10px)] z-50 w-56 rounded-2xl border p-2 shadow-2xl shadow-black/30 ${darkMode ? "border-white/[.1] bg-[#11182b]" : "border-slate-200 bg-white"}`}>
+                <button type="button" onClick={() => { navigate("messages"); setHeaderMenuOpen(false); }} className="relative flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm text-slate-300 transition hover:bg-white/[.06] hover:text-white">
+                  <FiBell />
+                  <span>Messages</span>
+                  {unreadMessages > 0 && <span className="ml-auto rounded-full bg-rose-500 px-2 py-0.5 text-[10px] font-bold text-white">{unreadMessages > 99 ? "99+" : unreadMessages}</span>}
+                </button>
+                <button type="button" onClick={() => { const next = !darkMode; setDarkMode(next); localStorage.setItem("portfolio-admin-theme", next ? "dark" : "light"); }} className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm text-slate-300 transition hover:bg-white/[.06] hover:text-white">
+                  {darkMode ? <FiMoon /> : <FiSun className="text-amber-400" />}
+                  {darkMode ? "Dark mode" : "Light mode"}
+                </button>
+                <a href="/" target="_blank" rel="noreferrer" onClick={() => setHeaderMenuOpen(false)} className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-slate-300 transition hover:bg-white/[.06] hover:text-white"><FiExternalLink /> View site</a>
+                <button onClick={async () => { await apiFetch("/api/auth/logout", { method: "POST" }); setAuthenticated(false); }} className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm text-slate-300 transition hover:bg-rose-500/10 hover:text-rose-300"><FiLogOut /> Sign out</button>
+              </div>
+            )}
           </div>
         </header>
 
-        <div className="mx-auto max-w-[1500px] p-5 sm:p-8">
+        <div className="mx-auto max-w-[1500px] p-5 sm:p-8 lg:p-10">
           {notice && <div className="mb-6 flex items-center justify-between rounded-2xl border border-emerald-400/20 bg-emerald-400/[.07] px-4 py-3 text-sm text-emerald-300 shadow-lg shadow-emerald-950/10"><span className="flex items-center gap-2"><FiCheck />{notice}</span><button onClick={() => setNotice("")} className="rounded-lg p-1 hover:bg-white/10" aria-label="Dismiss notification"><FiX /></button></div>}
           {active === "overview" ? <Overview counts={allCounts} onNavigate={navigate} /> : active === "profile" ? <ProfilePage profile={profile} onEdit={() => setEditing(profile || empty(profileFields))} /> : active === "messages" ? <Messages messages={messages} onDelete={async id => { await apiFetch(`/api/messages/${id}`, { method: "DELETE" }); load(); }} /> : <Collection module={modules[active]} rows={filtered} query={query} setQuery={setQuery} onAdd={() => setEditing(empty(modules[active].fields))} onEdit={setEditing} onDelete={remove} />}
         </div>
@@ -328,12 +359,133 @@ export default function AdminDashboard() {
   );
 }
 
-function NavGroup({ label, items, active, onNavigate, unreadMessages = 0 }) {
-  return <div><p className="mb-2 px-3 text-[10px] font-semibold uppercase tracking-[.2em] text-slate-600">{label}</p><div className="space-y-1">{items.map(([key, itemLabel, Icon]) => <button key={key} onClick={() => onNavigate(key)} className={`group flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-sm transition ${active === key ? "bg-indigo-500/15 font-medium text-indigo-300 shadow-sm shadow-indigo-950/20" : "text-slate-400 hover:bg-white/[.04] hover:text-slate-100"}`}><span className="flex items-center gap-3"><Icon size={17} />{itemLabel}</span>{key === "messages" && unreadMessages > 0 ? <span className="rounded-full bg-rose-500 px-2 py-0.5 text-[10px] font-bold text-white">{unreadMessages}</span> : active === key ? <FiChevronRight className="text-indigo-400" /> : null}</button>)}</div></div>;
+function NavGroup({ label, items, active, onNavigate, unreadMessages = 0, collapsed = false }) {
+  return <div>{items.map(([key, itemLabel, Icon]) => <button key={key} onClick={() => onNavigate(key)} title={collapsed ? itemLabel : undefined} className={`group flex w-full items-center rounded-xl px-3 py-2.5 text-sm transition ${collapsed ? "justify-center" : "justify-between"} ${active === key ? "bg-indigo-500/15 font-medium text-indigo-300 shadow-sm shadow-indigo-950/20" : "text-slate-400 hover:bg-white/[.04] hover:text-slate-100"}`}><span className="flex items-center gap-3"><Icon size={17} />{!collapsed && itemLabel}</span>{!collapsed && (key === "messages" && unreadMessages > 0 ? <span className="rounded-full bg-rose-500 px-2 py-0.5 text-[10px] font-bold text-white">{unreadMessages}</span> : active === key ? <FiChevronRight className="text-indigo-400" /> : null)}</button>)}</div>;
 }
 
 function Overview({ counts, onNavigate }) { const total = Object.values(counts).reduce((sum, value) => sum + value, 0); return <><div className="mb-10 flex flex-wrap items-end justify-between gap-5"><div><p className="mb-3 text-sm font-medium text-indigo-400">Your creative command center</p><h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">Good morning, Tolesa</h2><p className="mt-3 max-w-xl text-slate-400">Keep your story current, your work visible, and your next opportunity one click away.</p></div><button onClick={() => onNavigate("projects")} className="flex items-center gap-2 rounded-xl bg-indigo-500 px-4 py-3 text-sm font-semibold shadow-lg shadow-indigo-500/20 hover:bg-indigo-400"><FiPlus /> Add project</button></div><div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4"><Stat label="Published items" value={total} icon={FiLayers} accent="indigo" /><Stat label="Projects" value={counts.projects || 0} icon={FiFolder} accent="fuchsia" /><Stat label="Skills listed" value={counts.skills || 0} icon={FiActivity} accent="cyan" /><Stat label="Collections" value={Object.keys(counts).length} icon={FiGrid} accent="emerald" /></div><div className="mt-8 grid gap-5 xl:grid-cols-[1.3fr_.7fr]"><div className="rounded-3xl border border-white/10 bg-[#11182b] p-6 sm:p-8"><div className="flex items-center justify-between"><div><p className="text-sm font-medium text-slate-400">Manage content</p><h3 className="mt-1 text-xl font-semibold">Your portfolio building blocks</h3></div><FiSettings className="text-slate-500" /></div><div className="mt-6 grid gap-3 sm:grid-cols-2">{Object.entries(modules).slice(0, 4).map(([key, item]) => <button key={key} onClick={() => onNavigate(key)} className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/[.025] p-4 text-left transition hover:border-indigo-400/50 hover:bg-indigo-500/[.07]"><span className="flex items-center gap-3"><span className="rounded-xl bg-white/[.07] p-2.5 text-indigo-300"><item.icon /></span><span><span className="block text-sm font-medium">{item.label}</span><span className="mt-1 block text-xs text-slate-500">{counts[key] || 0} entries</span></span></span><FiChevronRight className="text-slate-600" /></button>)}</div></div><div className="rounded-3xl border border-white/10 bg-gradient-to-br from-indigo-500/20 to-fuchsia-500/[.08] p-6 sm:p-8"><FiClock className="text-indigo-300" size={22} /><h3 className="mt-5 text-xl font-semibold">A polished profile starts here.</h3><p className="mt-3 text-sm leading-6 text-slate-400">Update your headline, biography and profile image so visitors immediately understand what you do.</p><button onClick={() => onNavigate("profile")} className="mt-6 flex items-center gap-2 text-sm font-medium text-indigo-300 hover:text-white">Edit profile <FiArrowUpRight /></button></div></div></>; }
 function Stat({ label, value, icon: Icon, accent }) { const accents = { indigo: "bg-indigo-500/10 text-indigo-300", fuchsia: "bg-fuchsia-500/10 text-fuchsia-300", cyan: "bg-cyan-500/10 text-cyan-300", emerald: "bg-emerald-500/10 text-emerald-300" }; return <div className="rounded-2xl border border-white/10 bg-[#11182b] p-5"><div className={`mb-5 flex h-10 w-10 items-center justify-center rounded-xl ${accents[accent]}`}><Icon /></div><p className="text-sm text-slate-500">{label}</p><p className="mt-1 text-3xl font-semibold">{value}</p></div>; }
-function Collection({ module, rows, query, setQuery, onAdd, onEdit, onDelete }) { return <><div className="mb-7 flex flex-wrap items-end justify-between gap-4"><div><p className="mb-2 text-sm text-slate-500">Organize and publish</p><h2 className="text-3xl font-semibold tracking-tight">{module.label}</h2><p className="mt-2 text-sm text-slate-400">{rows.length} existing {module.label.toLowerCase()} available to edit.</p></div><button onClick={onAdd} className="flex items-center gap-2 rounded-xl bg-indigo-500 px-4 py-3 text-sm font-semibold hover:bg-indigo-400"><FiPlus /> New {module.singular}</button></div><div className="mb-5 flex items-center gap-3 rounded-2xl border border-white/10 bg-[#11182b] px-4 py-3"><FiSearch className="text-slate-500" /><input value={query} onChange={e => setQuery(e.target.value)} placeholder={`Search ${module.label.toLowerCase()}...`} className="w-full bg-transparent text-sm text-white outline-none placeholder:text-slate-600" /></div><div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">{rows.map(row => <article key={row.id} className="group rounded-2xl border border-white/10 bg-[#11182b] p-5 transition hover:-translate-y-0.5 hover:border-indigo-400/40"><div className="mb-5 flex items-start justify-between gap-4">{previewFor(row) ? <img src={assetUrl(previewFor(row))} alt={`${displayName(row)} preview`} className="h-16 w-20 rounded-xl object-cover" /> : <div className="flex h-16 w-20 items-center justify-center rounded-xl bg-white/[.05] text-slate-600"><module.icon size={24} /></div>}<span className={`rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider ${row.published === false ? "bg-slate-700/40 text-slate-500" : "bg-emerald-400/10 text-emerald-300"}`}>{row.published === false ? "Draft" : "Live"}</span></div><h3 className="truncate text-lg font-semibold">{displayName(row)}</h3><p className="mt-2 line-clamp-2 min-h-[40px] text-sm leading-5 text-slate-400">{row.description || row.category || row.organization || row.degree || row.url || "No description added yet."}</p><div className="mt-5 flex items-center justify-between border-t border-white/[.07] pt-4"><span className="text-xs text-slate-600">Updated {dateLabel(row.updatedAt)}</span><span className="flex gap-1 opacity-80"><button onClick={() => onEdit(row)} className="rounded-lg p-2 text-slate-400 hover:bg-indigo-500/10 hover:text-indigo-300"><FiEdit3 /></button><button onClick={() => onDelete(row)} className="rounded-lg p-2 text-slate-400 hover:bg-rose-500/10 hover:text-rose-300"><FiTrash2 /></button></span></div></article>)}{!rows.length && <div className="col-span-full rounded-3xl border border-dashed border-white/10 py-20 text-center"><FiFolder className="mx-auto text-slate-600" size={30} /><p className="mt-4 font-medium">Nothing here yet</p><p className="mt-1 text-sm text-slate-500">Create your first {module.singular.toLowerCase()} to get started.</p></div>}</div></>; }
+function ProjectCard({ row, onEdit, onDelete }) {
+  const technologies = Array.isArray(row.technologies) ? row.technologies : [];
+  return <article className="group overflow-hidden rounded-3xl border border-white/10 bg-[#11182b] shadow-xl shadow-black/10 transition duration-300 hover:-translate-y-1 hover:border-indigo-400/50 hover:shadow-indigo-950/30">
+    <div className="relative aspect-[16/9] overflow-hidden bg-gradient-to-br from-indigo-500/20 via-slate-900 to-fuchsia-500/20">
+      {previewFor(row) ? <img src={assetUrl(previewFor(row))} alt={`${displayName(row)} preview`} className="h-full w-full object-cover transition duration-500 group-hover:scale-105" /> : <div className="flex h-full items-center justify-center text-indigo-300"><FiFolder size={42} /></div>}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
+      <div className="absolute left-4 top-4 flex gap-2">
+        <span className={`rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider ${row.published === false ? "bg-slate-800/80 text-slate-300" : "bg-emerald-400/90 text-emerald-950"}`}>{row.published === false ? "Draft" : "Live"}</span>
+        {row.featured && <span className="flex items-center gap-1 rounded-full bg-amber-300/95 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-amber-950"><FiStar size={11} /> Featured</span>}
+      </div>
+      <p className="absolute bottom-4 left-4 text-xs font-medium text-white/70">Updated {dateLabel(row.updatedAt)}</p>
+    </div>
+    <div className="p-5">
+      <div className="flex items-start justify-between gap-3">
+        <h3 className="text-xl font-semibold tracking-tight">{displayName(row)}</h3>
+        <span className="rounded-lg bg-indigo-500/10 p-2 text-indigo-300"><FiFolder size={16} /></span>
+      </div>
+      <p className="mt-3 line-clamp-3 min-h-[60px] text-sm leading-5 text-slate-400">{row.description || "No description added yet."}</p>
+      {technologies.length > 0 && <div className="mt-4 flex flex-wrap gap-2">{technologies.slice(0, 4).map(technology => <span key={technology} className="rounded-lg border border-white/10 bg-white/[.04] px-2.5 py-1 text-[11px] font-medium text-slate-300">{technology}</span>)}{technologies.length > 4 && <span className="rounded-lg bg-white/[.04] px-2.5 py-1 text-[11px] text-slate-500">+{technologies.length - 4}</span>}</div>}
+      <div className="mt-5 flex items-center justify-between border-t border-white/[.08] pt-4">
+        <div className="flex gap-1">{row.liveUrl && <a href={row.liveUrl} target="_blank" rel="noreferrer" className="rounded-lg p-2 text-slate-400 transition hover:bg-indigo-500/10 hover:text-indigo-300" aria-label="Open live project"><FiGlobe size={17} /></a>}{row.githubUrl && <a href={row.githubUrl} target="_blank" rel="noreferrer" className="rounded-lg p-2 text-slate-400 transition hover:bg-indigo-500/10 hover:text-indigo-300" aria-label="Open GitHub repository"><FiGithub size={17} /></a>}</div>
+        <div className="flex gap-1"><button onClick={() => onEdit(row)} className="rounded-lg p-2 text-slate-400 transition hover:bg-indigo-500/10 hover:text-indigo-300" aria-label={`Edit ${displayName(row)}`}><FiEdit3 /></button><button onClick={() => onDelete(row)} className="rounded-lg p-2 text-slate-400 transition hover:bg-rose-500/10 hover:text-rose-300" aria-label={`Delete ${displayName(row)}`}><FiTrash2 /></button></div>
+      </div>
+    </div>
+  </article>;
+}
+
+function ServiceCard({ row, onEdit, onDelete }) {
+  const features = typeof row.features === "string"
+    ? row.features.split(",").map(feature => feature.trim()).filter(Boolean)
+    : [];
+  return <article className="group overflow-hidden rounded-3xl border border-white/10 bg-[#11182b] shadow-xl shadow-black/10 transition duration-300 hover:-translate-y-1 hover:border-indigo-400/50 hover:shadow-indigo-950/30">
+    <div className="relative aspect-[16/9] overflow-hidden bg-gradient-to-br from-indigo-500/20 via-slate-900 to-fuchsia-500/20">
+      {previewFor(row) ? <img src={assetUrl(previewFor(row))} alt={`${displayName(row)} preview`} className="h-full w-full object-cover transition duration-500 group-hover:scale-105" /> : <div className="flex h-full items-center justify-center text-indigo-300"><FiLayers size={42} /></div>}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
+      <div className="absolute left-4 top-4">
+        <span className={`rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider ${row.published === false ? "bg-slate-800/80 text-slate-300" : "bg-emerald-400/90 text-emerald-950"}`}>{row.published === false ? "Draft" : "Live"}</span>
+      </div>
+      <p className="absolute bottom-4 left-4 text-xs font-medium text-white/70">Updated {dateLabel(row.updatedAt)}</p>
+    </div>
+    <div className="p-5">
+      <div className="flex items-start justify-between gap-3">
+        <h3 className="text-xl font-semibold tracking-tight">{displayName(row)}</h3>
+        <span className="rounded-lg bg-indigo-500/10 p-2 text-indigo-300"><FiLayers size={16} /></span>
+      </div>
+      <p className="mt-3 line-clamp-3 min-h-[60px] text-sm leading-5 text-slate-400">{row.description || "No description added yet."}</p>
+      {features.length > 0 && <div className="mt-4 flex flex-wrap gap-2">{features.slice(0, 4).map(feature => <span key={feature} className="rounded-lg border border-white/10 bg-white/[.04] px-2.5 py-1 text-[11px] font-medium text-slate-300">{feature}</span>)}{features.length > 4 && <span className="rounded-lg bg-white/[.04] px-2.5 py-1 text-[11px] text-slate-500">+{features.length - 4}</span>}</div>}
+      <div className="mt-5 flex items-center justify-between border-t border-white/[.08] pt-4">
+        <span className="text-xs text-slate-500">{features.length} {features.length === 1 ? "feature" : "features"}</span>
+        <div className="flex gap-1"><button onClick={() => onEdit(row)} className="rounded-lg p-2 text-slate-400 transition hover:bg-indigo-500/10 hover:text-indigo-300" aria-label={`Edit ${displayName(row)}`}><FiEdit3 /></button><button onClick={() => onDelete(row)} className="rounded-lg p-2 text-slate-400 transition hover:bg-rose-500/10 hover:text-rose-300" aria-label={`Delete ${displayName(row)}`}><FiTrash2 /></button></div>
+      </div>
+    </div>
+  </article>;
+}
+
+function ExperienceCard({ row, onEdit, onDelete }) {
+  const dateRange = row.startDate
+    ? `${row.startDate} - ${row.currentlyWorking ? "Present" : row.endDate || "Not specified"}`
+    : "Dates not specified";
+  return <article className="group overflow-hidden rounded-3xl border border-white/10 bg-[#11182b] shadow-xl shadow-black/10 transition duration-300 hover:-translate-y-1 hover:border-indigo-400/50 hover:shadow-indigo-950/30">
+    <div className="relative overflow-hidden bg-gradient-to-br from-indigo-500/20 via-slate-900 to-fuchsia-500/20 p-5">
+      <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/10 to-transparent" />
+      <div className="relative flex items-start justify-between gap-4">
+        <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-indigo-500/15 text-indigo-300"><FiBriefcase size={26} /></div>
+        <span className={`rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider ${row.published === false ? "bg-slate-800/80 text-slate-300" : "bg-emerald-400/90 text-emerald-950"}`}>{row.published === false ? "Draft" : "Live"}</span>
+      </div>
+      <p className="relative mt-8 text-xs font-medium text-white/70">{dateRange}</p>
+    </div>
+    <div className="p-5">
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <h3 className="text-xl font-semibold tracking-tight">{displayName(row)}</h3>
+          <p className="mt-1 text-sm font-medium text-indigo-300">{row.organization || "Organization not specified"}</p>
+        </div>
+        {row.currentlyWorking && <span className="rounded-lg bg-emerald-500/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-emerald-300">Current</span>}
+      </div>
+      <p className="mt-4 line-clamp-3 min-h-[60px] text-sm leading-5 text-slate-400">{row.description || "No description added yet."}</p>
+      <div className="mt-4 flex flex-wrap gap-2">
+        {row.employmentType && <span className="rounded-lg border border-white/10 bg-white/[.04] px-2.5 py-1 text-[11px] font-medium text-slate-300">{row.employmentType}</span>}
+        {row.location && <span className="rounded-lg border border-white/10 bg-white/[.04] px-2.5 py-1 text-[11px] font-medium text-slate-300">{row.location}</span>}
+      </div>
+      <div className="mt-5 flex items-center justify-between border-t border-white/[.08] pt-4">
+        <span className="text-xs text-slate-500">Updated {dateLabel(row.updatedAt)}</span>
+        <div className="flex gap-1"><button onClick={() => onEdit(row)} className="rounded-lg p-2 text-slate-400 transition hover:bg-indigo-500/10 hover:text-indigo-300" aria-label={`Edit ${displayName(row)}`}><FiEdit3 /></button><button onClick={() => onDelete(row)} className="rounded-lg p-2 text-slate-400 transition hover:bg-rose-500/10 hover:text-rose-300" aria-label={`Delete ${displayName(row)}`}><FiTrash2 /></button></div>
+      </div>
+    </div>
+  </article>;
+}
+
+function CertificateCard({ row, onEdit, onDelete }) {
+  return <article className="group overflow-hidden rounded-3xl border border-white/10 bg-[#11182b] shadow-xl shadow-black/10 transition duration-300 hover:-translate-y-1 hover:border-indigo-400/50 hover:shadow-indigo-950/30">
+    <div className="relative aspect-[16/9] overflow-hidden bg-gradient-to-br from-amber-500/20 via-slate-900 to-indigo-500/20">
+      {previewFor(row) ? <img src={assetUrl(previewFor(row))} alt={`${displayName(row)} preview`} className="h-full w-full object-cover transition duration-500 group-hover:scale-105" /> : <div className="flex h-full items-center justify-center text-amber-300"><FiFileText size={42} /></div>}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
+      <div className="absolute left-4 top-4">
+        <span className={`rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider ${row.published === false ? "bg-slate-800/80 text-slate-300" : "bg-emerald-400/90 text-emerald-950"}`}>{row.published === false ? "Draft" : "Live"}</span>
+      </div>
+      <p className="absolute bottom-4 left-4 text-xs font-medium text-white/70">{row.issueDate || "Date not specified"}</p>
+    </div>
+    <div className="p-5">
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <h3 className="text-xl font-semibold tracking-tight">{displayName(row)}</h3>
+          <p className="mt-1 text-sm font-medium text-indigo-300">{row.issuer || "Issuer not specified"}</p>
+        </div>
+        <span className="rounded-lg bg-amber-500/10 p-2 text-amber-300"><FiFileText size={16} /></span>
+      </div>
+      <p className="mt-4 line-clamp-3 min-h-[60px] text-sm leading-5 text-slate-400">{row.description || "No description added yet."}</p>
+      <div className="mt-5 flex items-center justify-between border-t border-white/[.08] pt-4">
+        <span className="text-xs text-slate-500">{row.credentialUrl ? "Credential linked" : "No credential link"}</span>
+        <div className="flex gap-1">{row.credentialUrl && <a href={row.credentialUrl} target="_blank" rel="noreferrer" className="rounded-lg p-2 text-slate-400 transition hover:bg-indigo-500/10 hover:text-indigo-300" aria-label={`Open ${displayName(row)} credential`}><FiExternalLink /></a>}<button onClick={() => onEdit(row)} className="rounded-lg p-2 text-slate-400 transition hover:bg-indigo-500/10 hover:text-indigo-300" aria-label={`Edit ${displayName(row)}`}><FiEdit3 /></button><button onClick={() => onDelete(row)} className="rounded-lg p-2 text-slate-400 transition hover:bg-rose-500/10 hover:text-rose-300" aria-label={`Delete ${displayName(row)}`}><FiTrash2 /></button></div>
+      </div>
+    </div>
+  </article>;
+}
+
+function Collection({ module, rows, query, setQuery, onAdd, onEdit, onDelete }) {
+  const isProjects = module.path === "/api/projects";
+  const isServices = module.path === "/api/services";
+  const isExperience = module.path === "/api/experience";
+  const isCertificates = module.path === "/api/certificates";
+  return <><div className="mb-7 flex flex-wrap items-end justify-between gap-4"><div><p className="mb-2 text-sm text-slate-500">{isProjects ? "Build, showcase and manage your work" : isServices ? "Present your expertise and manage what visitors can see" : isExperience ? "Shape your professional story and manage what visitors can see" : isCertificates ? "Showcase your credentials and achievements" : "Organize and publish"}</p><h2 className="text-3xl font-semibold tracking-tight">{module.label}</h2><p className="mt-2 text-sm text-slate-400">{rows.length} existing {module.label.toLowerCase()} available to edit.</p></div><button onClick={onAdd} className="flex items-center gap-2 rounded-xl bg-indigo-500 px-4 py-3 text-sm font-semibold shadow-lg shadow-indigo-500/20 transition hover:bg-indigo-400"><FiPlus /> New {module.singular}</button></div><div className="mb-5 flex items-center gap-3 rounded-2xl border border-white/10 bg-[#11182b] px-4 py-3 shadow-lg shadow-black/5"><FiSearch className="text-slate-500" /><input value={query} onChange={e => setQuery(e.target.value)} placeholder={`Search ${module.label.toLowerCase()}...`} className="w-full bg-transparent text-sm text-white outline-none placeholder:text-slate-600" /></div><div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">{rows.map(row => isProjects ? <ProjectCard key={row.id} row={row} onEdit={onEdit} onDelete={onDelete} /> : isServices ? <ServiceCard key={row.id} row={row} onEdit={onEdit} onDelete={onDelete} /> : isExperience ? <ExperienceCard key={row.id} row={row} onEdit={onEdit} onDelete={onDelete} /> : isCertificates ? <CertificateCard key={row.id} row={row} onEdit={onEdit} onDelete={onDelete} /> : <article key={row.id} className="group rounded-2xl border border-white/10 bg-[#11182b] p-5 transition hover:-translate-y-0.5 hover:border-indigo-400/40"><div className="mb-5 flex items-start justify-between gap-4">{previewFor(row) ? <img src={assetUrl(previewFor(row))} alt={`${displayName(row)} preview`} className="h-16 w-20 rounded-xl object-cover" /> : <div className="flex h-16 w-20 items-center justify-center rounded-xl bg-white/[.05] text-slate-600"><module.icon size={24} /></div>}<span className={`rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider ${row.published === false ? "bg-slate-700/40 text-slate-500" : "bg-emerald-400/10 text-emerald-300"}`}>{row.published === false ? "Draft" : "Live"}</span></div><h3 className="truncate text-lg font-semibold">{displayName(row)}</h3><p className="mt-2 line-clamp-2 min-h-[40px] text-sm leading-5 text-slate-400">{row.description || row.category || row.organization || row.degree || row.url || "No description added yet."}</p><div className="mt-5 flex items-center justify-between border-t border-white/[.07] pt-4"><span className="text-xs text-slate-600">Updated {dateLabel(row.updatedAt)}</span><span className="flex gap-1 opacity-80"><button onClick={() => onEdit(row)} className="rounded-lg p-2 text-slate-400 hover:bg-indigo-500/10 hover:text-indigo-300"><FiEdit3 /></button><button onClick={() => onDelete(row)} className="rounded-lg p-2 text-slate-400 hover:bg-rose-500/10 hover:text-rose-300"><FiTrash2 /></button></span></div></article>)}{!rows.length && <div className="col-span-full rounded-3xl border border-dashed border-white/10 py-20 text-center"><FiFolder className="mx-auto text-slate-600" size={30} /><p className="mt-4 font-medium">Nothing here yet</p><p className="mt-1 text-sm text-slate-500">Create your first {module.singular.toLowerCase()} to get started.</p></div>}</div></>; }
 function ProfilePage({ profile, onEdit }) { return <><div className="mb-7 flex items-end justify-between"><div><p className="mb-2 text-sm text-slate-500">Public identity</p><h2 className="text-3xl font-semibold">Profile</h2></div><button onClick={onEdit} className="flex items-center gap-2 rounded-xl bg-indigo-500 px-4 py-3 text-sm font-semibold hover:bg-indigo-400"><FiEdit3 /> Edit profile</button></div><div className="max-w-4xl rounded-3xl border border-white/10 bg-[#11182b] p-6 sm:p-8">{profile ? <div className="grid gap-8 md:grid-cols-[180px_1fr]"><div>{profile.photoKey ? <img src={assetUrl(profile.photoKey)} alt={profile.name} className="h-44 w-44 rounded-3xl object-cover" /> : <div className="flex h-44 w-44 items-center justify-center rounded-3xl bg-indigo-500/10 text-indigo-300"><FiUser size={42} /></div>}<p className="mt-3 text-xs text-slate-600">Profile image preview</p></div><div><p className="text-3xl font-semibold">{profile.name}</p><p className="mt-2 text-lg text-indigo-300">{profile.title}</p><p className="mt-6 max-w-2xl whitespace-pre-wrap text-sm leading-7 text-slate-400">{profile.biography}</p><div className="mt-6 flex flex-wrap gap-2 text-xs text-slate-400"><span className="rounded-full bg-white/[.06] px-3 py-2">{profile.email}</span>{profile.location && <span className="rounded-full bg-white/[.06] px-3 py-2">{profile.location}</span>}</div></div></div> : <div className="py-16 text-center"><FiUser className="mx-auto text-slate-600" size={32} /><p className="mt-4">Your profile has not been created yet.</p><button onClick={onEdit} className="mt-4 text-sm text-indigo-300">Create profile</button></div>}</div></>; }
 function Messages({ messages, onDelete }) { return <><div className="mb-7"><p className="mb-2 text-sm text-slate-500">Inbox</p><h2 className="text-3xl font-semibold">Messages</h2><p className="mt-2 text-sm text-slate-400">Keep track of conversations from your portfolio contact form.</p></div><div className="space-y-3">{messages.map(message => <article key={message.id} className="rounded-2xl border border-white/10 bg-[#11182b] p-5"><div className="flex flex-wrap items-start justify-between gap-3"><div><div className="flex items-center gap-2"><h3 className="font-semibold">{message.name}</h3>{!message.read && <span className="rounded-full bg-indigo-500/15 px-2 py-1 text-[10px] font-semibold uppercase text-indigo-300">New</span>}</div><a href={`mailto:${message.email}`} className="mt-1 block text-sm text-indigo-300 hover:text-white">{message.email}</a></div><div className="flex items-center gap-3 text-xs text-slate-600"><span>{dateLabel(message.createdAt)}</span><button onClick={() => onDelete(message.id)} className="rounded-lg p-2 text-slate-500 hover:bg-rose-500/10 hover:text-rose-300"><FiTrash2 /></button></div></div>{message.subject && <p className="mt-5 text-sm font-medium text-slate-300">{message.subject}</p>}<p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-slate-400">{message.message}</p></article>)}{!messages.length && <div className="rounded-3xl border border-dashed border-white/10 py-20 text-center"><FiMail className="mx-auto text-slate-600" size={30} /><p className="mt-4 font-medium">Your inbox is clear</p><p className="mt-1 text-sm text-slate-500">New contact form messages will appear here.</p></div>}</div></>; }

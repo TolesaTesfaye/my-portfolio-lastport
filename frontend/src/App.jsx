@@ -128,11 +128,18 @@ function App() {
   return (
     isAdmin ? <AdminDashboard /> :
     <div
+      data-theme={darkMode ? "dark" : "light"}
       className={`min-h-screen transition-colors duration-300 ${
         darkMode
           ? "bg-gradient-to-br from-gray-900 via-slate-900 to-gray-800"
           : "bg-gradient-to-br from-slate-50 via-white to-blue-50"
       }`}
+      style={{
+        backgroundColor: darkMode ? "#111827" : "#f8fafc",
+        backgroundImage: darkMode
+          ? "linear-gradient(to bottom right, #111827, #0f172a, #1f2937)"
+          : "linear-gradient(to bottom right, #f8fafc, #ffffff, #eff6ff)",
+      }}
     >
       {/* Amazing New Animated Background - Mesh Gradient Style */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
