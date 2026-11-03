@@ -17,12 +17,6 @@
     @apply bg-slate-50 text-slate-900;
   }
   
-  /* Light mode enhancements */
-  @media (prefers-color-scheme: light) {
-    body {
-      @apply bg-gradient-to-br from-slate-50 via-white to-blue-50/30;
-    }
-  }
 }
 
 @layer utilities {

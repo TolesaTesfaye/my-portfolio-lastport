@@ -10,13 +10,16 @@ import {
 import { useState, useEffect } from "react";
 import { useLanguage } from "../context/LanguageContext";
 import { translations as t } from "../translations";
+import { usePortfolioData } from "../context/PortfolioDataContext";
+import { assetUrl } from "../lib/api";
 
 const Services = ({ darkMode }) => {
   const { translate } = useLanguage();
+  const { data } = usePortfolioData();
   const [hoveredIndex, setHoveredIndex] = useState(null);
   const [activeImage, setActiveImage] = useState({});
 
-  const services = [
+  const fallbackServices = [
     {
       title: translate(t.serviceContent),
       description: translate(t.serviceContentDesc),
@@ -65,6 +68,20 @@ const Services = ({ darkMode }) => {
       images: ["/vedioediting (1).png", "/vedioediting (2).png", "/tolman.jpg"],
     },
   ];
+  const iconMap = { FaYoutube, FaChalkboardTeacher, FaVideo };
+  const services = data?.services?.length
+    ? data.services.map((service, index) => ({
+        ...service,
+        icon: iconMap[service.icon] || FaVideo,
+        color: service.color || "from-blue-500 to-purple-500",
+        features: (service.features || "").split(",").map(feature => feature.trim()).filter(Boolean),
+        images: service.images?.length
+          ? service.images.map(image => assetUrl(image.imageKey))
+          : service.imageKey
+            ? [assetUrl(service.imageKey)]
+            : fallbackServices[index % fallbackServices.length].images,
+      }))
+    : fallbackServices;
 
   // Initialize active image index for each service
   useEffect(() => {
@@ -73,7 +90,7 @@ const Services = ({ darkMode }) => {
       initial[index] = 0;
     });
     setActiveImage(initial);
-  }, []);
+  }, [services.length]);
 
   // Auto-slide for hovered service
   useEffect(() => {
@@ -82,24 +99,24 @@ const Services = ({ darkMode }) => {
     const interval = setInterval(() => {
       setActiveImage((prev) => ({
         ...prev,
-        [hoveredIndex]: ((prev[hoveredIndex] || 0) + 1) % 3,
+        [hoveredIndex]: ((prev[hoveredIndex] || 0) + 1) % services[hoveredIndex].images.length,
       }));
     }, 2500);
 
     return () => clearInterval(interval);
-  }, [hoveredIndex]);
+  }, [hoveredIndex, services]);
 
   const nextImage = (serviceIndex) => {
     setActiveImage((prev) => ({
       ...prev,
-      [serviceIndex]: ((prev[serviceIndex] || 0) + 1) % 3,
+      [serviceIndex]: ((prev[serviceIndex] || 0) + 1) % services[serviceIndex].images.length,
     }));
   };
 
   const prevImage = (serviceIndex) => {
     setActiveImage((prev) => ({
       ...prev,
-      [serviceIndex]: ((prev[serviceIndex] || 0) - 1 + 3) % 3,
+      [serviceIndex]: ((prev[serviceIndex] || 0) - 1 + services[serviceIndex].images.length) % services[serviceIndex].images.length,
     }));
   };
 

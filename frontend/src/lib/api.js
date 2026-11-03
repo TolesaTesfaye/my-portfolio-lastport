@@ -42,9 +42,9 @@ export const assetUrl = (key) => {
 
 export async function getPortfolioData() {
   if (!apiEnabled) return null;
-  const [profile, skills, experience, projects, education, certificates, socialLinks] = await Promise.all([
+  const [profile, skills, experience, projects, education, certificates, socialLinks, services] = await Promise.all([
     apiFetch("/api/profile"), apiFetch("/api/skills"), apiFetch("/api/experience"), apiFetch("/api/projects"),
-    apiFetch("/api/education"), apiFetch("/api/certificates"), apiFetch("/api/social-links"),
+    apiFetch("/api/education"), apiFetch("/api/certificates"), apiFetch("/api/social-links"), apiFetch("/api/services"),
   ]);
-  return { profile, skills, experience, projects, education, certificates, socialLinks };
+  return { profile, skills, experience, projects, education, certificates, socialLinks, services };
 }

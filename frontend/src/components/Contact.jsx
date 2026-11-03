@@ -27,7 +27,7 @@ const Contact = ({ darkMode }) => {
 
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const [submitError, setSubmitError] = useState(false);
+  const [submitError, setSubmitError] = useState("");
 
   // Replace this with your own Formspree endpoint (or any form backend)
   const FORM_ENDPOINT = "https://formspree.io/f/xvkkkwbe";
@@ -35,29 +35,48 @@ const Contact = ({ darkMode }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitting(true);
-    setSubmitError(false);
+    setSubmitError("");
 
     try {
       const payload = {
-          name: formData.name,
-          email: formData.email,
-          message: formData.message,
-          _replyto: formData.email,
+        name: formData.name,
+        email: formData.email,
+        message: formData.message,
+        _replyto: formData.email,
+        _subject: `New portfolio message from ${formData.name}`,
       };
-      const response = import.meta.env.VITE_API_URL
-        ? await apiFetch("/api/contact", { method: "POST", body: JSON.stringify(payload) }).then(() => ({ ok: true }))
-        : await fetch(FORM_ENDPOINT, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
 
-      if (response.ok) {
-        setSubmitted(true);
-        setFormData({ name: "", email: "", message: "" });
-        setTimeout(() => setSubmitted(false), 5000);
-      } else {
+      const apiConfigured = Boolean(import.meta.env.VITE_API_URL);
+      const emailRequest = fetch(FORM_ENDPOINT, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const results = await Promise.allSettled([
+        ...(apiConfigured ? [apiFetch("/api/contact", { method: "POST", body: JSON.stringify(payload) })] : []),
+        emailRequest,
+      ]);
+      const savedToInbox = apiConfigured && results[0]?.status === "fulfilled";
+      const emailResult = results[apiConfigured ? 1 : 0];
+      const emailSent = emailResult?.status === "fulfilled" && emailResult.value.ok;
+
+      if (!savedToInbox && !emailSent) {
         throw new Error("Failed to send message");
       }
+
+      setSubmitted(true);
+      setSubmitError(
+        apiConfigured && !savedToInbox
+          ? "Email sent, but the message could not be saved to the admin inbox."
+          : !emailSent
+            ? "Message saved to the admin inbox, but the email notification could not be sent."
+            : "",
+      );
+      setFormData({ name: "", email: "", message: "" });
+      setTimeout(() => setSubmitted(false), 5000);
     } catch (err) {
       console.error("Contact form error:", err);
-      setSubmitError(true);
+      setSubmitError("Failed to send message. Please try again or email directly.");
     } finally {
       setSubmitting(false);
     }
@@ -350,7 +369,7 @@ const Contact = ({ darkMode }) => {
                     darkMode ? "text-red-400" : "text-red-600"
                   }`}
                 >
-                  Failed to send message. Please try again or email directly.
+                  {submitError}
                 </motion.p>
               )}
             </form>

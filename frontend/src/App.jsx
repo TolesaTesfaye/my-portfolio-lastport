@@ -17,7 +17,12 @@ import Journey from "./components/Journey";
 import AdminDashboard from "./components/admin/AdminDashboard";
 
 function App() {
-  const [darkMode, setDarkMode] = useState(true);
+  const [darkMode, setDarkMode] = useState(() => {
+    const savedTheme = localStorage.getItem("portfolio-theme");
+    if (savedTheme === "light") return false;
+    if (savedTheme === "dark") return true;
+    return window.matchMedia?.("(prefers-color-scheme: dark)").matches ?? true;
+  });
   const [currentPage, setCurrentPage] = useState("home");
 
   const isAdmin = window.location.pathname === "/admin" || window.location.hash === "#admin";
@@ -25,8 +30,16 @@ function App() {
   useEffect(() => {
     if (darkMode) {
       document.documentElement.classList.add("dark");
+      document.documentElement.classList.remove("light");
+      document.body.classList.add("dark");
+      document.body.classList.remove("light");
+      localStorage.setItem("portfolio-theme", "dark");
     } else {
       document.documentElement.classList.remove("dark");
+      document.documentElement.classList.add("light");
+      document.body.classList.remove("dark");
+      document.body.classList.add("light");
+      localStorage.setItem("portfolio-theme", "light");
     }
   }, [darkMode]);
 
