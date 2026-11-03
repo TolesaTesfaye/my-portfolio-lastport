@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Profile Image Debugger</title>
+    <style>
+        body { 
+            font-family: monospace; 
+            max-width: 900px; 
+            margin: 50px auto; 
+            padding: 20px; 
+            background: #1a1a2e;
+            color: #eee;
+        }
+        .box { 
+            background: #16213e; 
+            padding: 20px; 
+            border-radius: 8px; 
+            margin: 20px 0;
+            border: 1px solid #0f3460;
+        }
+        .success { color: #4ade80; }
+        .error { color: #f87171; }
+        .warning { color: #fbbf24; }
+        button { 
+            background: #3b82f6; 
+            color: white; 
+            border: none; 
+            padding: 12px 24px; 
+            border-radius: 6px; 
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover { background: #2563eb; }
+        pre { 
+            background: #0a0a0a; 
+            padding: 15px; 
+            border-radius: 6px; 
+            overflow-x: auto;
+            border: 1px solid #333;
+        }
+        img { 
+            max-width: 300px; 
+            border: 2px solid #3b82f6; 
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔍 Profile Image Debugger</h1>
+    
+    <button onclick="runDiagnostics()">Run Diagnostics</button>
+    
+    <div id="result"></div>
+
+    <script>
+        const API_URL = 'https://tolesa-portfolio-api.onrender.com';
+        
+        async function runDiagnostics() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '<p>Running diagnostics...</p>';
+            
+            let output = '';
+            
+            try {
+                // Step 1: Fetch profile
+                output += '<div class="box"><h3>Step 1: Fetching Profile</h3>';
+                const profileRes = await fetch(`${API_URL}/api/profile`);
+                const profile = await profileRes.json();
+                
+                output += `<p class="success">✅ Profile fetched successfully</p>`;
+                output += `<pre>${JSON.stringify(profile, null, 2)}</pre>`;
+                
+                const photoKey = profile.photoKey;
+                
+                if (!photoKey) {
+                    output += '<p class="error">❌ photoKey is null or empty!</p>';
+                    output += '<p>Go to Admin → Profile → Edit → Upload an image</p></div>';
+                    resultDiv.innerHTML = output;
+                    return;
+                }
+                
+                output += `<p class="success">✅ photoKey found: <code>${photoKey}</code></p></div>`;
+                
+                // Step 2: Test image URL
+                output += '<div class="box"><h3>Step 2: Testing Image URL</h3>';
+                const imageUrl = `${API_URL}/api/files/${encodeURIComponent(photoKey)}`;
+                output += `<p>Testing URL: <code>${imageUrl}</code></p>`;
+                
+                // Try to load the image
+                const img = new Image();
+                const imgLoadPromise = new Promise((resolve, reject) => {
+                    img.onload = () => resolve(true);
+                    img.onerror = () => reject(new Error('Image failed to load'));
+                    setTimeout(() => reject(new Error('Image load timeout')), 10000);
+                });
+                
+                img.src = imageUrl;
+                
+                try {
+                    await imgLoadPromise;
+                    output += '<p class="success">✅ Image loaded successfully!</p>';
+                    output += `<img src="${imageUrl}" alt="Profile">`;
+                } catch (err) {
+                    output += `<p class="error">❌ Image failed to load: ${err.message}</p>`;
+                    output += '<p>Possible issues:</p><ul>';
+                    output += '<li>B2 credentials not set in Render</li>';
+                    output += '<li>Image was not uploaded to B2</li>';
+                    output += '<li>CORS issue with B2</li>';
+                    output += '</ul>';
+                }
+                
+                output += '</div>';
+                
+                // Step 3: Test frontend assetUrl logic
+                output += '<div class="box"><h3>Step 3: Frontend assetUrl Logic</h3>';
+                const frontendUrl = photoKey.startsWith('http') ? photoKey : `${API_URL}/api/files/${encodeURIComponent(photoKey)}`;
+                output += `<p>Frontend would use: <code>${frontendUrl}</code></p>`;
+                output += `<p class="warning">⚠️ Make sure your frontend is calling <code>assetUrl(profile.photoKey)</code></p>`;
+                output += '</div>';
+                
+            } catch (error) {
+                output += `<div class="box"><p class="error">❌ Error: ${error.message}</p></div>`;
+            }
+            
+            resultDiv.innerHTML = output;
+        }
+    </script>
+</body>
+</html>

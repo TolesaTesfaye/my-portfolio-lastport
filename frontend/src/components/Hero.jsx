@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { FaGithub, FaLinkedin, FaEnvelope } from "react-icons/fa";
 import { FaYoutube, FaTelegram } from "react-icons/fa";
@@ -10,6 +11,10 @@ const Hero = ({ darkMode }) => {
   const { translate } = useLanguage();
   const { data } = usePortfolioData();
   const profile = data?.profile;
+  const [imageSource, setImageSource] = useState(null);
+  const fallbackImage = "/photo_2026-10-26_21-22-03.jpg";
+  const profileImage = profile?.photoKey ? assetUrl(profile.photoKey) : fallbackImage;
+  const displayedImage = imageSource || profileImage;
 
   // Dynamic academic year calculation (started 2022, expected graduation 2026)
   const startYear = 2022;
@@ -300,16 +305,14 @@ const Hero = ({ darkMode }) => {
               >
                 <div className="w-full h-full rounded-2xl overflow-hidden bg-gray-800">
                   <img
-                    src={profile?.photoKey ? assetUrl(profile.photoKey) : "/photo_2026-10-26_21-22-03.jpg"}
+                    src={displayedImage}
                     alt={profile?.name || translate(t.heroName)}
                     className="w-full h-full object-cover bg-gray-800"
-                    onError={(e) => {
-                      if (e.target.src.includes("photo_2026-10-26_21-22-03.jpg")) {
-                        e.target.src = "/Tolli.jpg";
-                      } else {
-                        e.target.style.display = "none";
-                        e.target.parentElement.style.background =
-                          "linear-gradient(135deg, #667eea 0%, #764ba2 100%)";
+                    onError={() => {
+                      if (displayedImage === fallbackImage) {
+                        setImageSource("/Tolli.jpg");
+                      } else if (displayedImage !== "/Tolli.jpg") {
+                        setImageSource(fallbackImage);
                       }
                     }}
                   />
